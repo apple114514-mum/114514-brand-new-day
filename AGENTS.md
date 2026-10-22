@@ -2,6 +2,19 @@
 
 本仓库是 Codex 云端环境的工作仓库。所有任务由 Codex 在本仓库的容器内完成。
 
+## 环境约束（重要，先读）
+
+- **网络**：本容器走白名单代理，仅 PyPI、npm、GitHub 等开发域名可访问。访问 `doi.org`、出版社站点（Elsevier、Springer、Wiley 等）、Google Scholar、文献检索站会返回**代理 403**。遇到 403 不要反复重试或换镜像试探，直接用一句话告知用户，并给出下面的取原文路径。
+- **论文原文获取顺序**：① 先找仓库 `papers/` 目录 → ② 请用户在任务对话里直接上传 PDF → ③ 才考虑网络（通常不可用）。绝不在未读原文的情况下编造精读报告或 PPT 内容。
+- **已安装工具**（由 `setup.sh` 提供，缺失时先 `pip install`，不要假设有 Windows 引擎）：
+  - `pymupdf`：PDF 文本抽取、页面渲染（`fitz`）
+  - `python-pptx`：PPTX 组装（图片版与可编辑版）
+  - `pillow`：图像处理
+  - `poppler-utils`：`pdftotext`、`pdftoppm` 命令行兜底
+  - Noto CJK 字体：中文 PPT 渲染字形
+  - LibreOffice（`soffice`）：可能未安装；有则用于 PPT→图片预览，没有就跳过并如实说明「未渲染预览」
+- **不能用**：原版技能包内的 `bin/*.exe`、`vendor/*/bin` 编译引擎（Windows/macOS 专用），也不要用 PowerShell 或 COM。
+
 ## 项目说明
 
 - 用途：通用工作仓库，通过 Codex 云端环境执行日常开发、文档、自动化任务
