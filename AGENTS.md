@@ -19,7 +19,10 @@
 
 ## 已安装技能
 
-（待添加——每个新技能安装后在此登记一行：技能名 / 用途 / 触发场景）
+- **norman-paper-reading**：精读科研论文（PDF / DOI / arXiv / 论文文本）。用户要求总结、精读、分析某篇论文，或要"批判性看待某篇顶刊"、制定未来研究计划时使用。模式：quick（速览）/ deep（精读）/ extend（研究规划）/ focused（单点）。已完成 Codex 云环境（Linux）适配，详见该技能 SKILL.md。
+- **norman-paper2ppt**：把论文 PDF 转成中文组会汇报 PPT。用户要求"把某篇文章做成 PPT / 组会汇报 / 讲稿"时使用。需依次确认三个选项：模式（A 简要 / B 标准 / C 深度）、是否要逐页讲稿、是否要可编辑版。已完成 Codex 云环境（Linux）适配。
+
+两个技能均来自 N同学开源项目（https://github.com/N-tongxue/norman-skill ），输出须保留原技能要求的水印与署名。
 
 ## 通用约定
 
