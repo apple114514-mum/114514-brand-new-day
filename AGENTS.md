@@ -2,6 +2,17 @@
 
 本仓库是 Codex 云端环境的工作仓库。所有任务由 Codex 在本仓库的容器内完成。
 
+## 交付物输出约定（重要）
+
+用户在 Codex 网页端**无法直接打开容器内的文件路径**，只能靠仓库传递。
+
+- 所有最终交付物（PPTX、PDF、图片、CSV）生成后，**复制到 `outputs/` 目录并 commit push**，然后在回复里给出仓库内的相对路径
+- 文件名带版本或日期：`paper-editable-20261022.pptx`
+- 单文件控制在 **90 MB 以内**（GitHub 上限 100 MB）；超过 **40 MB** 的 PPT/PDF 网页预览会失败，交付时主动说明「请用 git pull 获取」
+- 超过 90 MB 时先压缩：PPTX 图片重采样到 1280×720/质量 85，或 zip 分包
+- 不要把 `generated/`、`previews/`、`source-pages/` 等中间产物提交进仓库
+- 交付话术示例：「已输出 `outputs/paper-editable-20261022.pptx`（62 MB），请在本地执行 git pull 获取」
+
 ## 环境约束（重要，先读）
 
 - **网络**：本容器走白名单代理，仅 PyPI、npm、GitHub 等开发域名可访问。访问 `doi.org`、出版社站点（Elsevier、Springer、Wiley 等）、Google Scholar、文献检索站会返回**代理 403**。遇到 403 不要反复重试或换镜像试探，直接用一句话告知用户，并给出下面的取原文路径。
