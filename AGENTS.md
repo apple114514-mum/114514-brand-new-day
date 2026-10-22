@@ -34,8 +34,13 @@
 
 - **norman-paper-reading**：精读科研论文（PDF / DOI / arXiv / 论文文本）。用户要求总结、精读、分析某篇论文，或要"批判性看待某篇顶刊"、制定未来研究计划时使用。模式：quick（速览）/ deep（精读）/ extend（研究规划）/ focused（单点）。已完成 Codex 云环境（Linux）适配，详见该技能 SKILL.md。
 - **norman-paper2ppt**：把论文 PDF 转成中文组会汇报 PPT。用户要求"把某篇文章做成 PPT / 组会汇报 / 讲稿"时使用。需依次确认三个选项：模式（A 简要 / B 标准 / C 深度）、是否要逐页讲稿、是否要可编辑版。已完成 Codex 云环境（Linux）适配。
+- **research-plot**：科研数据绘图与出图规范。要画图、出图、统一图表风格、出论文级插图（温度/流量/压力曲线、实验 vs 计算对比）时使用。默认论文插图规格：单栏 8.5 cm、600 DPI、矢量优先、单位齐全。
+- **fluent-post**：Fluent/CFD 结果后处理。给了 monitor `.out`、Reports 积分结果、`.xy`/`.csv` 数据，要判断收敛、提特征量（ΔT、Q、Re、Nu、f）、出工况对比表时使用。**未收敛不出结论**。
+- **paper-archive**：文献归档与整理。要归档 PDF、按规范重命名、查重、生成 `papers/INDEX.md` 清单时使用。
+- **thesis-writing**：中文学术写作与排版。写开题报告、学位论文章节、期刊投稿、研究进展报告时使用；含结构模板、图表公式编号、GB/T 7714 引用规范。
+- **weekly-report**：生成周报与研究进展。用户说"写周报""汇报本周工作""准备组会进展"时使用。结构：本周完成 / 遇到的问题 / 下周计划 / 需要支持。
 
-两个技能均来自 N同学开源项目（https://github.com/N-tongxue/norman-skill ），输出须保留原技能要求的水印与署名。
+前两个来自 N同学开源项目（https://github.com/N-tongxue/norman-skill ），输出须保留原技能要求的水印与署名；后五个为本仓库自建，按本组习惯持续修订。
 
 ## 通用约定
 

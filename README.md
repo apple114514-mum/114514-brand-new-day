@@ -52,10 +52,20 @@ Codex 云容器走**白名单代理**，只有 PyPI、npm、GitHub 等开发域�
 
 ## 已装技能
 
+**文献与汇报（来自开源项目，已做 Linux 适配）**
+
 - **norman-paper-reading** —— 精读论文：「用 $norman-paper-reading 精读 papers/xxx.pdf」
 - **norman-paper2ppt** —— 论文转 PPT：「用 $norman-paper2ppt 把 papers/xxx.pdf 做成组会汇报」
 
-两者来自 [N-tongxue/norman-skill](https://github.com/N-tongxue/norman-skill)，已做 Linux 云环境适配（原版依赖 Windows/macOS 编译引擎），方法论与署名水印规则保留。
+两者来自 [N-tongxue/norman-skill](https://github.com/N-tongxue/norman-skill)，方法论与署名水印规则保留。
+
+**自建（按本组科研习惯）**
+
+- **research-plot** —— 科研出图规范（论文级尺寸/DPI、中文字体、对比图约定）
+- **fluent-post** —— Fluent 后处理（解析 .out、判收敛、提特征量、工况对比表）
+- **paper-archive** —— 文献归档（命名规范、去重、生成 INDEX.md）
+- **thesis-writing** —— 中文学术写作（开题/章节/投稿结构、图表公式编号、GB/T 7714）
+- **weekly-report** —— 周报与进展汇报（本周完成 / 问题 / 下周计划 / 需要支持）
 
 ## 如何添加新技能
 
