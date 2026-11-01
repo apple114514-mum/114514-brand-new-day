@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#52657E"/></marker></defs>
+<rect width="1600" height="900" fill="#F8FAFD"/>
+<rect x="0" y="0" width="1600" height="14" fill="#234C79"/>
+<text x="80" y="105" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="48" font-weight="700" fill="#162D49">KYLIN-II: evidence gates before a distortion bound</text>
+<text x="82" y="156" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="24" fill="#52657E">Conditional model audit, then a defensible paired FoM study</text>
+<path d="M551,341 L575,341" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1015,341 L1039,341" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1264,456 L1264,538" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1049,663 L1025,663" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M585,663 L561,663" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<rect x="121" y="226" width="430" height="230" rx="22" fill="#E8F0FC" stroke="#3773B8" stroke-width="3"/>
+<circle cx="155" cy="263" r="19" fill="#3773B8"/>
+<text x="155" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">1</text>
+<text x="146" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Verify primary sources</text>
+<text x="146" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Xu tables, Li point, Cheng setup</text>
+<rect x="585" y="226" width="430" height="230" rx="22" fill="#E4F4EE" stroke="#25826C" stroke-width="3"/>
+<circle cx="619" cy="263" r="19" fill="#25826C"/>
+<text x="619" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">2</text>
+<text x="610" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Close the physical</text>
+<text x="610" y="347" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">loop</text>
+<text x="610" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Height, segments, losses, heat</text>
+<text x="610" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">sink</text>
+<rect x="1049" y="226" width="430" height="230" rx="22" fill="#FDF1DD" stroke="#B67820" stroke-width="3"/>
+<circle cx="1083" cy="263" r="19" fill="#B67820"/>
+<text x="1083" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">3</text>
+<text x="1074" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Separate fit from test</text>
+<text x="1074" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Fit one point; hold out other</text>
+<text x="1074" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">data</text>
+<rect x="1049" y="548" width="430" height="230" rx="22" fill="#EFEAF9" stroke="#7159A6" stroke-width="3"/>
+<circle cx="1083" cy="585" r="19" fill="#7159A6"/>
+<text x="1083" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">4</text>
+<text x="1074" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Prove the one-input</text>
+<text x="1074" y="669" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">case</text>
+<text x="1074" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Bore: unique root, endpoint</text>
+<text x="1074" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">extrema</text>
+<rect x="585" y="548" width="430" height="230" rx="22" fill="#E8F0FC" stroke="#3773B8" stroke-width="3"/>
+<circle cx="619" cy="585" r="19" fill="#3773B8"/>
+<text x="619" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">5</text>
+<text x="610" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Bound joint</text>
+<text x="610" y="669" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">uncertainty</text>
+<text x="610" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Geometry, heat loss, measurement</text>
+<rect x="121" y="548" width="430" height="230" rx="22" fill="#E4F4EE" stroke="#25826C" stroke-width="3"/>
+<circle cx="155" cy="585" r="19" fill="#25826C"/>
+<text x="155" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">6</text>
+<text x="146" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Transfer to a reactor</text>
+<text x="146" y="669" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">case</text>
+<text x="146" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Method benchmark then reactor</text>
+<text x="146" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">design</text>
+<text x="80" y="856" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="17" fill="#6F7E90">Norman-Research-Idea · programmatically drawn research diagram</text>
+</svg>

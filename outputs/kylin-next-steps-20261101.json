@@ -1,0 +1,43 @@
+{
+  "title": "KYLIN-II: evidence gates before a distortion bound",
+  "subtitle": "Conditional model audit, then a defensible paired FoM study",
+  "nodes": [
+    {
+      "id": "sources",
+      "label": "Verify primary sources",
+      "detail": "Xu tables, Li point, Cheng setup"
+    },
+    {
+      "id": "geometry",
+      "label": "Close the physical loop",
+      "detail": "Height, segments, losses, heat sink"
+    },
+    {
+      "id": "baseline",
+      "label": "Separate fit from test",
+      "detail": "Fit one point; hold out other data"
+    },
+    {
+      "id": "theorem",
+      "label": "Prove the one-input case",
+      "detail": "Bore: unique root, endpoint extrema"
+    },
+    {
+      "id": "joint",
+      "label": "Bound joint uncertainty",
+      "detail": "Geometry, heat loss, measurement"
+    },
+    {
+      "id": "reactor",
+      "label": "Transfer to a reactor case",
+      "detail": "Method benchmark then reactor design"
+    }
+  ],
+  "edges": [
+    {"from": "sources", "to": "geometry"},
+    {"from": "geometry", "to": "baseline"},
+    {"from": "baseline", "to": "theorem"},
+    {"from": "theorem", "to": "joint"},
+    {"from": "joint", "to": "reactor"}
+  ]
+}
