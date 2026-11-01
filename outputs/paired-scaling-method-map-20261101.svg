@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#52657E"/></marker></defs>
+<rect width="1600" height="900" fill="#F8FAFD"/>
+<rect x="0" y="0" width="1600" height="14" fill="#234C79"/>
+<text x="80" y="105" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="48" font-weight="700" fill="#162D49">Design-stage scaling distortion: a paired question</text>
+<text x="82" y="156" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="24" fill="#52657E">FoM defines the target; the paired design and physics determine its bound</text>
+<path d="M551,341 L575,341" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1015,341 L1039,341" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1264,456 L1264,538" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1049,663 L1025,663" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M585,663 L561,663" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<rect x="121" y="226" width="430" height="230" rx="22" fill="#E8F0FC" stroke="#3773B8" stroke-width="3"/>
+<circle cx="155" cy="263" r="19" fill="#3773B8"/>
+<text x="155" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">1</text>
+<text x="146" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Specify the pair</text>
+<text x="146" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Prototype, facility, c or</text>
+<text x="146" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">geometry ratios</text>
+<rect x="585" y="226" width="430" height="230" rx="22" fill="#E4F4EE" stroke="#25826C" stroke-width="3"/>
+<circle cx="619" cy="263" r="19" fill="#25826C"/>
+<text x="619" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">2</text>
+<text x="610" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Solve coupled physics</text>
+<text x="610" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Reduced equations for both</text>
+<text x="610" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">designs</text>
+<rect x="1049" y="226" width="430" height="230" rx="22" fill="#FDF1DD" stroke="#B67820" stroke-width="3"/>
+<circle cx="1083" cy="263" r="19" fill="#B67820"/>
+<text x="1083" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">3</text>
+<text x="1074" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Define FoM distortion</text>
+<text x="1074" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Observed ratio versus ideal ratio</text>
+<rect x="1049" y="548" width="430" height="230" rx="22" fill="#EFEAF9" stroke="#7159A6" stroke-width="3"/>
+<circle cx="1083" cy="585" r="19" fill="#7159A6"/>
+<text x="1083" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">4</text>
+<text x="1074" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Check independent data</text>
+<text x="1074" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Keep calibration separate from</text>
+<text x="1074" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">validation</text>
+<rect x="585" y="548" width="430" height="230" rx="22" fill="#E8F0FC" stroke="#3773B8" stroke-width="3"/>
+<circle cx="619" cy="585" r="19" fill="#3773B8"/>
+<text x="619" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">5</text>
+<text x="610" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Bound the joint domain</text>
+<text x="610" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Sourced inputs; GSA guides</text>
+<text x="610" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">refinement</text>
+<rect x="121" y="548" width="430" height="230" rx="22" fill="#E4F4EE" stroke="#25826C" stroke-width="3"/>
+<circle cx="155" cy="585" r="19" fill="#25826C"/>
+<text x="155" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">6</text>
+<text x="146" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Derive a design rule</text>
+<text x="146" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">FoM tolerance sets feasible</text>
+<text x="146" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">choices</text>
+<text x="80" y="856" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="17" fill="#6F7E90">Norman-Research-Idea · programmatically drawn research diagram</text>
+</svg>

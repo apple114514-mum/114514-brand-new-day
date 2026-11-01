@@ -1,0 +1,22 @@
+quantity,value,evidence_status,interpretation
+observed_Dm_percent,2.87683528417,Zhao Table 5 CFD,P/M normalized by Table 1 ideal ratio
+observed_DdeltaT_percent,-4.90124359912,Zhao Table 5 CFD,Cannot be replaced by a counterfactual
+mass_times_deltaT_factor,0.978345909798,algebra on CFD outputs,(1+Dm)(1+DdeltaT)
+prototype_enthalpy_MW,10.1999792284,single-stream proxy,Integral of Zhao Table 4 cp over printed temperatures
+facility_enthalpy_MW,1.84210771143,single-stream proxy,Integral of Zhao Table 4 cp over printed temperatures
+enthalpy_ratio_factor,0.978834521405,single-stream proxy,"Qh,P/Qh,M divided by ideal mass and temperature ratio"
+cpbar_M_over_P,0.999577707754,single-stream proxy,Required factor in the energy identity
+printed_deltaT_rounding_factor,0.99992308284,Zhao Table 5,130.0 K versus 663.16-533.15=130.01 K
+counterfactual_DdeltaT_percent,-2.79638781289,counterfactual only,Requires mass-times-temperature factor exactly one
+effective_K_M_over_P,1.11248185736,CFD-inverted scenario,Uses assumed gross area; not an independently known loss ratio
+observed_cube_factor,1.08881172211,algebra on CFD outputs,Equals density ratio times effective K ratio times energy factor
+K_only_cube_prediction_Dm_percent,3.61699163522,counterfactual only,Drops density and energy factors; disagrees with observed Dm
+w_fit_delta_0,0.370291323155,retrospective fit,Assumes n=0.25 and delta=0
+w_fit_delta_0p05_correct,0.246218544125,retrospective fit,Correct denominator f_R-1-delta
+w_fit_delta_0p05_uploaded,0.176619246648,uploaded-code error,Incorrect denominator f_R-1+delta
+frozen_Re_surrogate_K_min,1.0020882482,conditional surrogate,n/w/delta low corner
+frozen_Re_surrogate_K_max,1.24487999382,conditional surrogate,n/w/delta high corner
+frozen_Re_surrogate_Dm_max_percent,7.57445698269,conditional surrogate,Not a prior bound for Zhao facility
+3pct_w_limit_n0p25_delta0,0.305258148538,conditional surrogate,Only for fixed n and delta
+3pct_w_limit_all_n_delta,0.131548649491,conditional surrogate,"All n in [0.18,0.30], delta in [-0.05,0.05]"
+10pct_max_Dm_n0p25_delta0_percent,9.24457179815,conditional surrogate,"If w<=1, 10 percent target is automatically met"

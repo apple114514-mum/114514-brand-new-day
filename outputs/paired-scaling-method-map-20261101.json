@@ -1,0 +1,19 @@
+{
+  "title": "Design-stage scaling distortion: a paired question",
+  "subtitle": "FoM defines the target; the paired design and physics determine its bound",
+  "nodes": [
+    {"id":"pair","label":"Specify the pair","detail":"Prototype, facility, c or geometry ratios"},
+    {"id":"model","label":"Solve coupled physics","detail":"Reduced equations for both designs"},
+    {"id":"fom","label":"Define FoM distortion","detail":"Observed ratio versus ideal ratio"},
+    {"id":"check","label":"Check independent data","detail":"Keep calibration separate from validation"},
+    {"id":"box","label":"Bound the joint domain","detail":"Sourced inputs; GSA guides refinement"},
+    {"id":"rule","label":"Derive a design rule","detail":"FoM tolerance sets feasible choices"}
+  ],
+  "edges": [
+    {"from":"pair","to":"model"},
+    {"from":"model","to":"fom"},
+    {"from":"fom","to":"check"},
+    {"from":"check","to":"box"},
+    {"from":"box","to":"rule"}
+  ]
+}
