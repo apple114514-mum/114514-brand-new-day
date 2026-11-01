@@ -3,19 +3,22 @@
 
 This is a conditional, retrospective diagnostic. Prototype K is inverted
 from Zhao Table 5 CFD, and gross diameters from Table 3 are assumed to be
-flow diameters. The uploaded exponential viscosity is retained for a direct
-comparison; it is not Zhao Table 4's viscosity. No physical bound is claimed.
+flow diameters. Select the uploaded exponential viscosity (default) for a
+direct comparison, or Zhao Table 4's polynomial with --viscosity zhao.
+No physical bound is claimed.
 
 The energy equation uses the *integral* of Zhao Table 4 cp(T). A bracketed
 root solves facility mass flow, with Reynolds ratio evaluated at the trial
 mass flow. One CFD pair can conditionally fit (effective heat, friction
 share), but it is then fully spent on calibration and cannot validate the
 model. Run: python outputs/paired-forward-consistency-20261101.py > result.csv
+For the same-source property check, append --viscosity zhao.
 """
 
 import csv
 import math
 import sys
+import argparse
 
 
 G = 9.80665
@@ -35,6 +38,14 @@ def rho(t):
 
 def mu_uploaded(t):
     return 4.94e-4 * math.exp(754.1/t)
+
+
+def mu_zhao_table4(t):
+    """Zhao 2020 Table 4, Pa s; T is kelvin."""
+    return 4.56e-3 - 7.03e-6*t + 3.61e-9*t*t
+
+
+mu = mu_uploaded
 
 
 def enthalpy_primitive(t):
@@ -61,13 +72,13 @@ def rise_from_heat(q_eff, mass):
 
 TP = TIN + DTP/2
 KP = 2*rho(TP)*AP**2*G*B*DTP*HP/MP**2
-RE_P = 4*MP/(math.pi*DP*mu_uploaded(TP))
+RE_P = 4*MP/(math.pi*DP*mu(TP))
 
 
 def state(m, w, q_eff, n=0.25, delta=0.0):
     dt = rise_from_heat(q_eff, m)
     tm = TIN+dt/2
-    re_ratio = (4*m/(math.pi*DM*mu_uploaded(tm)))/RE_P
+    re_ratio = (4*m/(math.pi*DM*mu(tm)))/RE_P
     f_ratio = re_ratio**(-n)
     k_ratio = 1+w*(f_ratio-1)+(1-w)*delta
     rhs_m2 = 2*rho(tm)*AM**2*G*B*dt*HM/(KP*k_ratio)
@@ -155,4 +166,10 @@ def main():
 
 
 if __name__=="__main__":
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--viscosity',choices=('uploaded','zhao'),default='uploaded')
+    args=parser.parse_args()
+    mu = mu_uploaded if args.viscosity=='uploaded' else mu_zhao_table4
+    RE_P = 4*MP/(math.pi*DP*mu(TP))
+    print(f'viscosity={args.viscosity}; mu_P={mu(TP):.9g} Pa s',file=sys.stderr)
     main()
