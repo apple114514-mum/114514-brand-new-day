@@ -1,0 +1,6 @@
+case,effective_heat_MW,w,mass_kg_s,deltaT_K,Re_M_over_P,K_M_over_P,Dm_percent_P_over_M,DdeltaT_percent_P_over_M,mass_residual_m2,note
+design_heat_fit_mass,1.770000000,0.225452154,92.790000000,131.304271494,0.344138848,1.068902539,2.876835284,-0.993319927,-1.81899e-12,Matches mass only; temperature remains an unfitted check
+design_heat_fit_rise,1.770000000,0.646885960,89.157815789,136.700000000,0.332540880,1.204970586,7.067916161,-4.901243599,-1.81899e-12,Matches temperature only; mass remains an unfitted check
+paired_fit_heat_and_w,1.842107711,0.370277780,92.790000000,136.700000000,0.346088203,1.112481857,2.876835284,-4.901243599,0,Both FoMs used for fit; neither is independent validation
+design_heat_3pct_threshold,1.770000000,0.237770467,92.679044136,131.462786551,0.343784628,1.072747188,3.000000000,-1.112700095,0,Conditional one-sided 3% crossing; not a physical acceptance limit
+fitted_heat_3pct_threshold,1.842107711,0.383028872,92.679044136,136.865082266,0.345733826,1.116483263,3.000000000,-5.015948664,0,Conditional one-sided 3% crossing; not a physical acceptance limit
