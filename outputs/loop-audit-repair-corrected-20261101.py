@@ -131,6 +131,7 @@ def assemble(pP, c=0.5, n=0.25):
 # ------------------------------------------------------------------ 主流程
 LOG = []
 def L(s=''):
+    s = s.rstrip()
     LOG.append(s); print(s)
 
 def main():
