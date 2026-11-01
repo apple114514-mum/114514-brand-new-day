@@ -124,7 +124,7 @@ def rows():
 
 
 def main():
-    writer = csv.writer(sys.stdout)
+    writer = csv.writer(sys.stdout, lineterminator="\n")
     writer.writerow(
         ["scenario", "assumed_A_P_over_A_M", "assumed_friction_share_w", "effective_exponent_n",
          "facility_m_pred_kg_s", "facility_deltaT_pred_K", "facility_m_CFD_kg_s",

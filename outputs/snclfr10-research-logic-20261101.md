@@ -136,5 +136,6 @@
 - 直接运行：上传脚本的隔离副本；本报告附带的两个 Python 3 标准库脚本及 CSV。新脚本使用赵文表 4 物性，且 0D 情景只在其明示假设下成立。
 - 未完成：其他候选文献全文、最新数据库检索、真实仪表不确定度、四段几何模型、成对连续盒数值上界与有向舍入认证。**创新性判断仅为当前两篇全文和引文线索下的暂定判断。**
 
-分析采用 norman-paper-reading 技能｜作者：N同学｜小红书：N同学｜B站/抖音：耐心的N同学  
+分析采用 norman-paper-reading 技能｜作者：N同学｜小红书：N同学｜B站/抖音：耐心的N同学
+
 Analysis performed using the norman-paper-reading skill | Author: N同学 | Xiaohongshu: N同学 | Bilibili/Douyin: 耐心的N同学

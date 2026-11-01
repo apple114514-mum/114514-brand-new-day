@@ -45,7 +45,7 @@ def rows():
 
 def main():
     fieldnames = list(next(rows()))
-    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
+    writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames, lineterminator="\n")
     writer.writeheader()
     writer.writerows(rows())
     for label, flow, t_in, t_out, nominal_mw in (
