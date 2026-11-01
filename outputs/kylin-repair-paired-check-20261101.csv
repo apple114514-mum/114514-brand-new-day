@@ -1,0 +1,9 @@
+case,effective_height_m,sum_k,prototype_m_kg_s,facility_m_kg_s,paired_mass_deviation_percent,facility_vs_fixed_1p2_percent,paired_deltaT_deviation_percent,note
+standard,5.0000,22.718441,1.200000000,0.320303539,-0.382077,,-0.732754,Facility flow is the actual model output
+standard,3.3500,11.593410,1.200000000,0.320285055,-0.387826,,-0.727025,Facility flow is the actual model output
+US_scaled_with_power,3.3500,11.593410,1.200000000,0.321532039,0.000000,,-0.000000,Counterfactual: heat-loss coefficient scales with Q and UA
+no_local_losses_both_sides,3.3500,0.000000,1.560677198,0.416465677,-0.408306,,-0.706611,Changed both designs; not a physical estimate of the removed loss
+height_only_pair_consistent,3.3500,3.000000,1.424111077,1.344217369,-5.610076,12.018114,9.922423,Same k on both designs; US halved as in original reduced-height scenario
+height_only_pair_consistent,3.3500,6.000000,1.326845097,1.207938782,-8.961582,0.661565,13.969129,Same k on both designs; US halved as in original reduced-height scenario
+height_only_pair_consistent,3.3500,11.593410,1.200000000,1.054189100,-12.150908,-12.150908,18.106733,Same k on both designs; US halved as in original reduced-height scenario
+height_only_pair_consistent,3.3500,36.000000,0.935021792,0.783049708,-16.253320,-34.745858,23.892305,Same k on both designs; US halved as in original reduced-height scenario
