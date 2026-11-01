@@ -11,8 +11,11 @@
 ├── papers/                # 论文原文存放目录（云环境看不到你本机磁盘）
 └── .codex/
     └── skills/            # 技能目录，每个技能一个文件夹
-        ├── norman-paper-reading/   # 精读文献
-        ├── norman-paper2ppt/       # 论文转组会 PPT
+        ├── norman-paper-reading/   # 精读文献，Linux/Python 适配
+        ├── norman-paper2ppt/       # 论文转组会 PPT，Linux x64
+        ├── norman-fig2ppt/         # 图片转可编辑 PPT，Linux x64
+        ├── norman-research-idea/   # 科研选题与创新方案，Linux x64
+        ├── norman-humanize/       # 中英文文字与 Word 修改，Linux x64
         └── README.md               # 技能安装说明
 ```
 
@@ -52,12 +55,15 @@ Codex 云容器走**白名单代理**，只有 PyPI、npm、GitHub 等开发域�
 
 ## 已装技能
 
-**文献与汇报（来自开源项目，已做 Linux 适配）**
+**Norman-Skill（来自上游当前主分支，适用于此云端 Linux x64 环境）**
 
-- **norman-paper-reading** —— 精读论文：「用 $norman-paper-reading 精读 papers/xxx.pdf」
-- **norman-paper2ppt** —— 论文转 PPT：「用 $norman-paper2ppt 把 papers/xxx.pdf 做成组会汇报」
+- **norman-paper-reading v1.4.0** —— 精读论文：「用 $norman-paper-reading 精读 papers/xxx.pdf」。上游没有 Linux 引擎，保留同版本的云端 Python 适配。
+- **norman-paper2ppt v1.1.0** —— 论文转 PPT：「用 $norman-paper2ppt 把 papers/xxx.pdf 做成组会汇报」。
+- **norman-fig2ppt v1.3.1** —— 论文图转可编辑 PPT：「用 $norman-fig2ppt 重建这张图」。
+- **norman-research-idea v2.0.0** —— 文献核查、创新点评估和研究方案：「用 $norman-research-idea 分析这个研究方向」。
+- **norman-humanize v1.3.2** —— 中英文写作修改与 Word 修订：「用 $norman-humanize 修改这段文字」。
 
-两者来自 [N-tongxue/norman-skill](https://github.com/N-tongxue/norman-skill)，方法论与署名水印规则保留。
+上游来源和所装版本记录在 [.codex/skills/NORMAN-UPSTREAM.md](.codex/skills/NORMAN-UPSTREAM.md)。仓库仅保留云端所需的 Linux x64 程序；你本机 Workbuddy 的 Windows 版独立安装。
 
 **自建（按本组科研习惯）**
 

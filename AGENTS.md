@@ -24,7 +24,7 @@
   - `poppler-utils`：`pdftotext`、`pdftoppm` 命令行兜底
   - Noto CJK 字体：中文 PPT 渲染字形
   - LibreOffice（`soffice`）：可能未安装；有则用于 PPT→图片预览，没有就跳过并如实说明「未渲染预览」
-- **不能用**：原版技能包内的 `bin/*.exe`、`vendor/*/bin` 编译引擎（Windows/macOS 专用），也不要用 PowerShell 或 COM。
+- **技能运行平台**：本仓库的 `norman-fig2ppt`、`norman-paper2ppt`、`norman-research-idea` 和 `norman-humanize` 只安装了上游对应版本的 Linux x64 可执行文件；按各自 `SKILL.md` 调用。`norman-paper-reading` 上游 v1.4.0 没有 Linux 可执行文件，继续使用本仓库的 Python 适配版。不要在云端运行 Windows/macOS 可执行文件、PowerShell 或 COM。
 
 ## 项目说明
 
@@ -43,15 +43,18 @@
 
 ## 已安装技能
 
-- **norman-paper-reading**：精读科研论文（PDF / DOI / arXiv / 论文文本）。用户要求总结、精读、分析某篇论文，或要"批判性看待某篇顶刊"、制定未来研究计划时使用。模式：quick（速览）/ deep（精读）/ extend（研究规划）/ focused（单点）。已完成 Codex 云环境（Linux）适配，详见该技能 SKILL.md。
-- **norman-paper2ppt**：把论文 PDF 转成中文组会汇报 PPT。用户要求"把某篇文章做成 PPT / 组会汇报 / 讲稿"时使用。需依次确认三个选项：模式（A 简要 / B 标准 / C 深度）、是否要逐页讲稿、是否要可编辑版。已完成 Codex 云环境（Linux）适配。
+- **norman-paper-reading v1.4.0**：精读科研论文（PDF / DOI / arXiv / 论文文本），包括证据审查与研究规划；使用现有 Linux/Python 适配版。
+- **norman-paper2ppt v1.1.0**：把论文 PDF 转成中文组会汇报 PPT；使用上游 Linux x64 版，按技能要求依次确认汇报模式、讲稿和可编辑版。
+- **norman-fig2ppt v1.3.1**：把论文图片、流程图等重建为可编辑 PowerPoint 对象；使用上游 Linux x64 版。
+- **norman-research-idea v2.0.0**：从研究方向或论文出发，核查文献、比较创新点并设计可执行研究方案；使用上游 Linux x64 版。
+- **norman-humanize v1.3.2**：按用户选择的文体、修改程度和范围润色中英文文字或 Word 文档；使用上游 Linux x64 版。
 - **research-plot**：科研数据绘图与出图规范。要画图、出图、统一图表风格、出论文级插图（温度/流量/压力曲线、实验 vs 计算对比）时使用。默认论文插图规格：单栏 8.5 cm、600 DPI、矢量优先、单位齐全。
 - **fluent-post**：Fluent/CFD 结果后处理。给了 monitor `.out`、Reports 积分结果、`.xy`/`.csv` 数据，要判断收敛、提特征量（ΔT、Q、Re、Nu、f）、出工况对比表时使用。**未收敛不出结论**。
 - **paper-archive**：文献归档与整理。要归档 PDF、按规范重命名、查重、生成 `papers/INDEX.md` 清单时使用。
 - **thesis-writing**：中文学术写作与排版。写开题报告、学位论文章节、期刊投稿、研究进展报告时使用；含结构模板、图表公式编号、GB/T 7714 引用规范。
 - **weekly-report**：生成周报与研究进展。用户说"写周报""汇报本周工作""准备组会进展"时使用。结构：本周完成 / 遇到的问题 / 下周计划 / 需要支持。
 
-前两个来自 N同学开源项目（https://github.com/N-tongxue/norman-skill ），输出须保留原技能要求的水印与署名；后五个为本仓库自建，按本组习惯持续修订。
+上述五个 Norman 技能来自 N同学项目（https://github.com/N-tongxue/norman-skill ），版本与来源提交见 `.codex/skills/NORMAN-UPSTREAM.md`，输出须遵守各技能的署名要求；其余五个为本仓库自建，按本组习惯持续修订。
 
 ## 通用约定
 
