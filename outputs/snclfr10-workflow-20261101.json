@@ -1,0 +1,49 @@
+{
+  "title": "From paired CFD ratios to conditional FoM bounds",
+  "subtitle": "SNCLFR-10 prototype / scaled facility: evidence gates before uncertainty claims",
+  "nodes": [
+    {
+      "id": "source",
+      "label": "Fix the source cohort",
+      "detail": "Zhao 2020 Tables 3-5; separate design inputs from CFD outputs"
+    },
+    {
+      "id": "fom",
+      "label": "Define paired FoMs",
+      "detail": "Flow and core temperature rise; core pressure drop stays separate"
+    },
+    {
+      "id": "audit",
+      "label": "Audit physics and units",
+      "detail": "Energy balance, property version, pressure-drop convention"
+    },
+    {
+      "id": "model",
+      "label": "Build a paired reduced model",
+      "detail": "Calibrate prototype only; retain facility CFD as an unfitted check"
+    },
+    {
+      "id": "bound",
+      "label": "Bound the joint input box",
+      "detail": "Shared properties + side-specific geometry; witness and gap"
+    },
+    {
+      "id": "gsa",
+      "label": "Use GSA to refine",
+      "detail": "Rank ratios; refine bounds; retain all variables"
+    },
+    {
+      "id": "claim",
+      "label": "State a conditional claim",
+      "detail": "Scenario bound now; measured bound after new data"
+    }
+  ],
+  "edges": [
+    {"from": "source", "to": "fom"},
+    {"from": "fom", "to": "audit"},
+    {"from": "audit", "to": "model"},
+    {"from": "model", "to": "bound"},
+    {"from": "bound", "to": "gsa"},
+    {"from": "gsa", "to": "claim"}
+  ]
+}

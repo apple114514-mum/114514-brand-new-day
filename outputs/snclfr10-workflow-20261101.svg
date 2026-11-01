@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#52657E"/></marker></defs>
+<rect width="1600" height="900" fill="#F8FAFD"/>
+<rect x="0" y="0" width="1600" height="14" fill="#234C79"/>
+<text x="80" y="105" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="48" font-weight="700" fill="#162D49">From paired CFD ratios to conditional FoM bounds</text>
+<text x="82" y="156" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="24" fill="#52657E">SNCLFR-10 prototype / scaled facility: evidence gates before uncertainty claims</text>
+<path d="M421,341 L445,341" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M783,341 L807,341" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1145,341 L1169,341" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1343,456 L1343,538" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M1179,663 L1155,663" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<path d="M817,663 L793,663" stroke="#52657E" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
+<rect x="93" y="226" width="328" height="230" rx="22" fill="#E8F0FC" stroke="#3773B8" stroke-width="3"/>
+<circle cx="127" cy="263" r="19" fill="#3773B8"/>
+<text x="127" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">1</text>
+<text x="118" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Fix the source cohort</text>
+<text x="118" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Zhao 2020 Tables 3-5; separate</text>
+<text x="118" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">design inputs from CFD outputs</text>
+<rect x="455" y="226" width="328" height="230" rx="22" fill="#E4F4EE" stroke="#25826C" stroke-width="3"/>
+<circle cx="489" cy="263" r="19" fill="#25826C"/>
+<text x="489" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">2</text>
+<text x="480" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Define paired FoMs</text>
+<text x="480" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Flow and core temperature rise;</text>
+<text x="480" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">core pressure drop stays separate</text>
+<rect x="817" y="226" width="328" height="230" rx="22" fill="#FDF1DD" stroke="#B67820" stroke-width="3"/>
+<circle cx="851" cy="263" r="19" fill="#B67820"/>
+<text x="851" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">3</text>
+<text x="842" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Audit physics and</text>
+<text x="842" y="347" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">units</text>
+<text x="842" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Energy balance, property version,</text>
+<text x="842" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">pressure-drop convention</text>
+<rect x="1179" y="226" width="328" height="230" rx="22" fill="#EFEAF9" stroke="#7159A6" stroke-width="3"/>
+<circle cx="1213" cy="263" r="19" fill="#7159A6"/>
+<text x="1213" y="271" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">4</text>
+<text x="1204" y="315" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Build a paired reduced</text>
+<text x="1204" y="347" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">model</text>
+<text x="1204" y="395" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Calibrate prototype only; retain</text>
+<text x="1204" y="420" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">facility CFD as an unfitted check</text>
+<rect x="1179" y="548" width="328" height="230" rx="22" fill="#E8F0FC" stroke="#3773B8" stroke-width="3"/>
+<circle cx="1213" cy="585" r="19" fill="#3773B8"/>
+<text x="1213" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">5</text>
+<text x="1204" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Bound the joint input</text>
+<text x="1204" y="669" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">box</text>
+<text x="1204" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Shared properties + side-specific</text>
+<text x="1204" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">geometry; witness and gap</text>
+<rect x="817" y="548" width="328" height="230" rx="22" fill="#E4F4EE" stroke="#25826C" stroke-width="3"/>
+<circle cx="851" cy="585" r="19" fill="#25826C"/>
+<text x="851" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">6</text>
+<text x="842" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">Use GSA to refine</text>
+<text x="842" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Rank ratios; refine bounds;</text>
+<text x="842" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">retain all variables</text>
+<rect x="455" y="548" width="328" height="230" rx="22" fill="#FDF1DD" stroke="#B67820" stroke-width="3"/>
+<circle cx="489" cy="585" r="19" fill="#B67820"/>
+<text x="489" y="593" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">7</text>
+<text x="480" y="637" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">State a conditional</text>
+<text x="480" y="669" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="700" fill="#19324E">claim</text>
+<text x="480" y="717" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">Scenario bound now; measured</text>
+<text x="480" y="742" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="19" fill="#445A72">bound after new data</text>
+<text x="80" y="856" font-family="Arial, Noto Sans CJK SC, sans-serif" font-size="17" fill="#6F7E90">Norman-Research-Idea · programmatically drawn research diagram</text>
+</svg>

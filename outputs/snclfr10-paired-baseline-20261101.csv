@@ -1,0 +1,4 @@
+fom,prototype_CFD,facility_CFD,ideal_prototype_over_facility,actual_prototype_over_facility,signed_deviation_percent,absolute_deviation_percent,source
+system_mass_flow_kg_s,540.0,92.79,5.656854249492381,5.819592628516004,2.876835284172774,2.876835284172774,Zhao et al. 2020 Table 5; ideal ratios from Table 1 and Eq. 10/14
+core_temperature_rise_K,130.0,136.7,1.0,0.9509875640087784,-4.901243599122163,4.901243599122163,Zhao et al. 2020 Table 5; ideal ratios from Table 1 and Eq. 10/14
+core_pressure_drop_Pa,3105.8,1515.02,2.0,2.050005940515637,2.50029702578185,2.50029702578185,Zhao et al. 2020 Table 5; ideal ratios from Table 1 and Eq. 10/14
