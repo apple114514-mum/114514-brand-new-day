@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>源无关界 v3：撤回伪认证，重做真区间证书与解析界（2026-11-02 第三轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.7;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>源无关界 v3：撤回伪认证，重做真区间证书与解析界</h1>
+<div class="sub">对 2026-11-02 <code>source-free-v2-review</code> 的逐条处理 ｜ 第三轮 ｜ 脚本 <code>source_free_bound_v3.py</code>（[0]/A–E 九段，190 行日志）</div>
+
+<div class="box">
+<b>本轮五句话。</b>
+① 复核说的<b>对</b>：v2 的 <code>7.8×10<sup>−14</sup></code> 不是认证间隙。割线当导数上界，反例逐位成立（割线 <code>0.000859193</code> &lt; 导数 <code>0.000915790</code>）；81 点取样 + 10× 缓冲也不是包络。整句<b>撤回</b>。
+② 我自己还有一处更基础的错：<code>dT<sub>M</sub>/dx</code> 推导<b>漏了因子 2</b>，<code>|M<sub>x</sub>|</code> 真值比 v2 用的还大 6.2%。所以 v2 的 <code>min F<sub>x</sub>=2.0543</code> 是双重错误下的数；结论（<code>F<sub>x</sub>&gt;0</code>）仍然成立，但推导无效。
+③ 用定向舍入区间算术重做了证书：<code>T<sub>M</sub></code> 用区间符号二分，根用 <code>F</code> 的区间符号夹逼，单调性用区间导数<code>F<sub>x</sub></code> 在 120 个箱上验号。赵 <code>D<sub>m</sub>∈[0,+9.7782%]</code>，<b>已证明的</b>包络宽 <code>1.0×10<sup>−14</sup></code>。前提只剩一条非算术假设（libm ≤8 ulp）。
+④ 复核给的解析界 <b>[0,+9.914%]</b> 常数逐条核验通过（<code>max M=1</code>、<code>max μ<sub>R</sub>=1</code>、<code>f(1)=1.2968&gt;1</code>），作为<b>人手可查</b>的正式结论并列报告。
+⑤ 顺手把 <code>δ</code> 从"取 0"换成 Xu §4 的 7.3% 量级：<code>δ</code> 的不确定度<b>只压低下端</b>，<code>w=1</code> 时它完全退出，故 <code>D<sub>m</sub>∈[−2.39%,+9.78%]</code>，下端有闭式 <code>(1+δ)<sup>1/3</sup>−1</code>。
+</div>
+
+<h2>一、复核意见的裁决</h2>
+
+<table>
+<tr><th style="width:34%">复核意见</th><th style="width:9%">裁决</th><th>处置与复算</th></tr>
+<tr>
+<td><code>7.8×10<sup>−14</sup></code> 认证间隙未获证明</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>整句撤回。<b>区间宽度</b>与<b>已证明的包含关系</b>是两件事，v2 只给了前者。</td>
+</tr>
+<tr>
+<td>割线斜率不能当全区间导数上界，模型内可直接找到反例</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>赵 <code>x∈[.9,1.2]</code>：割线 <code>0.000859193</code>，解析导数 <code>M<sub>x</sub>(0.9)=0.000915790</code>。两个数我们<b>逐位复现</b>。</td>
+</tr>
+<tr>
+<td>81 点取样 + 缓冲 + <code>nextafter</code> 不构成严格包络</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>网格间极值无约束；<code>nextafter</code> 只把<b>未证明</b>的端点外移 1 ulp，也没覆盖 <code>G</code> 与二分中的浮点运算。</td>
+</tr>
+<tr>
+<td>可给较宽的解析条件界 <code>0～+9.914%</code>，但不能当实测约束上界</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>论证链与常数全部核验通过，见 §四。<code>2<sup>3/22</sup>−1=9.9131%</code>，保守写 <b>+9.914%</b>。</td>
+</tr>
+<tr>
+<td>Xu 表 1 给 3.35 m，但<b>没给</b>水平段 3:4 分配</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>上一轮我说"这个自由假设可以删了"<b>过头</b>：3.35 m 不吃这个假设，但摩擦权重仍吃，见 §五。</td>
+</tr>
+<tr>
+<td>17.9 kW 只能列候选单量对照；<code>ΔT<sub>HS</sub></code> 用了不一致的物性</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>v2 的 <code>114.54/+5.47%</code> 混了物性版本。同模型自洽值 <b>114.90/+5.80%</b>，见 §七。</td>
+</tr>
+<tr>
+<td><code>K<sub>R</sub>=1</code> 单独推不出 Xu 的 <code>c<sup>.7</sup>,c<sup>1.9</sup></code></td>
+<td><span class="tag t-ok">成立</span></td>
+<td>还须 <code>ΔT<sub>R</sub>=1</code>、动量映射、几何加热面积与物性相似。改称<b>"与 Xu 式(6)–(12) 同前提下的推导一致性检查"</b>，不称独立验证。</td>
+</tr>
+</table>
+
+<h2>二、两处证明错误：一处复核指出，一处是我自己的</h2>
+
+<h3>2.1 割线不是导数上界（复核指出）</h3>
+
+<p>中值定理只保证"<b>存在某一点</b>的导数等于割线斜率"，不保证"割线界住全区间的导数"。赵的 <code>M(x)=c<sub>p,R</sub>/ρ<sub>R</sub></code> 在这个温区单调、近线性，但<u>斜率随 x 变化</u>，割线取的是平均值，必然小于最陡处：</p>
+
+<table>
+<tr><th>量</th><th class="num">数值</th><th>说明</th></tr>
+<tr><td>割线 <code>|M(1.2)−M(0.9)|/0.3</code></td><td class="num">0.000859193</td><td>v2 当作 <code>|M<sub>x</sub>|</code> 的上界</td></tr>
+<tr><td>解析导数 <code>M<sub>x</sub>(0.9)</code></td><td class="num">0.000915790</td><td>真值，<b>比割线大 6.2%</b></td></tr>
+<tr><td>解析导数 <code>M<sub>x</sub>(1.2)</code></td><td class="num">0.000802173</td><td>单调递减，最坏点在最左端</td></tr>
+</table>
+
+<p class="small">复核给的 <code>0.000859193 / 0.000915790</code> 与本脚本逐位相同。</p>
+
+<h3>2.2 更基础的一处：v2 的 <code>dT<sub>M</sub>/dx</code> 漏了因子 2（我自己的）</h3>
+
+<p>复核的反例迫使我重推一遍隐函数导数，才发现 v2 里 <code>T<sub>M</sub>′</code> 的分母少了 <code>2c<sub>p</sub></code> 的因子 2 —— 直接后果是 <code>|M<sub>x</sub>|</code> 被<b>高估</b>了一倍（<code>0.001845</code> vs 真值 <code>0.000916</code>），与复核的差来自两个不同方向、正好抵消了一部分，所以 v2 的 <code>min F<sub>x</sub>=2.0543</code> 看着"没事"。正确式：</p>
+
+<pre><code>g(T) = m·c_p(T)·2(T−T_in) − Q = 0
+T′ = c_p·ΔT / ( x·(c_p′·ΔT + 2c_p) )      ΔT = 2(T−T_in)      ← v2 缺了分母里的 2</code></pre>
+
+<div class="box warn">
+这两处错误的方向相反、量级相近，所以 v2 的<b>结论</b>（<code>F<sub>x</sub>&gt;0</code>）在数值上侥幸成立。这恰好说明为什么"端点落在区间里"不能当证明：<b>两个错误可以互相掩盖</b>。
+</div>
+
+<h2>三、真区间证书</h2>
+
+<p>替换掉取样与割线的办法只有一个：每一步都用<b>定向舍入</b>，让"包含"由运算本身保证，而不是由采样密度保证。</p>
+
+<h3>3.1 构造</h3>
+
+<pre><code>I 类：加/减/乘/除/整数幂/正实数幂，每个运算把两端各外移 ≥2 ulp；
+      exp 与 pow 按 8 ulp 外扩（唯一的非算术假设）。
+1) T_M：对固定 x，g(T)=m c_p(T)·2(T−T_in)−Q 严格增 ⇒ 在 [560,670] 上按 g 的**区间符号**二分
+2) T_M 关于 x 增：T′&gt;0（分母项 ≈ 2c_p + c_p′ΔT ≈ 288 &gt; 0）⇒ 箱 [xa,xb] 的 T 箱 = hull(T(xa),T(xb))
+3) M=c_p,R/ρ_R、f=(R_id·x·d·μ_R)^n、G=(1−w)(1+δ)+w(λ/d)f 全部区间求值
+4) F(x,w)=x³−M·G 用区间符号二分 ⇒ 根的**已证明**包络（IVT）
+5) 唯一性与 w 单调：区间 F_x&gt;0，且 F_w=−M[(λ/d)f−1] 不变号 ⇒ 极值在 w 端点</code></pre>
+
+<h3>3.2 单调性证书（区间导数，覆盖 12×10=120 个箱）</h3>
+
+<table>
+<tr><th>案例</th><th class="num">F<sub>x</sub> 下确界<br>（最坏箱）</th><th class="num">min[(λ/d)f]</th><th class="num">max[(λ/d)f]</th><th>结论</th></tr>
+<tr><td>Zhao <code>d=λ=.5</code></td><td class="num">2.551238</td><td class="num">1.29053</td><td class="num">1.33934</td><td>恒 &gt;1 ⇒ <b>D 随 w 增</b>，上端在 <code>w=1</code></td></tr>
+<tr><td>KYLIN 降高度 <code>d=1,λ=.5</code></td><td class="num">0.693708</td><td class="num">0.46026</td><td class="num">0.53145</td><td>恒 &lt;1 ⇒ <b>D 随 w 减</b>，上端在 <code>w=0</code></td></tr>
+</table>
+
+<p class="small">两案 <code>F<sub>x</sub></code> 的下确界都远离 0（2.55 / 0.69），所以区间过估即使再宽也不会翻符号。这一步不再依赖任何采样。</p>
+
+<h3>3.3 根的已证明包络</h3>
+
+<table>
+<tr><th>案例</th><th class="num">w</th><th class="num">x ∈（已证明）</th><th class="num">包络宽度</th><th class="num">设计口径的偏差</th></tr>
+<tr><td>Zhao</td><td class="num">0.0</td><td class="num">0.999999999999995 ~ 1.000000000000005</td><td class="num">1.02e−14</td><td class="num">D<sub>m</sub> ∈ [−0.0000%, +0.0000%]</td></tr>
+<tr><td>Zhao</td><td class="num">1.0</td><td class="num">1.097782446340133 ~ 1.097782446340143</td><td class="num">1.02e−14</td><td class="num">D<sub>m</sub> ∈ [+9.7782%, +9.7782%]</td></tr>
+<tr><td>KYLIN 降高度</td><td class="num">0.0</td><td class="num">0.999928206804120 ~ 0.999928206804124</td><td class="num">3.55e−15</td><td class="num">ε(M/P) = −20.6242%</td></tr>
+<tr><td>KYLIN 降高度</td><td class="num">1.0</td><td class="num">0.793700525984096 ~ 0.793700525984103</td><td class="num">7.11e−15</td><td class="num">ε(M/P) = −0.0000%</td></tr>
+</table>
+
+<div class="box ok">
+<b>这才是"认证"的格式。</b><code>1.0×10<sup>−14</sup></code> 是<b>证明出来的包含宽度</b>，不是把取样端点挪一个浮点单位。但它有两条前提，必须与结论同时写在标题句里：<br>
+a. <b>libm 的 <code>exp</code>/<code>pow</code> 误差 ≤8 ulp</b>（已按 8 ulp 外扩）—— 这是唯一的非算术假设；<br>
+b. 模型本身（<code>d=0.5</code>、<code>λ/d</code>、<code>n=1/4</code>、<code>δ</code>、绝热、物性版本）全是<b>声明</b>。<br>
+故整句仍只能叫「声明模型内、对 <code>w</code> 一个参数成立的条件包络」。
+</div>
+
+<h2>四、可证界 <code>[0, +9.914%]</code>：不用浮点证书的那条路</h2>
+
+<p>复核给的解析界值得单独列为正式结论，因为它<b>只用手算两条不等式</b>，任何人拿纸笔都能查。</p>
+
+<pre><code>(a) w=0：F(x,0)=x³−M(x)，且 M(1)=1、F_x&gt;0  ⇒  根恰为 x=1，D_m=0
+(b) 对 x∈[1,x̄]：M(x)≤1、μ_R(x)≤1（核验），且 (λ/d)f(x)≥1（f 增、f(1)=1.2968&gt;1）
+      ⇒ F(1,w) = 1 − M(1)[1+w(f(1)−1)] ≤ 0
+      ⇒ F(x̄,w) ≥ x̄³ − M(x̄)f(x̄) ≥ x̄³ − (R_id·d·x̄)^n = 0
+      ⇒ 每个 w 都有根落在 [1,x̄]
+(c) F_w = −M[(λ/d)f−1] &lt; 0 ⇒ 根随 w 增 ⇒ x(w=1) 最大
+
+x̄ = (R_id·d)^(n/(3−n)) = 2^(3/22) = 1.0991312226</code></pre>
+
+<table>
+<tr><th>核验项</th><th class="num">数值</th><th>要求</th></tr>
+<tr><td><code>max M(x)</code>，<code>x∈[1,x̄]</code></td><td class="num">1.000000000000</td><td>≤1（等号只在 <code>x=1</code> 取到）</td></tr>
+<tr><td><code>max μ<sub>R</sub>(x)</code></td><td class="num">1.000000000000</td><td>≤1（同上）</td></tr>
+<tr><td><code>f(1)</code></td><td class="num">1.296840</td><td>&gt;1，使 <code>F(1,w)≤0</code></td></tr>
+<tr><td><code>T<sub>M</sub>(x̄)</code> / <code>T<sub>P</sub></code></td><td class="num">603.249 K / 596.874 K</td><td>同物性区，无外推</td></tr>
+<tr><td><code>x̄−1</code></td><td class="num">+9.9131%</td><td>保守十进制写 <b>+9.914%</b></td></tr>
+</table>
+
+<div class="box">
+两条结论<b>层次不同，不能混写</b>：<br>
+<span class="tag t-ok">可证界</span> <code>[0, +9.914%]</code> —— 只用两条不等式，人手可查，不依赖任何浮点证书。<br>
+<span class="tag t-mid">数值端点</span> <code>+9.7782%</code> —— 区间证书下的紧包络（§三）；若不愿接受 8 ulp 假设，就退一步只说"双精度求根结果"，不能说"认证到 1e−14"。<br>
+两者差 <b>0.135 pp</b>，都只约束 <code>w</code> 一个参数，都依赖 <code>d=0.5</code>、<code>δ</code>、绝热、物性版本。
+</div>
+
+<h2>五、把 <code>δ</code> 从"取 0"换成有依据的量级</h2>
+
+<p><code>δ</code>（局部阻力不相似项）一直是我这一系列结果里弹性最大、依据最弱的一维。本轮它第一次有了<b>一手量级锚</b>：Xu 原文 §4 说标准缩比方案的稳态偏差 <code>m ≤7.3%</code>、<code>ΔT ≤7.5%</code>，而本模型对同样的标准缩比给<b>恰好 0</b>（<code>K<sub>R</sub>=1</code> 的代数结果）。两者之差就是模型没覆盖的部分，<b>7% 就是这个差应当取的量级</b>。</p>
+
+<table>
+<tr><th class="num">δ</th><th class="num">D<sub>m</sub>(w=0)</th><th class="num">D<sub>m</sub>(w=1)</th><th class="num">闭式 (1+δ)<sup>1/3</sup>−1</th></tr>
+<tr><td class="num">−0.07</td><td class="num">−2.3893%</td><td class="num">+9.7782%</td><td class="num">−2.3900%</td></tr>
+<tr><td class="num">−0.05</td><td class="num">−1.6948%</td><td class="num">+9.7782%</td><td class="num">−1.6952%</td></tr>
+<tr><td class="num">0.00</td><td class="num">−0.0000%</td><td class="num">+9.7782%</td><td class="num">+0.0000%</td></tr>
+<tr><td class="num">+0.05</td><td class="num">+1.6391%</td><td class="num">+9.7782%</td><td class="num">+1.6396%</td></tr>
+<tr><td class="num">+0.07</td><td class="num">+2.2802%</td><td class="num">+9.7782%</td><td class="num">+2.2809%</td></tr>
+</table>
+
+<div class="box ok">
+两个<b>结构性</b>事实（不是数值巧合）：<br>
+① <code>w=1</code> 时 <code>(1−w)(1+δ)=0</code>，<b><code>δ</code> 完全退出</b> ⇒ 上端对 <code>δ</code> 不敏感；<br>
+② <code>w=0</code> 时只剩 <code>(1+δ)</code>，故 <code>D<sub>m</sub>=(1+δ)<sup>1/3</sup>−1</code> 有<b>闭式</b>，与数值逐位吻合。<br>
+<b>结论</b>：<code>δ</code> 的不确定度是<b>单边</b>的 —— 它只把下端拉低，不抬高上端。取 <code>δ∈[−0.07,+0.07]</code> 得
+<code>D<sub>m</sub> ∈ [−2.39%, +9.78%]</code>，比"<code>δ=0</code> 时的 <code>[0,+9.78%]</code>"诚实，且下端可查闭式。
+</div>
+
+<h2>六、Xu 原文：3.35 m 是一手，3:4 仍是假设（但量级无关）</h2>
+
+<p>上一轮我说"那个自由假设可以删了"，<b>过头了</b>。准确的说法是分成两件事：</p>
+
+<table>
+<tr><th style="width:30%">量</th><th style="width:12%">状态</th><th>依据</th></tr>
+<tr><td><code>3.35 m</code> 段间高差</td><td><span class="tag t-ok">一手</span></td><td>Xu FR26-170 <b>表 1</b>（PDF 第 4 页）："Height between cooling and heating sections (m) 3.35"。且 <code>∮T dz</code> 展开给 <code>(L_core+L_hx)/2+V_HOT = 0.9+0.75+1.7 = 3.35</code>，与水平段分配无关。</td></tr>
+<tr><td>水平段 <code>3:4</code> 分配</td><td><span class="tag t-no">假设</span></td><td>Xu 表 1 只给总长 12 m 与各段长，<b>不给</b>热段/冷段水平长度。该假设只影响热/冷水平段的<b>摩擦权重</b>（经 <code>μ(T)</code>），不影响浮升高度。</td></tr>
+</table>
+
+<table>
+<tr><th class="num">frac_hot</th><th class="num">coef_hot</th><th class="num">k_tot（标定）</th><th class="num">ε 降高度</th><th class="num">摩擦份额</th></tr>
+<tr><td class="num">0.0000</td><td class="num">3.35000</td><td class="num">11.51537</td><td class="num">−12.0979%</td><td class="num">0.4902</td></tr>
+<tr><td class="num">0.4286（3:7）</td><td class="num">3.35000</td><td class="num">11.59341</td><td class="num">−12.1509%</td><td class="num">0.4867</td></tr>
+<tr><td class="num">1.0000</td><td class="num">3.35000</td><td class="num">11.69746</td><td class="num">−12.2211%</td><td class="num">0.4821</td></tr>
+</table>
+
+<p><code>coef_hot</code> 恒为 3.35，不随 <code>frac_hot</code> 变；偏差随分配只动 <b>0.12 pp</b>。<b>结论</b>：浮升高度不再依赖这个假设，摩擦权重仍依赖它，但灵敏度小到不影响任何结论的量级。</p>
+
+<h2>七、Xu §4 的两组数字：判据"只能落在摩擦数上"的独立佐证</h2>
+
+<p>这是我上一轮读 Xu 时<b>漏掉</b>的段落（PDF 第 5–6 页），价值高于表 1/2：</p>
+
+<pre><code>"For the standard scaling models, the steady deviation of the mass flow rate
+ is less than 7.3% under all cases, while the deviation of the temperature
+ difference remains below 7.5%."
+
+"The scaling of the diameter results in the distortion of the friction number of
+ the criteria. In practice, calibration of the resistance before experiments can be
+ performed to meet the friction criterion and avoid the excessive distortion.
+ This can be adjusted by the electric regulating valve."</code></pre>
+
+<table>
+<tr><th style="width:22%">对齐点</th><th>含义</th></tr>
+<tr><td>Xu 把简化缩比的失真<b>归因于摩擦数</b></td><td>与本项目「<code>K<sub>R</sub>=1</code> 是唯一缩比要求」同义。</td></tr>
+<tr><td>Xu 说实验前可用<b>调节阀</b>把摩擦判据补回来</td><td>这正是「阻力可标定 ⇒ 判据是<b>可执行</b>的」的原始出处，比我此前的推断硬。</td></tr>
+<tr><td>标准缩比自身仍有 ≤7.3%/≤7.5%</td><td>本模型给 0 ⇒ 差值是 <code>δ</code>+三维+物性非线性，<b>7% 就是 <code>δ</code> 的量级锚</b>（§五）。</td></tr>
+<tr><td>简化缩比失真"随原型流面积增大而增大"</td><td>与「<code>c</code> 只决定地板、失配比 <code>K<sub>R</sub></code> 决定大小」一致：流面积越大，同一台架越难以小 <code>c</code> 模拟。</td></tr>
+</table>
+
+<table>
+<tr><th style="width:44%">量</th><th class="num">数值</th><th>口径</th></tr>
+<tr><td>Xu 标准缩比 CFD 偏差（<code>m</code> / <code>ΔT</code>）</td><td class="num">≤7.3% / ≤7.5%</td><td>同判据、全 CFD</td></tr>
+<tr><td>本模型 标准缩比（KYLIN 全相似）</td><td class="num">0 / 0</td><td><code>K<sub>R</sub>=1</code> 的代数结果</td></tr>
+<tr><td>本模型 降高度（Zhao 几何，<code>w=0.487</code>）</td><td class="num">−13.18%</td><td>绝热、单 λ 单 d</td></tr>
+<tr><td>四段模型 降高度 <code>US=0</code></td><td class="num">−13.29%</td><td>同 <code>k</code> 成对重解</td></tr>
+<tr><td>Zhao 条件包络（<code>w∈[0,1]</code>）</td><td class="num">0 ~ +9.91%</td><td>声明模型内</td></tr>
+</table>
+
+<p class="small">能写的句子：Xu 的 7.3% 是「模型本应给 0」与「真实工程偏差」之间的<b>缝</b>；我们的包络是「设计映射一改，缝会张到多大」。两者回答的不是同一个问题，但都指向判据要落在摩擦数上。</p>
+
+<h2>八、17.9 kW：物性版本与"没有 HS 节点"</h2>
+
+<p>固定 <code>(k_tot=11.5934, UA=915, US=6)</code> 预测 17.9 kW：<code>m=1.0746 kg/s</code>，对 1.12 是 <b>−4.06%</b>（唯一独立对比量）。</p>
+
+<table>
+<tr><th>ΔT<sub>HS</sub> 的算法</th><th class="num">数值</th><th class="num">对 108.6 K</th><th>评价</th></tr>
+<tr><td><code>Q/(m·c<sub>p,z</sub>(T<sub>b</sub>))</code>，赵文物性</td><td class="num">114.26 K</td><td class="num">+5.21%</td><td>物性与流量来源不一致</td></tr>
+<tr><td>v2 实际用的（<code>c<sub>p,z</sub></code> 在 <code>T<sub>in</sub>+ΔT/2</code>）</td><td class="num">114.54 K</td><td class="num">+5.47%</td><td>温度取值也不一致，<b>撤回</b></td></tr>
+<tr><td><code>Q/(m·c<sub>p,Yang</sub>(T<sub>b</sub>))</code>，四段模型自身物性</td><td class="num">114.90 K</td><td class="num">+5.80%</td><td>自洽值（与复核一致）</td></tr>
+</table>
+
+<div class="box warn">
+但更根本的问题比物性版本严重：<b>四段模型只有"全回路净温升" <code>dT=Q<sub>net</sub>/(m c<sub>p</sub>(T<sub>b</sub>))</code>，没有加热段进出口两个节点。</b>
+所以 <code>Q/(m c<sub>p</sub>(T<sub>b</sub>))</code> 只是<b>同一控制体的毛热代理</b>，不是对实验 <code>ΔT<sub>HS</sub></code> 的预测。把它和实测 108.6 K 相减并报出百分数，形式上是"两个量相减"，实质是"两个不同定义相减"。<br>
+<b>结论</b>：17.9 kW 只能列<b>候选单量外部对照</b>（<code>m</code>，−4.06%），不能宣布留出验证通过。参照量级：Yue 自算（全段优化）是 −1.79%/+1.57%。
+</div>
+
+<h2>九、文献状态（本轮实际可达性）</h2>
+
+<table>
+<tr><th style="width:15%">文献</th><th style="width:24%">出处</th><th style="width:28%">地址 / 本地文件</th><th>本轮核到什么</th></tr>
+<tr>
+<td><b>Xu FR26-170</b></td>
+<td>IAEA FR26（北京 2026-05）paper 170，无 DOI</td>
+<td><code>conferences.iaea.org/event/436/contributions/38376/attachments/22586/39273/FR26-170.pdf</code><br>本地 <code>文献原文/FR26-170_Xu.pdf</code></td>
+<td>表 1（3.35 m，第 4 页）、表 2、式(17)(18)、<b>§4 的 7.3%/7.5% 与"调节阀补摩擦判据"</b>（第 5–6 页）、参考文献[13]=Li 2015。</td>
+</tr>
+<tr>
+<td><b>Yue 2017</b></td>
+<td>NST <b>28(3):39</b>，DOI <code>10.1007/s41365-017-0187-x</code></td>
+<td><code>link.springer.com/article/10.1007/s41365-017-0187-x</code>（<b>付费</b>，仅摘要+作者信息）<br><code>nst.sinap.ac.cn/article/id/3124</code> 本轮 <b>不可达</b>（<code>code=000</code>）</td>
+<td>只核到：标题、作者（Yue, Chen, Lyu, Li, Gao；通讯 Chen）、2017-02-11 在线。<b>17.9 kW / 1.12 kg/s / 108.6 K、"HS 入温低于 HX 出温因为散热" 本轮未能二次核验</b>——上一轮是从 nst 开放全文页读的，本轮站点不通。</td>
+</tr>
+<tr>
+<td><b>Li 2015</b></td>
+<td>PNE <b>81:239–244</b>，DOI <code>10.1016/j.pnucene.2014.12.009</code></td>
+<td><code>sciencedirect.com/science/article/pii/S0149197014003485</code>（付费）<br>INIS <code>yqsy3-fjz55</code>（摘要）</td>
+<td>摘要级：24 kW→1.2 kg/s。二次侧油回路条件仍未核。<b>Xu Fig.3b/3c 的实验点正引自本篇</b>，是同系列留出点的首选来源。</td>
+</tr>
+<tr>
+<td>Xu 期刊版</td>
+<td>NED <b>443:114346</b>，DOI <code>10.1016/j.nucengdes.2025.114346</code></td>
+<td>doi.org 同号（未取）</td>
+<td>未核。</td>
+</tr>
+<tr>
+<td>赵鹏程 2020</td>
+<td>核动力工程 <b>41(6):207–213</b></td>
+<td>DOI <code>10.13832/j.jnpe.2020.06.0207</code></td>
+<td>表 3/4/5 已用于全部赵算例。</td>
+</tr>
+<tr>
+<td>Carnevali 2025</td>
+<td>NED <b>444:114409</b>，OA</td>
+<td>本地 <code>D:\zotero\Ciads\失真\</code></td>
+<td>p.2/p.9/§3 open issue(ii) 已引。</td>
+</tr>
+</table>
+
+<h2>十、可宣称 / 不可宣称</h2>
+
+<table>
+<tr><th style="width:50%">可宣称（都带条件句）</th><th>不可宣称</th></tr>
+<tr>
+<td>
+<ul>
+<li>通式 <code>x³=K<sub>R</sub>c<sub>p,R</sub>/ρ<sub>R</sub></code>，<code>K<sub>R</sub>=(1−w)(1+δ)+w(λ/d)f<sub>R</sub></code>；<code>K<sub>R</sub>=1</code> 是唯一缩比要求。</li>
+<li>Zhao 声明模型内、对 <code>w</code> 一个参数：<b>可证界 <code>[0,+9.914%]</code></b>；区间证书紧包络 <code>[0,+9.7782%]</code>（宽 1e−14，含 8 ulp 假设）。</li>
+<li><code>δ∈[−0.07,+0.07]</code> ⇒ <code>D<sub>m</sub>∈[−2.39%,+9.78%]</code>，下端闭式 <code>(1+δ)<sup>1/3</sup>−1</code>。</li>
+<li>KYLIN 全相似回到模型零偏差；降高度 −13.18%（比值）/ −13.29%（四段 <code>US=0</code>），主因是局部损失不随长度缩短。</li>
+<li>3.35 m 有 Xu 表 1 一手依据；<code>3:4</code> 是假设，对结论量级无关（≤0.12 pp）。</li>
+</ul>
+</td>
+<td>
+<ul>
+<li><b>"7.8e−14 认证间隙"</b> —— 割线当导数上界 + 取样当包络，<b>撤回</b>。</li>
+<li><b>"+9.7782% 已认证到 1e−14"</b> —— 只能在 8 ulp 假设下说"区间证书"，否则退到可证界 +9.914%。</li>
+<li><b>跨案例移植 <code>w*(3%)</code></b> —— 赵 0.304 / 全相似 0（退化）/ 降高度 0.910。</li>
+<li><b><code>K<sub>R</sub>=1</code> 单独推出 Xu 指数</b> —— 须再加 <code>ΔT<sub>R</sub>=1</code> 等前提，只能叫推导一致性检查。</li>
+<li><b>"17.9 kW 留出验证通过"</b> —— 只有 <code>m</code> 一个候选对照，<code>ΔT<sub>HS</sub></code> 无独立控制体。</li>
+<li><b>赵的 <code>d=0.5</code></b> —— 表 3 的 1.0/0.5 m 是外形尺寸，不是净流道。</li>
+</ul>
+</td>
+</tr>
+</table>
+
+<h2>十一、下一步（按阻塞程度）</h2>
+
+<ol>
+<li><b>拿 Li 2015 全文</b>（不是 Yue）：Xu Fig.3b/3c 的实验点全部引自 Li，同一篇里有多个功率点，是唯一可能真正"留出"的系列。用它一个点标定、其余点只预测。</li>
+<li><b><code>δ</code> 的独立来源</b>：现有锚是 Xu 的 7.3% 残余，但那是「标准缩比 CFD vs 原型 CFD」，不是「实物局阻不相似」。可做的是——用与原型同 <code>L/D</code> 但不同形阻系数的两套段阻力数据反解。</li>
+<li><b><code>UA/US</code> 的独立热平衡估计</b>（保温、外表面积、环境温度）：现在 <code>US=6 W/K</code> 与 <code>k_tot</code> 强简并（<code>US</code> 6→0 使 <code>k</code> 抬 14.7%）。</li>
+<li><b>测量不确定度</b>（题目另一半，仍未动）：GUM 合成，不得在无仪表精度与相关性时直接加到最坏界上。</li>
+<li><b>真正的第二装置</b>：Yue 的 17.9 kW 是同台架不同功率，不是第二台架。要跨台架，得另找一套公开几何 + 多工况的回路。</li>
+</ol>
+
+<div class="box warn">
+<b>一句话总结本轮。</b>复核把「数值端点」和「已证明包含」这两件事拆开了——这是对的，我上一轮把它们混成了一句"认证"。现在给出两条可查的路：<b>人手可查的可证界 <code>[0,+9.914%]</code></b>，和<b>依赖 8 ulp 假设的区间证书 <code>[0,+9.7782%]</code></b>。两者都不再是"端点落在区间里"。
+</div>
+
+<p class="small" style="margin-top:36px;border-top:1px solid var(--line);padding-top:14px">
+脚本 <code>比例失真_计算/source_free_bound_v3.py</code>（纯标准库，<code>python source_free_bound_v3.py</code>）· 日志 <code>source_free_bound_v3_log.txt</code>（190 行）· Xu 原文 <code>文献原文/FR26-170_Xu.pdf</code><br>
+上一版报告 <code>源无关界通式修正与KYLIN归因撤回_2026-11-02.html</code> 的认证结论已在本页 §二、§三 更正。
+</p>
+
+</div>
+</body>
+</html>
