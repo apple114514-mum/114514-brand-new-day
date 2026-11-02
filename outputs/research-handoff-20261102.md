@@ -1,12 +1,14 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。本日新增的“源无关条件界”复核应作为**最新版本**阅读：它修正了比热比方向、摩擦段 `L/D` 因子，并将 17.9 kW 降级为待核原文的候选外部对照。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v2 最新复核**：Xu 原文已核对，但 v2 所报 `7.8×10^-14`“认证间隙”的证明步骤无效；当前可守住更宽的解析条件界 `[0,+9.914%]`。17.9 kW 仍是待核 Yue/Li 原文与冷端工况的候选对照。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
-| **最新复核（先读）** | [源无关条件界复核 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-review-20261102.md) · [复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-audit-20261102.py) · [结果 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-audit-20261102.csv) | 检查通用 `K_R` 的长度因子、比热比方向和 KYLIN 热损反例；分清候选留出点与已验证工况 |
+| **v2 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-review-20261102.md) · [Xu FR26 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/xu-fr26-170-original-20261102.pdf) · [解析界核查脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-analytic-envelope-check-20261102.py) | Xu 表 1/2 与 Fig. 3 核读；v2 单参数证书的导数与舍入问题；较宽但可论证的解析条件界 |
+| 本轮上传原件归档（待审计） | [v2 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-upload-20261102.py) · [原运行日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-upload-report-20261102.html) · [所需依赖脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/loop-audit-repair-corrected-20261101.py) | 保留 Workbuddy 本轮输入原貌；其中“末位认证”和“独立验证”说法需以最新复核为准。运行原脚本时，将所需依赖复制到同目录并命名为 `loop_audit_repair.py`。 |
+| 上一轮复核 | [源无关条件界复核 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-review-20261102.md) · [复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-audit-20261102.py) · [结果 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-audit-20261102.csv) | 检查通用 `K_R` 的长度因子、比热比方向和 KYLIN 热损反例；分清候选留出点与已验证工况 |
 | Zhao 成对前向模型 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-review-20261101.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-review-20261101.md) | 流量/温升口径、精确关系、Re 内生求解及“认证上界”审查 |
 | Zhao 成对前向模型 | [复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-consistency-20261101.py) · [原上传黏度结果 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-consistency-20261101.csv) · [赵文同版黏度结果 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-zhao-property-20261101.csv) | 用两种黏度式复算同一条件模型；CSV 可由脚本重新生成 |
 | KYLIN-II 四段模型 | [第二轮复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-second-review-audit-20261101.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-second-review-audit-20261101.md) | 名义摩擦份额、共同阻力成对扫描、缩比参照口径及跨案例判据审查 |
@@ -45,7 +47,7 @@
 
 ## 下一轮给 Workbuddy 的任务说明
 
-> 请先读本文件所链接的**最新“源无关条件界”复核**，再读此前两份报告，**先核来源，再建界**。优先取得 Yue 2017、Li 2015、Xu FR26 原文，核实 17.9 kW 与 24 kW 是否同装置同配置，以及热源积分、冷端条件、真实流道几何、`UA/US`、逐段阻力的来源。将 24 kW 点用于固定参数，留出点只预测、不重新拟合；由能量平衡反算的流量与温升不能当两个独立测量。若找不到可靠第二点，请明确标注当前只能做模型内条件情景。建立带来源的联合输入域后，才证明根存在与唯一、全域包含界及设计判据。通用式务必保留摩擦项的 `L_M/L_P ÷ D_M/D_P`，比热比放在正确位置，并统一理想分母。请不要复用 Zhao 情景的 `w≤0.302`，也不要把抽样范围称为认证上界。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
+> 请先读本文件所链接的**v2 最新复核和 Xu 原文**，再读此前报告，**先核来源，再建界**。优先取得 Yue 2017、Li 2015 全文，核实 17.9 kW 与 24 kW 是否同装置同配置；Xu Fig. 3 已引用 Li 的多功率实验曲线，可先在 Li 原文中寻找同系列留出点。核热源积分、冷端条件、真实流道几何、`UA/US`、逐段阻力的来源。将 24 kW 点用于固定参数，留出点只预测、不重新拟合；由能量平衡反算的流量与温升不能当两个独立测量。建立带来源的联合输入域后，才证明根存在与唯一、全域包含界及设计判据。v2 的割线斜率并非导数上界，81 点加缓冲并非严格区间；当前可先使用报告中的 `[0,+9.914%]` 解析条件界。通用式保留摩擦项的 `L_M/L_P ÷ D_M/D_P`，比热比放在正确位置，并统一理想分母。请不要复用 Zhao 情景的 `w≤0.302`，也不要把抽样范围称为认证上界。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
 
 ## 来源边界
 

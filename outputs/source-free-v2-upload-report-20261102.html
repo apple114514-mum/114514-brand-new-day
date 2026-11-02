@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>源无关界通式修正与 KYLIN 归因撤回（2026-11-02 第二轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.7;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>源无关界通式修正与 KYLIN 归因撤回</h1>
+<div class="sub">对 2026-11-02 <code>source-free-bound-review</code> 的逐条复算 ｜ 2026-11-02 第二轮 ｜ 脚本 <code>source_free_bound_v2.py</code>（A–G 七段，242 行日志）</div>
+
+<div class="box">
+<b>本轮五句话。</b>
+① 复核提的两处公式错<b>全部成立</b>：<code>c_p</code> 方应在分子，摩擦项漏了 <code>λ/d</code>。赵 <code>w=1</code> 端点由 <b>+9.842%</b> 修为 <b>+9.778%</b>，<code>w*(3%)</code> 由 0.302 修为 <b>0.304</b>。
+② 修正后 <b>KYLIN 全相似恒为 0</b>，而且能把 Xu 准则的 <code>d_R=c^0.7</code>、<code>m_R=c^1.9</code> 反推出来 —— 这是全篇<b>第一个非恒等式重排的验证</b>。
+③ KYLIN 降高度：分母换回设计目标后是 <b>−13.18%</b>（绝热），四段模型固定 <code>k</code> 只把 <code>US</code> 设 0 得 <b>−13.286%</b>。故<b>「−12.15% 主要由热路造成」撤回</b>；主体是<b>局部损失不随长度缩短</b>，热损是把它抵掉 1.1 pp。
+④ 17.9 kW 只剩<b>一个</b>独立对比（<code>m</code>，−4.06%）。原「两个 FoM 同号偏低」与「符号随口径反转」是<b>控制体口径伪像</b>，撤回。
+⑤ 名字降级：只能叫<b>「声明模型内、对 <code>w</code> 一个参数成立的条件包络」</b>，不叫认证上界。
+</div>
+
+<h2>一、复核意见的裁决</h2>
+
+<table>
+<tr><th style="width:36%">复核意见</th><th style="width:9%">裁决</th><th>处置</th></tr>
+<tr>
+<td>通式把比热比放反：应为 <code>x³=K_R·c_p,R/ρ_R</code></td>
+<td><span class="tag t-ok">成立</span></td>
+<td>由 <code>ΔT_P/ΔT_M=Q_R c_p,R/r</code> 一步即得。已改；对赵值 0.064 pp。</td>
+</tr>
+<tr>
+<td>摩擦项漏 <code>L/D</code>：应为 <code>K_R=(1−w)+w(λ/d)f_R</code></td>
+<td><span class="tag t-ok">成立</span></td>
+<td><code>K_f∝f·L/D</code>，故 <code>K_f,M/K_f,P=(λ/d)(f_R)</code>。赵恰好 <code>λ=d</code>，所以旧式在赵上"看不出错"；KYLIN 上错 2–20 pp。</td>
+</tr>
+<tr>
+<td>赵 <code>w=1</code> 由 +9.842% 修为约 +9.778%</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>复现 <b>+9.7782%</b>；赵表 4 黏度 <b>+9.8063%</b>，与复核逐位一致。</td>
+</tr>
+<tr>
+<td>KYLIN 全相似修正后为浮点零</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>v2 恒为 0（六个 <code>w</code> 全部 0.0%）。旧式给 +3.788%，正是漏 <code>λ/d</code> 造出的假失真。</td>
+</tr>
+<tr>
+<td>KYLIN 降高度绝热修正式约 −13.17%，故不能说 −12.15% 主要来自热路</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>本脚本 −13.1793%；四段模型固定 <code>k</code>、<code>US=0</code> 给 <b>−13.2856%</b>。<b>归因撤回</b>，并给出正确归因（局部损失不随长度缩）。</td>
+</tr>
+<tr>
+<td>端点求值不等于连续 <code>w</code> 的极值证明，更不是外舍入认证</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>补单调性证书（<code>F_x&gt;0</code>、<code>F_w</code> 不变号）+ 外舍入夹逼，数值间隙 ~1e−14。</td>
+</tr>
+<tr>
+<td>函数不只依赖 <code>(d,H_R,Q_R,n)</code>，还含 <code>T_in</code>、<code>540 kg/s</code>、<code>10 MW</code></td>
+<td><span class="tag t-ok">成立</span></td>
+<td>形式上对。实测 <code>T_in</code> 以 1e−4 量级进 <code>w*</code>；<code>Q_P/m_P</code> 同比变动<b>完全不进</b>。判据写法改为 <code>f(d,λ/d,H_R,Q_R,n; T_in, 物性版本)</code>。</td>
+</tr>
+<tr>
+<td>17.9 kW 应是"候选外部对照点"，且流量反算不意味整回路 <code>US=0</code></td>
+<td><span class="tag t-ok">成立</span></td>
+<td>且 Yue 原文 §5.2 自己写了"HS 进口温度低于 HX 出口<b>是因为散热</b>" —— 原文明证整回路有热损，<code>US=0</code> 与实验描述矛盾，是换闭合不是换尺。</td>
+</tr>
+<tr>
+<td>"<code>16 kW</code> 对比 10% 只是相差数倍，不是一个量级"</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>"小一个量级"撤回，改"约 2.5 倍"。</td>
+</tr>
+<tr>
+<td>赵的 <code>d=0.5</code> 只来自外形直径，不是净流道</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>写进闭合清单，作为该案例的<b>声明</b>而非证据。</td>
+</tr>
+</table>
+
+<h2>二、通式：两处修正与推导</h2>
+
+<p>集总动量（Boussinesq，<code>β=1.1944/ρ</code>，故 <code>ρ²β ∝ ρ</code>）配绝热能量闭合：</p>
+
+<pre><code>ρ g β ΔT H = K m²/(2ρA²)      ⇒      m² = 2ρ ΔT H A²/K
+ΔT = Q/(m c_p)
+
+取 r=m_P/m_M, A_R=A_P/A_M, H_R=H_P/H_M, Q_R=Q_P/Q_M,
+   ρ_R=ρ_M/ρ_P, c_p,R=c_p,M/c_p,P, K_R=K_M/K_P:
+
+  r² = A_R² H_R (ΔT_P/ΔT_M) K_R/ρ_R
+  ΔT_P/ΔT_M = Q_R c_p,R / r            ← v1 把这一行写在了分母
+
+  r³ = A_R² H_R Q_R K_R c_p,R / ρ_R                  …… (*)</code></pre>
+
+<p>令 <code>R_id=(A_R²H_RQ_R)^(1/3)</code>、<code>x=r/R_id</code>，得 v2 通式（v1 在括号里的方向写反）：</p>
+
+<pre><code>x³ = K_R · c_p,R / ρ_R                    ← v2
+x³ = K_R / (ρ_R · c_p,R)                   ← v1（错）
+
+K_R = w·(λ/d)·f_R + (1−w)(1+δ)             ← v2
+   其中 λ=L_M/L_P, d=D_M/D_P, f_R=(r d μ_R)^n, δ=(K_l,M−K_l,P)/K_l,P
+K_R = 1 + w(f_R−1)                          ← v1（隐含 λ/d=1 且 δ=0）
+
+⇒ x³(ρ_R/c_p,R) = (1−w)(1+δ) + w(λ/d)(x·R_id·d·μ_R)^n</code></pre>
+
+<div class="box warn">
+<b>为什么 <code>λ/d=1</code> 是个"巧合陷阱"。</b>赵的理想圆管几何是 <code>λ=d=0.5</code>，所以漏掉 <code>λ/d</code> 在赵上<b>恰好</b>看不出来；而 KYLIN 全相似恰恰是 <code>λ=0.5, d=0.6156</code>，<code>λ/d=0.812</code>。一个只在"直径与长度同比缩"时成立的式子，被误当成了通式 —— 这就是它能在赵上复现、却在 KYLIN 上翻车的全部原因。
+</div>
+
+<h3>2.1 Zhao：数字几乎不动，但三处闭合必须写进标题句</h3>
+
+<table>
+<tr><th>条件</th><th class="num">v1（旧）</th><th class="num">v2（修正）</th><th>备注</th></tr>
+<tr><td>赵，<code>n=1/4, w=1</code>，上传黏度，<code>Q_R=2^2.5</code></td><td class="num">+9.8423%</td><td class="num"><b>+9.7782%</b></td><td>复核值逐位一致</td></tr>
+<tr><td>同上，改赵表 4 黏度</td><td class="num">+9.8707%</td><td class="num"><b>+9.8063%</b></td><td>复核给 +9.8063</td></tr>
+<tr><td><code>Q_R=10/1.77</code>（表 3 印出值）</td><td class="num">+9.8375%</td><td class="num">+9.7729%</td><td>与 <code>2^2.5</code> 差 0.005 pp</td></tr>
+<tr><td><code>w*(3%)</code>，上传黏度</td><td class="num">0.3022</td><td class="num"><b>0.3040</b></td><td>复核给 0.302→0.304</td></tr>
+<tr><td><code>w*(3%)</code>，赵表 4 黏度</td><td class="num">0.3019</td><td class="num">0.3037</td><td>—</td></tr>
+<tr><td>观测 <code>D_m=+2.8768%</code> 反解的 <code>w</code></td><td class="num">—</td><td class="num">0.2915</td><td>四段模型名义点几何分解 0.487，差值即口径项</td></tr>
+</table>
+
+<p>工况点灵敏度（回答"不只依赖四元"）：</p>
+
+<table>
+<tr><th>变动</th><th class="num">w*(3%)</th><th class="num">D_m(w=1)</th><th>说明</th></tr>
+<tr><td>基准 <code>T_in=533.15</code></td><td class="num">0.3040</td><td class="num">+9.7782%</td><td>—</td></tr>
+<tr><td><code>T_in=513.15</code></td><td class="num">0.3041</td><td class="num">+9.7690%</td><td>+1e−4</td></tr>
+<tr><td><code>T_in=573.15</code></td><td class="num">0.3038</td><td class="num">+9.7945%</td><td>−2e−4</td></tr>
+<tr><td><code>Q_P=9 / 11 MW</code>（<code>m_P</code> 同比）</td><td class="num">0.3040</td><td class="num">+9.7782%</td><td>完全不进：只改绝对流量，不改比值</td></tr>
+</table>
+
+<h2>三、从"端点抽样"升到"单参数包络"</h2>
+
+<p>要宣称 <code>w∈[0,1]</code> 上的包络，须证两件事：根存在唯一、<code>D_m(w)</code> 单调（极值在端点）。记 <code>M=c_p,R/ρ_R</code>、<code>G=(1−w)(1+δ)+w(λ/d)f_R</code>：</p>
+
+<pre><code>F(x,w) = x³ − M(x)·G(x,w) = 0
+F_x = 3x² − M_x·G − M·G_x          |M_x| ≤ (M_hi−M_lo)/(x_hi−x_lo)   ← 中值定理
+F_w = −M·[(λ/d)f_R − 1]</code></pre>
+
+<table>
+<tr><th>案例</th><th class="num">|M_x| 上界</th><th class="num">min F_x</th><th class="num">(λ/d)f_R−1 范围</th><th>结论</th></tr>
+<tr><td>Zhao <code>d=λ=.5</code></td><td class="num">8.59e−04</td><td class="num">2.054</td><td class="num">+0.268 ~ +0.348</td><td>严格递增，<code>w=1</code> 是上界</td></tr>
+<tr><td>KYLIN 全相似</td><td class="num">8.69e−04</td><td class="num">2.143</td><td class="num">−0.023 ~ +0.030</td><td><code>F_w≈0</code>：<b>该设计对 <code>w</code> 一阶不敏感</b></td></tr>
+<tr><td>KYLIN 降高度</td><td class="num">9.50e−04</td><td class="num">1.269</td><td class="num">−0.514 ~ −0.438</td><td>严格递减，<code>w=0</code> 是下界</td></tr>
+</table>
+
+<p>端点值再用外舍入夹逼（<code>M</code> 取区间包络 ⇒ <code>F_min≤F≤F_max</code>，逐轮收紧括号）：</p>
+
+<table>
+<tr><th>案例</th><th class="num">w</th><th class="num">x 下界</th><th class="num">x 上界</th><th class="num">数值间隙</th><th class="num">D_m</th></tr>
+<tr><td>Zhao</td><td class="num">0</td><td class="num">1.000000000</td><td class="num">1.000000000</td><td class="num">5.2e−14</td><td class="num">+0.0000%</td></tr>
+<tr><td>Zhao</td><td class="num">1</td><td class="num">1.097782446</td><td class="num">1.097782446</td><td class="num">7.8e−14</td><td class="num"><b>+9.7782%</b></td></tr>
+<tr><td>KYLIN 降高度</td><td class="num">0</td><td class="num">0.999928207</td><td class="num">0.999928207</td><td class="num">6.9e−14</td><td class="num">+25.9831%</td></tr>
+<tr><td>KYLIN 降高度</td><td class="num">1</td><td class="num">0.793700526</td><td class="num">0.793700526</td><td class="num">5.5e−14</td><td class="num">0.0000%</td></tr>
+</table>
+
+<div class="box">
+<b>所以能宣称的边界到这里为止：</b> <code>D_m ∈ [0, +9.778%]</code> 在 <b><code>w</code> 这一个参数上</b>是含舍入的包络（间隙 7.8e−14）。但 <code>d</code>、<code>λ/d</code>、<code>n</code>、<code>δ</code>、物性版本、绝热闭合、单 <code>λ</code> 单 <code>d</code> 理想化<b>都是声明</b>，其中赵的 <code>d=0.5</code> 只有外形尺寸支撑。因此整句只能写"声明模型内的条件包络"。
+</div>
+
+<h2>四、KYLIN 全相似：第一个非恒等式重排的验证</h2>
+
+<p>把 <code>K_R=1</code>（摩擦数不失真）代入 v2 的 <code>K_R</code> 分解，可直接解出流量比：</p>
+
+<pre><code>(λ/d)(r d)^n = 1  ⇒  r = d^((1−n)/n)·c^(−1/n)  ⇒  m_R = c^(2ξ+0.5)
+
+n=1/4, c=0.5:  d_R = c^0.7 = 0.615572
+               m_R = c^1.9 = 0.267943        ← 与 Xu 表 2 的 0.268 一致
+               q_R = m_R/(λ·d_R) = 0.8706 = c^0.2   ← 与表 2 的 0.871 一致</code></pre>
+
+<div class="box ok">
+<b>这不是"残差为零"式的自证。</b>Xu 的 <code>c^0.7 / c^1.9</code> 来自 H2TS 的相似准则推导，本式来自集总动量 + 能量闭合，两者出发点不同。修正后的通式<b>把别人的准则当成自己的一个特例复现出来</b>，这才是"公式对了"的证据。<br>
+顺带把 <code>q_R</code> 的身份钉死：它是<b>面热流密度比</b>（<code>Q/(πdL)</code>），功率比是 <code>m_R·ΔT_R=0.268</code>。三列数字（0.616/0.268/0.871）与 <code>c^0.7/c^1.9/c^0.2</code> 独立吻合，不是巧合。
+</div>
+
+<table>
+<tr><th class="num">w</th><th class="num">v1 D_m</th><th class="num">v2 D_m</th></tr>
+<tr><td class="num">0.0000</td><td class="num">−0.0000%</td><td class="num">−0.0000%</td></tr>
+<tr><td class="num">0.2500</td><td class="num">+1.9416%</td><td class="num">−0.0000%</td></tr>
+<tr><td class="num">0.4867</td><td class="num">+3.7876%</td><td class="num">−0.0000%</td></tr>
+<tr><td class="num">1.0000</td><td class="num">+7.7995%</td><td class="num">−0.0000%</td></tr>
+</table>
+
+<p class="small">v1 在 KYLIN 全相似上给出 +3.79%（<b>假失真</b>），并支持了上一轮的"<code>w*(3%)=0.386</code>"。该数作废：它度量的是公式误差，不是台架失真。</p>
+
+<h2>五、KYLIN 只降高度：分母换回来，机制也换回来了</h2>
+
+<p>设计意图是"同功率、同 ΔT、同流量"，即声明 <code>R_ideal=1</code>，<code>ε=m_M/m_P−1</code>。<code>v1</code> 却用 <code>R_id=(H_RQ_R)^(1/3)=1.2599</code> 当分母，量的是"相对几何理想比偏多少"，两个分母差 26%。</p>
+
+<table>
+<tr><th class="num">w</th><th class="num">r=m_P/m_M</th><th class="num">ε(M/P) v2</th><th class="num">x−1 v1</th><th class="num">x−1 v2</th><th class="num">D_m(P/M) v2</th></tr>
+<tr><td class="num">0</td><td class="num">1.25983</td><td class="num">−20.6242%</td><td class="num">+0.1366%</td><td class="num">−0.0072%</td><td class="num">+25.9831%</td></tr>
+<tr><td class="num">0.25</td><td class="num">1.20735</td><td class="num">−17.1740%</td><td class="num">+0.5684%</td><td class="num">−4.1725%</td><td class="num">+20.7350%</td></tr>
+<tr><td class="num">0.4867</td><td class="num">1.15180</td><td class="num"><b>−13.1793%</b></td><td class="num">+0.9887%</td><td class="num">−8.5817%</td><td class="num">+15.1799%</td></tr>
+<tr><td class="num">0.75</td><td class="num">1.08081</td><td class="num">−7.4767%</td><td class="num">+1.4694%</td><td class="num">−14.2162%</td><td class="num">+8.0809%</td></tr>
+<tr><td class="num">0.91</td><td class="num">1.03092</td><td class="num">−2.9995%</td><td class="num">+1.7690%</td><td class="num">−18.1756%</td><td class="num">+3.0923%</td></tr>
+<tr><td class="num">1.0</td><td class="num">1.00000</td><td class="num">0.0000%</td><td class="num">+1.9390%</td><td class="num">−20.6299%</td><td class="num">0.0000%</td></tr>
+</table>
+
+<p><code>w*(|ε|≤3%)=0.9103</code>：要进入 ±3%，摩擦份额得 ≥0.91（本几何、绝热口径）。上一轮"全 <code>w∈[0,1]</code> 都 ≤3%（上界 +1.94%）"的<b>数字没错、问题问错</b> —— <code>x−1</code> 全程只到 +1.94%，但它量的是相对 <code>R_id</code> 的偏差。</p>
+
+<h3>5.1 机制：不是热路，是"局部损失不随长度缩"</h3>
+
+<pre><code>均匀直径、ρ/c_p≈1：r³ = H_R[(1−w) + w·λ·r^n] = 2[(1−w) + 0.5w·r^0.25]
+
+w=1（纯分布摩擦）：r³ = r^0.25  ⇒  r=1   降高度恰好保流量（经典结论）
+w=0（纯局部阻力）：r³ = 2        ⇒  r=1.26  流量按 √H 掉 21%</code></pre>
+
+<div class="box warn">
+<b>归因改写。</b>降高度时 <code>f·L/D</code> 随 <code>L</code> 缩小，而<b>局部阻力系数 <code>k</code> 不随长度缩</b>。所以偏差的主体是 <code>(1−w)</code> 这一项 —— 即 <code>δ</code> 项在"几何相似但长度不同比"时的必然表现。<b>热损不是成因</b>，见下节反例。
+</div>
+
+<h2>六、四段模型反例：热损是"抵消"，不是"成因"</h2>
+
+<p>固定已反标定的 <code>k_total</code>，两侧逐段重解，只把 <code>US</code> 设 0：</p>
+
+<table>
+<tr><th class="num">k_tot</th><th class="num">ε (US=6)</th><th class="num">ε (US=0)</th><th class="num">热损抵掉</th></tr>
+<tr><td class="num">3.0000</td><td class="num">−5.6101%</td><td class="num">−6.8632%</td><td class="num">1.25 pp</td></tr>
+<tr><td class="num">6.0000</td><td class="num">−8.9616%</td><td class="num">−10.1563%</td><td class="num">1.19 pp</td></tr>
+<tr><td class="num"><b>11.5934</b>（标定）</td><td class="num"><b>−12.1509%</b></td><td class="num"><b>−13.2856%</b></td><td class="num">1.13 pp</td></tr>
+<tr><td class="num">36.0000</td><td class="num">−16.2533%</td><td class="num">−17.3043%</td><td class="num">1.05 pp</td></tr>
+</table>
+
+<div class="box ok">
+<b>两个结构不同的模型独立吻合到 0.1 pp。</b>四段模型的 <code>K_R=(1−w)+w·l_R·f_R</code>（<code>k</code> 不缩、<code>fL/D</code> 缩），比值模型给 <code>(1−w)+w(λ/d)f_R</code>（<code>d=1, λ=0.5</code>）—— 同一个结构。四段 <code>US=0</code> 给 13.286%，比值模型绝热给 13.179%，差 0.1 pp。这<b>才是</b>验证；恒等式残差为零不具备这个性质（它能分解，不能检验）。
+</div>
+
+<h2>七、17.9 kW：口径分账后只剩一个独立对比</h2>
+
+<p>标定 24 kW / 1.2 kg/s（Li 2015），固定 <code>(k_tot=11.5934, UA, US=6)</code>，直接预测 17.9 kW：</p>
+
+<table>
+<tr><th>量</th><th class="num">模型</th><th class="num">实测</th><th class="num">偏差</th><th>口径</th></tr>
+<tr><td>m (kg/s)</td><td class="num">1.0746</td><td class="num">1.12</td><td class="num">−4.06%</td><td>唯一独立对比</td></tr>
+<tr><td>ΔT_loop（模型值）</td><td class="num">104.39 K</td><td class="num">—</td><td class="num">—</td><td>净热 <code>Q_net=16.26 kW</code></td></tr>
+<tr><td>ΔT_HS（同控制体）</td><td class="num">114.54 K</td><td class="num">108.6 K</td><td class="num">+5.47%</td><td>毛热 <code>Q=17.9 kW</code></td></tr>
+</table>
+
+<div class="box warn">
+<b>撤回的两句话。</b>上一轮拿模型的 <code>ΔT_loop=104.39</code>（扣了 10.7% 散热）去比实测的 <code>ΔT_HS=108.6</code>（毛热），得 −3.87%，于是说"两个 FoM 同号偏低"。<b>这是两个不同控制体相减。</b>同控制体重算得 +5.47%，与 m 的 −4.06% 恰好反号 —— 因为 <code>m·ΔT=Q</code> 把它们绑死了。所以：<br>
+①「两个 FoM 同号偏低约 4%」<b>撤回</b>；②「符号随热损口径反转」<b>撤回</b>；③ 17.9 kW 只剩 <code>m</code> 一个独立约束。
+</div>
+
+<h3>7.1 <code>US=0</code> 不是"统一口径"</h3>
+
+<p>Yue 2017 §5.2 自己写道（原文）：CFD 假定绝热，而 <i>"the inlet temperature of HS is experimentally lower than the outlet temperature of HX <b>because of the heat losses</b>"</i>。原文已证明整回路存在散热，故 <b>整回路 <code>US=0</code> 与实验描述直接矛盾</b>，那是换闭合不是换尺。</p>
+
+<table>
+<tr><th>闭合</th><th class="num">k_tot</th><th class="num">m 预测</th><th class="num">m 偏差</th><th>说明</th></tr>
+<tr><td>US=6（基准）</td><td class="num">11.5934</td><td class="num">1.0746</td><td class="num">−4.06%</td><td>与 Yue §5.2 的"有热损"一致</td></tr>
+<tr><td>US=0（重标）</td><td class="num">13.2919</td><td class="num">1.0837</td><td class="num">−3.24%</td><td>+14.7% 的 k 补偿，与原文描述矛盾</td></tr>
+</table>
+
+<p>两闭合的 <code>m</code> 只差 0.85% —— 这才是"单点标定分不开 <code>US</code> 与 <code>k</code>"的真实量级（上一轮把它说成"符号反转"，夸大了）。</p>
+
+<h3>7.2 同一台架的精度参照（原文自给）</h3>
+
+<table>
+<tr><th>来源</th><th class="num">m (kg/s)</th><th class="num">ΔT_HS (K)</th><th class="num">对实测偏差</th></tr>
+<tr><td>实测（Yue §5.2）</td><td class="num">1.12</td><td class="num">108.6</td><td class="num">—</td></tr>
+<tr><td>Yue 理论（全功率段优化后）</td><td class="num">1.10</td><td class="num">110.3</td><td class="num">−1.79% / +1.57%</td></tr>
+<tr><td>本模型（只标 24 kW 一点）</td><td class="num">1.0746</td><td class="num">114.54</td><td class="num">−4.06% / +5.47%</td></tr>
+</table>
+
+<p>幂指数对照：本模型 <code>1/(3−nw)=0.3474</code>；Yue 表 3（<b>理论矩阵</b>，4→24 kW）<code>0.3431</code>；两点<b>实测</b> <code>0.2353</code>。模型与作者的理论曲线<b>同斜率</b>，不一致发生在两次实测之间 —— 这提示 24 kW 与 17.9 kW 的二次侧条件可能不同，而不是模型斜率错。</p>
+
+<h2>八、文献补齐（本轮新增一手材料）</h2>
+
+<p>复核指出"本轮没有 Yue、Li 原文"。本轮已把 Xu 的 FR26 论文下载并核读；Yue 2017 是开放获取，全文已逐节核读；Li 2015 为 Elsevier 付费墙，只有 INIS 摘要级。</p>
+
+<table>
+<tr><th style="width:16%">文献</th><th style="width:20%">出处</th><th style="width:26%">地址</th><th>本轮核到什么</th></tr>
+<tr>
+<td><b>Yue 2017</b></td>
+<td>Nucl. Sci. Tech. <b>28(3):39</b>，2017-03<br>DOI 10.1007/s41365-017-0187-x</td>
+<td><a href="https://www.nst.sinap.ac.cn/article/id/3124">nst.sinap.ac.cn/article/id/3124</a>（<b>开放全文</b>）<br><a href="https://inis.iaea.org/records/bw99x-00s42">INIS bw99x-00s42</a></td>
+<td><span class="tag t-ok">已核</span>表 1（<b>只给总高 5 m，无中心高差</b>）；表 2（<code>K_total</code> 24.5→22.8）；表 3（4–24 kW <b>理论矩阵</b>，24 kW→1.215/134.4）；§4.1（实验功率 4.3/7.6/11.2/15.3/17.9 kW）；§5.1（<b>流量由 HS 能量平衡反算</b>）；§5.2（17.9 kW：理论 110.3/1.10、实测 108.6/1.12、CFD 101.5/1.20；<b>"有热损失"原句</b>）</td>
+</tr>
+<tr>
+<td><b>Li 2015</b></td>
+<td>Prog. Nucl. Energy <b>81:239–244</b>，2015-05<br>DOI 10.1016/j.pnucene.2014.12.009</td>
+<td><a href="https://www.sciencedirect.com/science/article/pii/S0149197014003485">ScienceDirect S0149197014003485</a><br><a href="https://inis.iaea.org/records/yqsy3-fjz55">INIS yqsy3-fjz55</a></td>
+<td><span class="tag t-mid">摘要级</span>24 kW 加热棒 → <b>1.2 kg/s</b>（200 W/cm 线功率）；"实验与公式计算吻合良好"。<b>二次侧油流量/温度、ΔT 控制体未核</b></td>
+</tr>
+<tr>
+<td><b>Xu FR26-170</b></td>
+<td>FR26, Beijing, 2026-05-18~21，<b>paper 170</b>（无 DOI）</td>
+<td><a href="https://conferences.iaea.org/event/436/contributions/38376/attachments/22586/39273/FR26-170.pdf">conferences.iaea.org/…/FR26-170.pdf</a><br><a href="https://conferences.iaea.org/event/436/contributions/38376">贡献页</a></td>
+<td><span class="tag t-ok">已核</span>表 1：<b>"Height between cooling and heating sections = 3.35 m"</b>、总高 5、D 26/35/50 mm、加热 1.8、冷却 1.5、总长 12、0–30 kW；表 2：<code>l_R .5 / d_R .616 / m_R .268 / ΔT_R 1 / q_R .871</code>；式(15)–(18) 物性（ρ=11096−1.3235T 等）</td>
+</tr>
+<tr>
+<td>Xu 2025（期刊版）</td>
+<td>Nucl. Eng. Des. <b>443:114346</b>，2025-11<br>DOI 10.1016/j.nucengdes.2025.114346</td>
+<td><a href="https://doi.org/10.1016/j.nucengdes.2025.114346">doi.org/10.1016/j.nucengdes.2025.114346</a></td>
+<td><span class="tag t-no">未核</span>与前一条同组工作（H2TS + DSS，稳态用 Relap5）</td>
+</tr>
+<tr>
+<td>IAEA 设施档案 LFR-21</td>
+<td>IAEA LMFNS country profile</td>
+<td><a href="https://nucleus.iaea.org/sites/lmfns/Facility%20Country%20Profiles1/Profile%20LFR-21%20China%20-%20KYLIN%20II%20-%20TH%20NC.pdf">nucleus.iaea.org/…/LFR-21 KYLIN-II TH NC.pdf</a></td>
+<td><span class="tag t-ok">已核</span>24 kW、D 2.6 cm、HS 1.8 m、HX 1.5 m；<b>"An electromagnetic flow meter <i>will be installed</i> in next study"</b>、仪器栏列 "Induction flow meter" —— 独立旁证：Yue 时期确实没有可用的直读流量计</td>
+</tr>
+<tr>
+<td>Zhao 2020</td>
+<td>核动力工程 <b>41(6):207–213</b><br>DOI 10.13832/j.jnpe.2020.06.0207</td>
+<td>本地 PDF（此前上传）</td>
+<td><span class="tag t-ok">已核</span>表 3（H 2/1、D 1/0.5、Q 10/1.77 MW）、表 4（物性）、表 5（540/92.79；130/136.7）</td>
+</tr>
+</table>
+
+<div class="box ok">
+<b>两条由一手材料直接改写本项目的结论。</b><br>
+① <b>浮升高度 3.35 m 从"自己构造"升级为"原文给出"</b>：Xu FR26-170 表 1 明确列 <i>Height between cooling and heating sections = 3.35 m</i>，与 Yue 表 1 的同一装置（H=5、D=26 mm、HS 1.8、HX 1.5）配套。此前 3.35 m 是由 1.8/1.5/5 加"水平段 3:4"假设反推的，现在不必再依赖那个假设。<br>
+② <b>物性版本有了一手出处</b>：Xu 式(15)–(18) 的 ρ、c_p、μ 与本项目用的"杨若楠 2020 表 2"完全同式，可改引 Xu FR26-170 表 1 后式(15)–(18)。赵表 4 的 ρ 斜率（−1.1944 vs −1.3235）仍是两版差异所在。
+</div>
+
+<h2>九、本轮撤回与改写清单</h2>
+
+<table>
+<tr><th style="width:44%">原说法</th><th>处置</th></tr>
+<tr><td><code>K_R = 1 + w(f_R−1)</code></td><td><b>改为</b> <code>(1−w)(1+δ) + w(λ/d)f_R</code>；<code>λ/d</code> 不得省略</td></tr>
+<tr><td><code>x³ = K_R/(ρ_R c_p,R)</code></td><td><b>改为</b> <code>x³ = K_R c_p,R/ρ_R</code></td></tr>
+<tr><td>KYLIN 全相似 <code>w*(3%)=0.386</code></td><td><b>作废</b>：修正后恒为 0，该数是公式误差</td></tr>
+<tr><td>KYLIN 降高度"全 <code>w</code> 都 ≤3%，上界 +1.94%"</td><td><b>作废</b>：分母应为设计目标；正确值 −20.62% ~ 0%（绝热）</td></tr>
+<tr><td>"−12.15% 主要由 <code>UA_R=1、US_R=0.5</code> 的热路造成"</td><td><b>撤回</b>：<code>US=0</code> 给 −13.29%，热损是<b>抵消</b>约 1.1 pp；主体是局部损失不随长度缩</td></tr>
+<tr><td>"两个 FoM 同号偏低约 4%"</td><td><b>撤回</b>：<code>ΔT_loop</code> 比 <code>ΔT_HS</code>，控制体不同；同口径为 +5.47%</td></tr>
+<tr><td>"符号随热损口径反转"</td><td><b>撤回</b>：同口径下两闭合同号，差 0.85%</td></tr>
+<tr><td>"3~5% 比 10% 小一个量级"</td><td><b>改为</b> "约 2.5 倍"</td></tr>
+<tr><td><code>w*(3%) = f(d,H_R,Q_R,n)</code></td><td><b>改为</b> <code>f(d,λ/d,H_R,Q_R,n; T_in, 物性版本)</code></td></tr>
+<tr><td>"源无关界的认证上界"</td><td><b>改为</b> "声明模型内、对 <code>w</code> 一个参数成立的条件包络"</td></tr>
+</table>
+
+<h2>十、下一步（按阻塞程度）</h2>
+
+<ol>
+<li><b>净流道几何</b>：赵案例的 <code>d=0.5</code> 目前只有外形直径支撑。要把它变成有来源的量，须给出堆芯/组件等效流通面积与湿周；否则该案例永远是"声明几何下的情景"。</li>
+<li><b><code>δ</code> 与 <code>λ/d</code> 的来源</b>：现在两者都取 0/名义值。KYLIN 的全部偏差都来自 <code>(1−w)</code> 项，所以 <code>δ</code> 的不确定度就是结论的不确定度。</li>
+<li><b>把 <code>λ/d</code> 逐段化</b>：本项目四段模型已经逐段求和；比值通式只能在"各段 <code>λ/d</code> 相同"时用。要写进论文的适用条件。</li>
+<li><b>Li 2015 原文</b>：二次侧油流量/温度、ΔT 控制体，决定 24 kW 与 17.9 kW 是否真可比。</li>
+<li><b>独立 <code>US</code> 估计</b>（保温、外表面积、环境温度）：才能把 <code>US=6</code> 从反标定量变成有来源量。</li>
+<li>测量不确定度（GUM 合成）仍未动。</li>
+</ol>
+
+<p class="small" style="margin-top:34px;border-top:1px solid var(--line);padding-top:14px">
+复现：<code>python source_free_bound_v2.py</code> → <code>source_free_bound_v2_log.txt</code>（242 行，A–G 七段）。依赖 <code>loop_audit_repair.py</code> 的四段模型。所用一手材料存于 <code>文献原文/FR26-170_Xu.pdf</code> 与同名 <code>.txt</code>。本页所有百分数是<b>模型内条件结果</b>，不是台架性能预报，也不是受实测约束的认证界。
+</p>
+
+</div>
+</body>
+</html>
