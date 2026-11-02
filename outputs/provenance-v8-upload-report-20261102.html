@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>参数定级与输入分辨率（2026-11-02 第八轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.7;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>参数定级与输入分辨率</h1>
+<div class="sub">2026-11-02 · 第八轮 · 对应复核 <code>parameter-provenance-20261102</code> / <code>claim-matrix</code>（<code>main 381bf58</code>）· 脚本 <code>provenance_audit_v8.py</code>（248 行日志）</div>
+
+<div class="box ok">
+<p><b>一句话结论。</b><code>+2.88%</code> 不是测量值，它是四个比值的显式函数
+<code>D_m = r_m·d^(4/3)/(H_R·Q_R)^(1/3) − 1</code>，与 <code>w</code>、<code>δ</code> 无关。
+它的主导输入是<b>净流通面积比</b>，不是 <code>δ</code>。把「测不准 <code>δ</code>」换成
+「面积比必须准到 1.46%、<code>d</code> 必须准到 0.73%」之后，这张表就闭合了——
+而且闭合之后暴露出自家账目里的<b>三处错误</b>：<code>κ</code>、<code>w=0.370</code>、<code>μ</code> 的函数形式。</p>
+</div>
+
+<h2>一、复核的五条边界：全部成立，其中两条要补一句</h2>
+
+<table>
+<thead><tr><th style="width:26%">复核结论</th><th style="width:10%">判定</th><th>我的复算与补充</th></tr></thead>
+<tbody>
+<tr>
+<td>Xu 明确给出 26 mm <b>管内径</b></td>
+<td><span class="tag t-ok">成立</span></td>
+<td>X26-P4/表 1 行名 <i>Pipe inner diameter</i>，内径标签明确，维持 L1。</td>
+</tr>
+<tr>
+<td>赵文表 3 的 1/0.5 m 仅标「直径」，不能认作流通内径</td>
+<td><span class="tag t-ok">成立，但范围可收窄</span></td>
+<td>表 3 的<b>八行比值全部恰好 2:1</b>（循环高度 2/1、热源 0.8/0.4、冷源 1.52/0.76、主容器 2.285/1.1425、宽 5.6/2.8、直径 1/0.5、热源直径 2.142/1.071、冷源直径 0.15/0.075）。这是<b>均匀缩放的签名</b>：只要台架是同一几何的 1:2 复制，任何一根流道的比值都是 0.5，<b>与「哪一行是内径」无关</b>。所以比率 <code>d=0.5</code> 由缩放本身支持，等级从 L1* 改为 <b>L2（比率可靠）</b>；真正不可知的是两件事：①「1 m 那行指哪根管子」；②堆芯内部（棒径/栅距/棒数）是否同步减半——表 3 不列，若棒径保持原型值，净流通面积比就不是 0.25。</td>
+</tr>
+<tr>
+<td>表 5 是 CFD 结果</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>接受。并补一个后果：换成表 5 的 <code>(ṁ, ΔT)</code> 反算功率作口径，同一 <code>D_m</code> 从 <code>+2.88%</code> 变 <code>+3.61%</code>，<b>跨过 3% 判据</b>（见 §六）。</td>
+</tr>
+<tr>
+<td>两侧局阻缺失 ⇒ 不能给 <code>δ</code> 建实物范围</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>接受，并把上一轮的 Re 包络<b>降级</b>：前提 A1（构件类型与数量相同）是设计意图，不是文献事实（见 §九）。</td>
+</tr>
+<tr>
+<td>v7 的 <code>c₀≈0.7711</code> 只能作声明模型内阈值</td>
+<td><span class="tag t-ok">成立</span></td>
+<td>给出解析形式 <code>c₀ = (d/(H_R·Q_R))^(n/3)</code>。它<b>数值上很稳</b>（任一比值偏 10% 只动 0.83%），但<b>语义完全依赖声明的三个比值</b>，跨案例不可搬运（见 §八）。</td>
+</tr>
+</tbody>
+</table>
+
+<h2>二、七处定级改动（含一处数字错误）</h2>
+
+<table>
+<thead><tr><th style="width:24%">行</th><th style="width:12%">我 21:38 写的</th><th style="width:16%">应改为</th><th>依据</th></tr></thead>
+<tbody>
+<tr><td><code>ρ</code>、<code>c_p</code>、<code>μ</code> 三行</td><td>L1（杨若楠 2020）</td><td>L1，<b>分两套</b></td><td>Z20 表 4 与 X26 式(15)–(18) 是两套；<code>ρ</code> 斜率 <code>1.1944</code>（Z20）vs <code>1.3235</code>（X26）。</td></tr>
+<tr><td><code>μ(T)</code> 的函数形式</td><td>指数式</td><td><b>多项式</b>（Z20）</td><td>Z20 表 4 给 <code>4.56e−3 − 7.03e−6T + 3.61e−9T²</code>；指数式 <code>4.94e−4·exp(754.1/T)</code> 属 X26。见 §九。</td></tr>
+<tr><td><code>λ_R = L_M/L_P</code></td><td>L1</td><td>L2（推论）</td><td>表 3 八行全为 2:1 ⇒ 均匀缩放；逐段流道长度仍未列。</td></tr>
+<tr><td><code>d_R = D_M/D_P</code></td><td>L1*（仅外形）</td><td>L2（比率可靠）</td><td>同上；净流通面积的绝对量仍不可知。</td></tr>
+<tr><td><code>w</code>（赵）</td><td class="num">0.370</td><td class="num"><b>0.2915</b></td><td>旧值把 <code>κ</code> 与 <code>ε_Q</code> 压进了 <code>K_R</code>。见 §五。</td></tr>
+<tr><td><code>δ</code> 的 Re 包络</td><td>L2</td><td>L4 + L2 混合</td><td>A1 是设计意图，非文献事实。</td></tr>
+<tr><td>物性下限 <code>398.15 K</code></td><td>L4，出处缺</td><td>L4，<b>已确认缺</b></td><td>两篇原文表 4 / 式(15)–(18) 均未列适用温区；I21 的 250–500 °C 是设施运行范围，不能替换。</td></tr>
+</tbody>
+</table>
+
+<h2>三、两张图必须分开：数据归约 与 预测</h2>
+
+<p>这几轮反复出问题，根子是把两件事混在一个符号 <code>D_m</code> 里：</p>
+
+<pre><code>Map I  数据归约：D_m = r_m · d^(4/3) / (H_R·Q_R)^(1/3) − 1
+                 输入只有 r_m、d（面积比）、Q_R、H_R；与 w、δ、n 无关，不需要求根。
+Map II 预测    ：D_m = D_s(w, δ, c, n)，由 F(x;p)=0 求根；
+                 输入是设计量：摩擦份额、局阻失配、路径/管径比、关联式指数。
+桥            ：K_R = (1+D_m)³ · ρ_R / c_p,R  —— 用 Map I 的观测标定 Map II。</code></pre>
+
+<table>
+<thead><tr><th style="width:22%">输入</th><th class="num" style="width:14%">Map I 弹性<br><span class="small">dD/dln p</span></th><th class="num" style="width:14%">Map II 弹性<br><span class="small">同上</span></th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>r_m</code> 流量比</td><td class="num">+1.0288</td><td class="num">—</td><td>Map I 的主项。</td></tr>
+<tr><td><code>d</code> 长度比</td><td class="num">+1.3717</td><td class="num">−0.1269</td><td><b>符号相反</b>：Map I 里 <code>d</code> 在分母的理想比值里，Map II 里 <code>d</code> 只挪 <code>c=λ/d</code>。</td></tr>
+<tr><td><code>λ</code> 路径长</td><td class="num">0</td><td class="num">+0.1228</td><td>不进 Map I；只通过 <code>c</code> 进 Map II。</td></tr>
+<tr><td><code>Q_R</code> 功率比</td><td class="num">−0.3429</td><td class="num">+0.0133</td><td>Map II 里几乎不敏感。</td></tr>
+<tr><td><code>n</code> 关联式指数</td><td class="num">0</td><td class="num">+0.0327</td><td>Map II 里比 <code>d</code> 更敏感。</td></tr>
+</tbody>
+</table>
+
+<p class="small">Map II 弹性取 <code>w=0.291472</code>、<code>δ=0</code>、<code>d=λ=0.5</code> 处的中心差分（步长 <code>e=1e−6</code>）。</p>
+
+<div class="box warn">
+<p><b>这解释了上一轮的一个自相矛盾。</b>Morris 说「<code>w</code> 稳居第一」，而这一轮又说「<code>d</code> 主导」。
+两句都对，但说的不是同一张图：<b>Morris 是 Map II 的结论，<code>d</code> 主导是 Map I 的结论</b>。
+赵案实际在做的事（把一次成对 CFD 归约成一个失真数）属于 Map I，那里 <code>w</code> 根本不是输入。
+以后凡出现「谁主导」，必须先写清是 Map I 还是 Map II。</p>
+</div>
+
+<h2>四、主结果：<code>D_m</code> 的输入分辨率</h2>
+
+<p>赵案现值：<code>r_m = 5.819592629</code>、<code>d = 0.5000</code>、<code>Q_R = 5.656854249</code>、<code>H_R = 2.00</code>，
+得 <code>R_id = 5.656854249</code>、<code>D_m = +2.876835284%</code>。
+可观测量只有四个，<code>D_m</code> 是它们的显式函数——<b>没有求根，也没有 <code>w</code>、<code>δ</code></b>。</p>
+
+<table>
+<thead><tr><th style="width:20%">输入</th><th class="num">弹性 <code>dD/dln</code></th><th class="num">支撑 1 pp 所需的精度</th><th style="width:36%">备注</th></tr></thead>
+<tbody>
+<tr><td><code>r_m</code> 流量比</td><td class="num">+1.0288</td><td class="num">0.97%</td><td>表 5 给两位小数，已是 0.05%，不是瓶颈。</td></tr>
+<tr><td><code>d</code> 长度比</td><td class="num">+1.3717</td><td class="num"><b>0.73%</b></td><td>只能由均匀缩放推。</td></tr>
+<tr><td><code>A_R</code> 净流通面积比</td><td class="num">+0.6858</td><td class="num"><b>1.46%</b></td><td>最不确定的一项（堆芯内部尺寸未列）。</td></tr>
+<tr><td><code>Q_R</code> 功率比</td><td class="num">−0.3429</td><td class="num">2.92%</td><td>两表口径自身差 2%，见 §六。</td></tr>
+<tr><td><code>H_R</code> 高度比</td><td class="num">−0.3429</td><td class="num">2.92%</td><td>表 3 直给 2/1，不是瓶颈。</td></tr>
+</tbody>
+</table>
+
+<p>反过来问：单个输入放开、其余不动，<code>D_m</code> 什么时候归零？</p>
+
+<table>
+<thead><tr><th style="width:28%">输入</th><th class="num">现值</th><th class="num">使 <code>D_m=0</code></th><th class="num">相对变化</th></tr></thead>
+<tbody>
+<tr><td><code>d</code> 长度比</td><td class="num">0.500000</td><td class="num">0.489476</td><td class="num">−2.105%</td></tr>
+<tr><td><code>A_R</code> 净流通面积比</td><td class="num">0.250000</td><td class="num">0.239587</td><td class="num">−4.165%</td></tr>
+<tr><td><code>Q_R</code> 功率比</td><td class="num">5.656854</td><td class="num">6.159249</td><td class="num">+8.881%</td></tr>
+</tbody>
+</table>
+
+<div class="box">
+<p><b>怎么读这张表。</b>台架的净流通面积比只要比名义的 0.25 <b>小 4.17%</b>，<code>+2.88%</code> 就归零。
+物理上这不是算术巧合：若台架流道未按几何比例缩（最典型的情形就是堆芯棒径保持原型值、只缩外壳），
+名义上的「几何相似」就不再是真相似，观测到的偏差会被输入假设整段吸收。</p>
+<p>所以这个案例声称的失真量级，<b>与它自身输入的不确定度同阶</b>。
+这不是坏消息——它把「<code>δ</code> 测不出来」换成了「面积比要测到 1.5% 以内」，是可交付的设计/标定要求。</p>
+</div>
+
+<h2>五、<code>κ = 0.9987384</code> 的身份：它是 <code>Q_R</code> 的取整比，应从论文删除</h2>
+
+<pre><code>Q_R(表3 印数 10/1.77) / Q_R(脚本声明 4√2) = 0.9987383915
+记忆里记的 κ                                = 0.9987384000
+相对差 = 8.49e−09   （7 位有效数字内相同）
+
+Q_R = 4√2   ⟺  Q_M = 1.767767 MW  （表 3 印作 1.77 MW）
+Q_R = 10/1.77 ⟺  Q_M = 1.770000 MW</code></pre>
+
+<p>即 <code>4√2</code> 是「把 1.7678 圆整成 1.77」的另一种写法，两者都符合原文。
+而恒等式的闭合检验直接判了 <code>κ</code> 的死刑：</p>
+
+<table>
+<thead><tr><th class="num" style="width:18%"><code>κ</code></th><th class="num" style="width:26%"><code>c_p,R·K_R/ρ_R</code></th><th class="num" style="width:20%">残差 vs <code>(1+D_m)³</code></th><th>判读</th></tr></thead>
+<tbody>
+<tr><td class="num">1.0000000000</td><td class="num">1.088811722111</td><td class="num">−6.7e−16</td><td><span class="tag t-ok">浮点噪声</span>恒等式本就闭合。</td></tr>
+<tr><td class="num">0.9987384000</td><td class="num">1.087438077242</td><td class="num">−1.374e−3</td><td><span class="tag t-no">超出容差</span>把 <code>κ</code> 放进去反而不闭合。</td></tr>
+</tbody>
+</table>
+
+<p class="small">检验条件：<code>T_P = 596.874422 K</code>、<code>T_M = 598.723261 K</code>、<code>w_cal = 0.291472160</code>、<code>c_p,R = 0.999762219476</code>、<code>ρ_R = 0.999787322245</code>、<code>K_R = 1.088839060800</code>。</p>
+
+<div class="box warn">
+<p><b>连带更正两处自家账目。</b></p>
+<ul>
+<li><code>K_R = 1.1125</code> <b>不成立</b>，正确值是 <code>1.088839061</code>（由 <code>D_m</code> 反解，<code>δ=0</code>）。</li>
+<li><code>w = 0.370</code> <b>不成立</b>，正确值是 <code>0.291472160</code>（<code>= (K_R−1)/(f_R−1)</code>，<code>f_R = 1.304794327</code>）。</li>
+</ul>
+<p>1.1125 与 0.370 是 <code>κ</code> 与 <code>ε_Q</code> 同时被压进 <code>K_R</code> 的产物。
+<code>K_R</code> 是<b>损失比</b>，功率口径与圆整因子都不该进它。
+恒等式的干净形式是 <code>(1+D_m)³ = c_p,R·K_R/ρ_R</code>，没有 <code>κ</code>。</p>
+</div>
+
+<h2>六、<code>ε_Q</code>：表 5 的 <code>(Q, ṁ, ΔT)</code> 自己不闭合</h2>
+
+<table>
+<thead><tr><th style="width:12%">侧</th><th class="num">T_mean / K</th><th class="num">c_p</th><th class="num">Q（能量平衡）/MW</th><th class="num">Q（设计）/MW</th><th class="num">ε_Q</th></tr></thead>
+<tbody>
+<tr><td>原型</td><td class="num">598.15</td><td class="num">145.278</td><td class="num">10.199275</td><td class="num">10.0000</td><td class="num">+1.9928%</td></tr>
+<tr><td>台架</td><td class="num">601.50</td><td class="num">145.215</td><td class="num">1.841967</td><td class="num">1.7700</td><td class="num">+4.0659%</td></tr>
+</tbody>
+</table>
+
+<p>成对：<code>Q_R</code>（能量平衡反算）<code>= 5.537164751</code>，与声明的 <code>5.649717514</code> 差 <b>−1.9922%</b>。
+表 5 的出口温度与表 3 的功率不同源，并排使用必然带 2–4% 的口径差。这正是 <code>ε_Q</code> 该管的事——
+它不该混进 <code>δ</code>，也不该混进 <code>K_R</code>。</p>
+
+<table>
+<thead><tr><th style="width:34%"><code>Q_R</code> 的来源</th><th class="num" style="width:22%"><code>Q_R</code></th><th class="num" style="width:18%"><code>D_m</code></th><th>是否满足 3%</th></tr></thead>
+<tbody>
+<tr><td>脚本声明 <code>4√2</code></td><td class="num">5.656854249</td><td class="num">+2.876835%</td><td><span class="tag t-ok">满足</span></td></tr>
+<tr><td>表 3 印数 <code>10/1.77</code></td><td class="num">5.649717514</td><td class="num">+2.920135%</td><td><span class="tag t-ok">满足</span></td></tr>
+<tr><td>表 5 <code>(ṁ, ΔT)</code> 反算</td><td class="num">5.537164751</td><td class="num"><b>+3.612808%</b></td><td><span class="tag t-no">不满足</span></td></tr>
+</tbody>
+</table>
+
+<p>跨距 <b>0.736 pp</b>，而且<b>跨过 3% 判据</b>。所以「赵案满足 3%」这句话只在「用表 3 功率」这一口径下成立；
+换成「用表 5 的 <code>(ṁ, ΔT)</code> 反算功率」就不成立。<b>这不是误差，是口径</b>——
+正文必须把两个数并排报出，而不是选一个。</p>
+
+<h2>七、3% 可行带对 <code>d</code> 的脆弱性</h2>
+
+<table>
+<thead><tr><th class="num" style="width:10%"><code>d</code></th><th class="num" style="width:16%"><code>c = λ/d</code></th><th class="num" style="width:14%"><code>w₋</code></th><th class="num" style="width:14%"><code>w₊</code></th><th class="num">D(w=1)</th></tr></thead>
+<tbody>
+<tr><td class="num">0.450</td><td class="num">1.1111</td><td class="num">无解</td><td class="num">0.203997</td><td class="num">+14.1307%</td></tr>
+<tr><td class="num">0.475</td><td class="num">1.0526</td><td class="num">无解</td><td class="num">0.246651</td><td class="num">+11.8810%</td></tr>
+<tr><td class="num">0.500</td><td class="num">1.0000</td><td class="num">无解</td><td class="num">0.303987</td><td class="num">+9.7782%</td></tr>
+<tr><td class="num">0.525</td><td class="num">0.9524</td><td class="num">无解</td><td class="num">0.385143</td><td class="num">+7.8068%</td></tr>
+<tr><td class="num">0.550</td><td class="num">0.9091</td><td class="num">无解</td><td class="num">0.508831</td><td class="num">+5.9533%</td></tr>
+</tbody>
+</table>
+
+<p><code>d</code> 偏 10%，判据松紧差 <b>2.5 倍</b>（<code>w₊</code> 从 0.204 到 0.509）。
+下边界恒为「无解」不是数值问题：<code>D(w=0) = 0</code> 是恒等式（<code>w=0</code> 时 <code>K_R = 1+δ</code>，
+<code>δ=0</code> 即 <code>x=1</code>），所以 <code>δ ≥ 0</code> 时永远到不了 <code>−3%</code>。
+「3% 带」只在 <code>δ &lt; 0</code> 时才是双侧的——这一点与 v6 一致，但<b>边界值随 <code>d</code> 大幅移动</b>。</p>
+
+<h2>八、<code>c₀</code> 的可移植性：它是声明比值的函数，不是几何常数</h2>
+
+<pre><code>c₀ = 1/B,  B = (R_id·d)^n = (H_R·Q_R/d)^(n/3)
+⇒  c₀ = (d / (H_R·Q_R))^(n/3)</code></pre>
+
+<table>
+<thead><tr><th class="num" style="width:12%"><code>d</code></th><th class="num" style="width:20%"><code>B</code></th><th class="num" style="width:20%"><code>c₀ = 1/B</code></th><th class="num"><code>c = λ/d</code></th></tr></thead>
+<tbody>
+<tr><td class="num">0.40</td><td class="num">1.321180280</td><td class="num">0.756898975</td><td class="num">1.2500</td></tr>
+<tr><td class="num">0.45</td><td class="num">1.308275994</td><td class="num">0.764364709</td><td class="num">1.1111</td></tr>
+<tr><td class="num">0.50</td><td class="num">1.296839555</td><td class="num"><b>0.771105413</b></td><td class="num">1.0000</td></tr>
+<tr><td class="num">0.55</td><td class="num">1.286580184</td><td class="num">0.777254316</td><td class="num">0.9091</td></tr>
+<tr><td class="num">0.60</td><td class="num">1.277284998</td><td class="num">0.782910628</td><td class="num">0.8333</td></tr>
+</tbody>
+</table>
+
+<p>三个声明比值对 <code>c₀</code> 的对数弹性都是 <code>±n/3 = ±0.0833</code>：
+<b>任一比值偏 10%，<code>c₀</code> 只动 0.83%</b>。所以 <code>c₀</code> 的<b>数值</b>很稳，
+但它的<b>语义</b>完全依赖声明的 <code>(H_R, Q_R, d, n)</code>，换案例必须重算。</p>
+
+<p>Xu 标准 CFD 的 <code>c = 0.5/0.616 = 0.8117</code>，与赵的 <code>c₀ = 0.771105</code> <b>不能直接比</b>：
+那一案没有给出成对工况，<code>H_R</code>、<code>Q_R</code> 都未声明，因此<b>它的 <code>c₀</code> 本身算不出来</b>。
+所以「KYLIN 落在阈值哪一侧」在现有材料下不可判定——这条复核是对的，我上一轮那句
+「KYLIN 降高度恰好 <code>c=0.5</code> 正落在失效区」是把<b>我构造的情景</b>当成了文献设计，撤回。</p>
+
+<h2>九、两处自查：物性标签与核心压降</h2>
+
+<h3>（1）<code>μ</code> 的函数形式被硬编码</h3>
+
+<p><code>Model._mu_s</code> 的实现是 <code>m0·exp(m1/T)</code>，与 <code>Props</code> 里传什么无关；
+标量路径 <code>T_s</code> / <code>f_s</code> / <code>M_s</code> 全走这一支。
+所以 <code>P_ZHAO</code> 名字叫「Zhao 表4」，<code>μ</code> 用的却是 X26 式(15) 的指数式——
+<b>Z20 表 4 的多项式从未生效</b>。这属于 <code>claim-matrix</code> 的 C-05 那类错误（跨式混合后称同版物性）。</p>
+
+<table>
+<thead><tr><th class="num" style="width:14%">T / K</th><th class="num" style="width:22%">μ（指数式）</th><th class="num" style="width:22%">μ（多项式）</th><th class="num">相对差</th></tr></thead>
+<tbody>
+<tr><td class="num">533.15</td><td class="num">2.032373e−03</td><td class="num">1.838094e−03</td><td class="num">−9.559%</td></tr>
+<tr><td class="num">596.87</td><td class="num">1.747516e−03</td><td class="num">1.650068e−03</td><td class="num">−5.576%</td></tr>
+<tr><td class="num">598.72</td><td class="num">1.740711e−03</td><td class="num">1.645051e−03</td><td class="num">−5.495%</td></tr>
+<tr><td class="num">663.16</td><td class="num">1.540199e−03</td><td class="num">1.485595e−03</td><td class="num">−3.545%</td></tr>
+</tbody>
+</table>
+
+<p>但模型只用到<b>比值</b> <code>μ_R = μ(T_M)/μ(T_P)</code>：指数式 <code>0.996106215</code>，
+多项式 <code>0.996959187</code>，差 <code>+0.0856%</code> ⇒ <code>f_R</code> 差 <code>0.0214%</code> ⇒
+<code>D_m</code> 差约 <b>0.0026 pp</b>。<b>数值上无关紧要，标签必须改。</b>
+正确写法：「<code>ρ</code>、<code>c_p</code> 取 Z20 表 4；<code>μ</code> 取 X26 式(15)（两式 T 标度不同，已核差异 &lt; 0.01 pp）」。
+
+<h3>（2）新结果：核心压降的一致性 <code>K_R,core = 1.03295</code></h3>
+
+<p>只用表 5 的四个数与表 3 的核心直径，不需要任何关联式：</p>
+
+<pre><code>ρ_R = 0.999615157        A_R(核心) = (1.071/2.142)² = 0.250000000
+v_R = (ṁ_M/ṁ_P)/A_R = 0.687333333        动压比 = v_R²·ρ_R = 0.472245301
+Δp_R = 1515.02/3105.8 = 0.487803464
+⇒ K_R,core = Δp_R / 动压比 = 1.032945089    (δ_core = +3.2945%)</code></pre>
+
+<p>对照回路级 <code>K_R = 1.088839052</code>：<b>核心段比回路平均更接近 1，差 −5.13%</b>。
+解释：CFD 在核心段的损失结构几乎等比例保持（3.3% 的偏差），回路级 8.9% 的偏差主要来自
+<b>核心之外</b>（连接管、换热器、阀门）——这正是 <code>δ</code> 该住的地方。
+这是第一次有一个<b>可核的数值</b>指向它，虽然仍不是成对局阻本身。</p>
+
+<p class="small">限制：表 5 的 <code>Δp</code> 标为「堆芯压降」，是否含进出口联箱未说明；核心按多孔介质处理，
+<code>A_R</code> 用的是 2.142/1.071 两个「直径」，若这两个是容器内径而非净流道，则 <code>K_R,core</code> 会偏小。</p>
+
+<h2>十、<code>δ</code> 的 Re 包络重定级</h2>
+
+<table>
+<thead><tr><th style="width:8%">前提</th><th style="width:34%">内容</th><th style="width:10%">等级</th><th>为什么</th></tr></thead>
+<tbody>
+<tr><td>A1</td><td>两侧同湍流、构件类型与数量相同</td><td><span class="tag t-mid">L4</span></td><td>这是设计意图，三篇原文都没给构件清单。</td></tr>
+<tr><td>A2</td><td><code>K_i(Re)</code> 单调不增、指数 ≤ 0.2</td><td><span class="tag t-ok">L2</span></td><td>分离损失比壁面摩擦对 Re 更钝，属关联式性质。</td></tr>
+</tbody>
+</table>
+
+<p>所以这条的等级是「<b>L4 前提 + L2 关联式 = 条件包络</b>」，<b>不是物理范围</b>。数值（<code>μ_R</code> 计入后）：</p>
+
+<table>
+<thead><tr><th style="width:30%">案例</th><th class="num" style="width:14%"><code>Re_R</code></th><th class="num" style="width:16%"><code>δ</code> 上端</th><th style="width:26%"><code>μ</code> 比的口径</th></tr></thead>
+<tbody>
+<tr><td>赵 2020 成对 CFD</td><td class="num">0.3450</td><td class="num">23.7182%</td><td>由模型自身温度场</td></tr>
+<tr><td>赵（表 5 温度口径）</td><td class="num">0.3461</td><td class="num">23.6393%</td><td>由表 5 平均温度</td></tr>
+<tr><td>KYLIN 标准 CFD</td><td class="num">0.4351</td><td class="num">18.1107%</td><td>温度场未建模，取 1</td></tr>
+</tbody>
+</table>
+
+<p><code>Re_R = (1/r_m)(1/d)(μ_P/μ_M)</code>。两种温度口径差 0.3%，<code>δ</code> 上端差 0.08 pp——
+比 <code>d</code> 的不确定性（±10% ⇒ ±2 pp）小得多，所以温度口径不是瓶颈，<code>d</code> 才是。</p>
+
+<p><b>A1 一旦不成立</b>（台架多装一台流量计、少一个弯头），上端立刻失去意义。
+所以正文明写：「<b>在构件逐项对应的前提下</b>，<code>δ</code> 不超过 X%」。
+这比「<code>δ</code> 未知」有用，比「<code>δ</code> = ±7%」诚实。</p>
+
+<h2>十一、可写 / 不可写</h2>
+
+<div class="box ok">
+<p><b>可写（本轮之后仍成立）</b></p>
+<ul>
+<li><code>D_m</code> 是数据归约量：只依赖四个比值，与 <code>w</code>、<code>δ</code> 无关。</li>
+<li><b>输入分辨率表</b>：支撑 1 pp 需 <code>r_m</code> 0.97%、<code>d</code> 0.73%、面积比 1.46%、<code>Q_R</code>/<code>H_R</code> 2.92%。</li>
+<li>恒等式不含 <code>κ</code>：<code>K_R = 1.088839</code>、<code>w = 0.291472</code>。</li>
+<li>3% 带在 <code>δ ≥ 0</code> 时只有上边界，且 <code>w₊</code> 随 <code>d</code> 大幅移动。</li>
+<li>核心段 <code>K_R = 1.03295</code>，残差主要在核心之外（新结果）。</li>
+<li><code>δ</code> 的条件包络，A1 明写为设计意图。</li>
+</ul>
+</div>
+
+<div class="box warn">
+<p><b>不可写</b></p>
+<ul>
+<li>「赵案<b>实测</b>失真 2.88%」——它是 CFD，且口径换成表 5 反算即 3.61%，跨过 3%。</li>
+<li>「KYLIN 降高度 <code>c=0.5</code> 落在失效区」——<code>c=0.5</code> 是我构造的情景，不是文献设计。</li>
+<li>「<code>K_R = 1.1125</code> / <code>w = 0.370</code>」——含 <code>κ</code> 与 <code>ε_Q</code>，两项都不该进 <code>K_R</code>。</li>
+<li>「<code>δ</code> 的物理范围」——不存在，只有条件包络。</li>
+<li>「物性取自 Zhao 表 4」——<code>μ</code> 形式其实来自 X26 式(15)。</li>
+</ul>
+</div>
+
+<h3>下一步只剩三件有用的事</h3>
+<ol>
+<li>取 Li 2015 / Yue 2017 全文，补逐段阻力与功率矩阵——这是唯一能把 <code>δ</code> 从条件包络升级为实物区间的路径。</li>
+<li>把表 5 的 <code>(ṁ, ΔT)</code> 反算功率作为第二口径，正文把 <code>3.61%</code> 与 <code>2.88%</code> 并排报出。</li>
+<li>把输入分辨率表写进正文——它是本轮唯一新增的可交付设计判据，也是把「方法演示」接到「装置设计」的那一步。</li>
+</ol>
+
+<p class="small">复现：<code>比例失真_计算/provenance_audit_v8.py</code>（依赖 <code>source_free_bound_v5.py</code>），
+日志 <code>provenance_audit_v8_log.txt</code>（248 行）。全部数值一次生成，无手工填写。</p>
+
+</div>
+</body>
+</html>

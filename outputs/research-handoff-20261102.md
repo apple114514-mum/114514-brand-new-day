@@ -1,11 +1,12 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。本轮先读**参数闭合 v1 复核**和原始参数表：Workbuddy 的 131 行日志可复现，但 `δ≤Re_R^{-0.2}−1` 的构件指数没有一手出处；`Re_R≥0.6418` 只对应 Zhao 模型的 `w=0`，不能作为所有设计的 3% 保证线。两案的成对局阻 `δ`、赵文净流通内径和逐段长度仍缺原文数据。下方旧报告保留审计轨迹；如有冲突，以最新复核及参数原文为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。本轮先读**第八轮输入分辨率复核**：Map I 的局部弹性计算成立，但 `1.46%` 面积预算仅对应单输入约 1 pp，现值距 3% 门槛只有 0.1232 pp；`K_R=1.088839` 是选定热量闭合的条件反演值。前轮 `δ≤Re_R^{-0.2}−1` 仍缺构件指数出处，`Re_R≥0.6418` 也不能作通用 3% 保证线。下方旧报告保留审计轨迹；如有冲突，以最新复核及参数原文为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
+| **第八轮输入分辨率复核（先读）** | [复核 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/provenance-v8-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/provenance-v8-review-20261102.md) · [独立算术脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/provenance-v8-independent-audit-20261102.py) · [上传参数表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/provenance-v8-upload-table-20261102.md) · [上传 HTML](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/provenance-v8-upload-report-20261102.html) · [上传脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/provenance-v8-upload-script-20261102.py) · [上传日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/provenance-v8-upload-log-20261102.txt) | 分开 Map I 后验归约和 Map II 先验预测；复核 3% 门槛所需分辨率、功率口径、`K_R/w` 条件反演及核心压降归因 |
 | **参数闭合 v1 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-review-20261102.md) · [独立复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-audit-20261102.py) · [上传参数表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-upload-20261102.md) · [上传脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-upload-20261102.py) · [上传日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-upload-log-20261102.txt) | 131 行一致；`0.6418` 仅为 `w=0` 门槛，缺 `w` 与内生 Re 联立；A1/A2 未经文献核实，不能据此消除 `δ` 证据缺口 |
 | **参数溯源表（先读）** | [Markdown 原文坐标表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-provenance-20261102.md) · [论点—证据矩阵](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/paper-workspace/claim-matrix.md) · [论文状态包](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/paper-workspace/paper.origin.md) · [赵 2020 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-2020-original-20261102.pdf) | 逐格区分原文直给、计算值与未找到；明确 Xu 的管内径、赵文泛称“直径”、CFD/实测界线及 `δ/w/λ/d` 缺口 |
 | v7 上传原件 | [v7 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-report-20261102.html) | Workbuddy 的通用 `c` 双侧界修订；数学脚本不能替代几何/局阻原始来源，跨案例物理归因以参数溯源表限制为准 |
@@ -29,6 +30,13 @@
 | 共同背景 | [Carnevali 等（2025）原文 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/papers/carnevali-2025-nucengdes-114409.pdf) · [此前的方法定位报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-scaling-method-position-20261101.md) | 失真对 FoM 的影响、可接受性问题与本研究的贡献边界 |
 
 ## 给 Workbuddy 的已核结论
+
+### 本轮第八轮更新
+
+- Map I 的 `D_m=r_m A_R^(2/3)/(H_R Q_R)^(1/3)−1` 为声明面积与理想比下的**CFD 输出归约式**；`A_R=d²` 才能得到 `d^(4/3)`。其 `1 pp` 单输入局部预算可复算，但不能给建台架前的 FoM 上界。
+- 以 `Q_R=4√2` 得 `+2.876835%`，距本研究自行设定的 3% 门槛 `0.123165 pp`。逐项达到门槛的相对变化为流量比 `+0.1197%`、`d +0.0898%`、净面积 `+0.1796%`、功率或高度比 `−0.3583%`；联合域还需相关性与误差出处。表 5 印数位数不是 CFD 不确定度。
+- `κ≈0.9987384` 可由 `10/1.77` 与 `4√2` 的比值解释，取整补丁可删除；`K_R=1.088839、w=.291472` 只在有效入热比等于设计比、`δ=0` 的模型中成立。改用表 5 焓代理比时，条件反演回到约 `K_R=1.1124、w=.369`。焓代理归约的 `+3.612808%` 使用了另一个参照比，不能称同一性能偏差因测量误差跨过 3%。
+- Zhao 表 3 八项宏观尺寸 2:1，不足以验证净流通面积 `.25` 或逐段长度 `.5`。`K_R,core=1.032945` 用到未核面积 `.25` 且包括核心总压降，不能当局阻 `δ` 或据此断定残差来自核心外。上传表仍将 Xu 表 1 误写为 54/22 mm，并把未匹配的热导率式标为 L1；已在最新复核中定位。
 
 ### 本轮参数闭合 v1 更新
 
