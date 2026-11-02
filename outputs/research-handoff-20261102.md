@@ -1,11 +1,13 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v6 最新复核**：Zhao 模型的双侧 3% 可行带成立，但 v6 声称适用于任意 `λ/d` 的双侧界有反例，已给出有条件的修正式。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。本轮先读**参数溯源表**：已核 Xu/KYLIN 的 26 mm 管内径与赵文表 3、表 5；两案的成对局阻 `δ`、赵文净流通内径和逐段长度仍缺原文数据。v7 上传文件已归档，推导数值与实物参数不能混写。下方旧报告保留审计轨迹；如有冲突，以最新复核及参数原文为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
+| **参数溯源表（先读）** | [Markdown 原文坐标表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-provenance-20261102.md) · [论点—证据矩阵](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/paper-workspace/claim-matrix.md) · [论文状态包](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/paper-workspace/paper.origin.md) · [赵 2020 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-2020-original-20261102.pdf) | 逐格区分原文直给、计算值与未找到；明确 Xu 的管内径、赵文泛称“直径”、CFD/实测界线及 `δ/w/λ/d` 缺口 |
+| v7 上传原件 | [v7 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-report-20261102.html) | Workbuddy 的通用 `c` 双侧界修订；数学脚本不能替代几何/局阻原始来源，跨案例物理归因以参数溯源表限制为准 |
 | 新增研究技能 | [导入记录与版本 ID](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/WORKBUDDY-IMPORTED-20261102.md) · [GSA 技能](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/zvex-model-sensitivity/SKILL.md) · [论文证据矩阵技能](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/origin-paper-workspace/SKILL.md) · [情景分析备用技能](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/sensitivity-analysis/SKILL.md) | 用户提供压缩包已本地导入；`SALib==1.6.0` 已按用户新指示直连 PyPI 装入 `/workspace/.venv-gsa` 并通过 Morris 冒烟测试；重建步骤在 `setup.sh` |
 | **v6 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-review-20261102.md) · [独立复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-audit-20261102.py) | 一般 `λ/d` 的反例与修正条件界；Zhao 3% 双侧带可保留；摄动在整条方法链中的具体位置 |
 | v6 上传原件 | [v6 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-upload-report-20261102.html) · [本轮 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-3pct-band-v6-upload-20261102.csv) | Workbuddy 原始计算；新 CSV 有 61 数据行，脚本核对的 81 行是前轮 CSV |
@@ -26,6 +28,12 @@
 | 共同背景 | [Carnevali 等（2025）原文 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/papers/carnevali-2025-nucengdes-114409.pdf) · [此前的方法定位报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-scaling-method-position-20261101.md) | 失真对 FoM 的影响、可接受性问题与本研究的贡献边界 |
 
 ## 给 Workbuddy 的已核结论
+
+### 本轮参数溯源更新
+
+- 已直接核读 Zhao 2020 原文 PDF（7 页）和 Xu FR26-170、IAEA LFR-21 原文。Xu-P4/表1的 `26 mm` 明确为 **Pipe inner diameter**；Zhao-P5/表3的 `1/0.5 m` 行名只有“直径”，未说明是流通内径或当量直径，不能直接给模型 `d`。Zhao-P6/表5标题是**数值模拟结果**，流量 `540.0/92.79 kg/s` 不是两台实物的测量。
+- Xu-P4/表2标准 CFD 缩比 `l_R=.5,d_R=.616`，若将统一长度缩比用于摩擦路径，则条件 `c=λ/d≈.812`，不是 `.5`；“KYLIN 降高度 `c=.5`”属于另一个待声明的模型情景。Zhao 的总高度比也不能代替 `λ=L_M/L_P`，因为逐段流道长度没列。
+- 已读三份全文均未给成对局阻 `k_P,k_M`，所以 **`δ` 未定域**；Xu-P3/式(9) 的同字母 `δ` 指**壁厚**，不能引用为局阻失配。Zhao 表4与 Xu 式(15)–(18)的物性式不同；`398.15 K` 关联式下限仍未见原文。Li 2015、Yue 2017 全文未取得，旧“Yue 表2有阻力数”的转述仍未核。
 
 ### 本轮 v6 更新
 
@@ -84,7 +92,7 @@
 
 ## 下一轮给 Workbuddy 的任务说明
 
-> 请先读本文件所链接的**v6 最新复核**，再读 v5、Xu、LFR-21 与此前报告，**先核来源，再建界**。Zhao `λ/d=1` 的 3% 双侧 `w(δ)` 可行带保留，但 v6 把双侧解析界推广至任意 `λ/d` 的式子已有上下界反例；先按 v6 复核中的 `min/max{1,(1+δ)^(1/3),[(λ/d)(R_id d)^n]^(1/(3−n))}` 条件界改写并检验物性域。`δ_crit≈0.092755604` 的**等号可行**；`δ→−1` 仅是数学极限。修正 `F_dep_iv()`：非零 δ 时应取 `G=(1+δ)+w[(λ/d)f−(1+δ)]`。本轮上传 CSV 有 61 行，脚本硬编码读取的前轮 CSV 才有 81 行，请分清。继续建 `δ`、`w`、净流道尺寸的来源台账，优先核原型与台架两侧压降及 Li/Yue 全文；一侧阻力不能定成对 `δ`。摄动用隐式导数做局部排序和线性余项检查，GSA 需明示联合参数域/分布；它们不能替代最坏界。留出点只预测、不重新拟合。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
+> 请先读本文件最上方的**参数溯源表、论点—证据矩阵与原始 PDF**，再继续 v7 数学模型。对每个论文输入标原文表号/原句、计算关系或“未找到”；不要把 Zhao-P5/表3未限定的“直径”写成流通内径，把 Xu-P4/表2标准方案的 `l_R=.5,d_R=.616` 写成 KYLIN 实物 `c=.5`，或把 Zhao-P6/表5 CFD 值写成实测。`δ` 必须有两侧同口径局阻，单侧数据至多辅助 `w`；Xu 式(9) 的 `δ` 另指壁厚。优先取得 Li 2015、Yue 2017 全文，以及逐段长度、净流面积、阻力与物性适用域；缺失项保留为空。v7 的对称界可作为**条件模型命题**，但其 `c₀=1/B` 来自 Zhao 假设输入，不能跨案宣称实物阈值。之后才为 GSA 声明物理域或明确的情景分布；留出点只预测、不重新拟合。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
 
 ## 来源边界
 

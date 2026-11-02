@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>源无关界 v7：通用 c 的双侧界重写（2026-11-02 第七轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.7;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+figure{margin:22px 0 10px;background:var(--card);border:1px solid var(--line);padding:10px 10px 4px}
+figcaption{font-size:13px;color:var(--mute);padding:6px 6px 8px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>源无关界 v7：通用 c 的双侧界重写</h1>
+<div class="sub">2026-11-02 · 第七轮 · 对应复核 <code>source-free-v6-review</code>（<code>main d4ca702</code>）· 脚本 <code>source_free_bound_v7.py</code>（237 行日志）</div>
+
+<div class="box warn">
+<p><b>一句话：</b>复核的判定成立，而且<b>失效面比复核列出的更宽</b>——我补了两个反例，八案例里 v6 通式错了五个。但这一轮真正的增量不是"换成对称界"，而是两条<b>结构性结论</b>：① v6 下界的失效边界可以写成一个精确等式 <code>c ≥ 1/B = 0.771105</code>，而 <b>KYLIN-II 降高度恰好是 <code>c=0.5</code></b>，正落在失效区里；② v6 证明里那句"M 随 T 单调递减"<b>是错的</b>，<code>dlnM/dT</code> 在 <code>T*=737.48 K</code> 变号。结论救回来了，理由必须换。</p>
+</div>
+
+<h2>一、复核的两条反例：逐条复现</h2>
+
+<p>复现用的是同一个 Zhao 变物性标量方程，只改 <code>λ/d</code>，不换物性、不换热量定义，<code>d=0.5, H_R=2, Q_R=2^{2.5}, n=0.25</code>。基准常数：<code>R_id = 5.656854249492375</code>、<code>B=(R_id·d)^n = 1.296839554651009</code>、<code>T_P = 596.874422252565 K</code>。</p>
+
+<table style="font-size:13.5px">
+<thead><tr>
+<th class="num">c</th><th class="num">δ</th><th class="num">D(w=0)</th><th class="num">D(w=1)</th>
+<th>v6 通式界的判定</th><th>对称界</th><th>对称</th>
+</tr></thead>
+<tbody>
+<tr><td class="num">0.50</td><td class="num">0.00</td><td class="num">+0.0000%</td><td class="num">−14.4165%</td><td><code>[0, 0]</code> <span class="tag t-no">失效</span></td><td class="num">[−14.5752%, 0]</td><td><span class="tag t-ok">OK</span></td></tr>
+<tr><td class="num">0.50</td><td class="num">−0.50</td><td class="num">−20.6249%</td><td class="num">−14.4165%</td><td><code>[−20.6299%, −14.5752%]</code> <span class="tag t-no">失效</span></td><td class="num">[−20.6299%, 0]</td><td><span class="tag t-ok">OK</span></td></tr>
+<tr><td class="num">0.50</td><td class="num">+0.20</td><td class="num">+6.2639%</td><td class="num">−14.4165%</td><td><code>[0, +6.2659%]</code> <span class="tag t-no">失效</span></td><td class="num">[−14.5752%, +6.2659%]</td><td><span class="tag t-ok">OK</span></td></tr>
+<tr><td class="num">0.25</td><td class="num">−0.30</td><td class="num">−11.2066%</td><td class="num">−33.3165%</td><td><code>[−11.2096%, −11.2096%]</code> <span class="tag t-no">失效</span></td><td class="num">[−33.6076%, 0]</td><td><span class="tag t-ok">OK</span></td></tr>
+<tr><td class="num">0.75</td><td class="num">0.00</td><td class="num">+0.0000%</td><td class="num">−0.9916%</td><td><code>[0, 0]</code> <span class="tag t-no">失效</span></td><td class="num">[−1.0041%, 0]</td><td><span class="tag t-ok">OK</span></td></tr>
+<tr><td class="num">1.00</td><td class="num">0.00</td><td class="num">+0.0000%</td><td class="num">+9.7782%</td><td><code>[0, +9.9131%]</code> <span class="tag t-ok">OK</span></td><td class="num">[0, +9.9131%]</td><td><span class="tag t-ok">OK</span></td></tr>
+<tr><td class="num">1.00</td><td class="num">+0.35</td><td class="num">+10.5176%</td><td class="num">+9.7782%</td><td><code>[0, +10.5209%]</code> <span class="tag t-ok">OK</span></td><td class="num">[0, +10.5209%]</td><td><span class="tag t-ok">OK</span></td></tr>
+<tr><td class="num">2.00</td><td class="num">0.00</td><td class="num">+0.0000%</td><td class="num">+40.7220%</td><td><code>[0, +41.4214%]</code> <span class="tag t-ok">OK</span></td><td class="num">[0, +41.4214%]</td><td><span class="tag t-ok">OK</span></td></tr>
+</tbody>
+</table>
+
+<p class="small">前 5 行是 v6 失效的案例，后 3 行是成立的。逐行对应：<b>①</b> 复核反例 1，下界失效；<b>②</b> 复核反例 2，上界也失效；<b>③</b> <b>本轮补</b>——<code>δ&gt;0</code> 时下界同样失效，说明不是"负 δ 才出事"；<b>④</b> <b>本轮补</b>——小 <code>c</code> 时上下界同时失效；<b>⑤</b> 临界下方，量级小但确实越界；<b>⑥⑦</b> Zhao 本体；<b>⑧</b> <code>c&gt;1</code>。八案例中 v6 通式失效 <b>5 个</b>，对称界 8/8 成立。复核只列了 2 个，实际失效面覆盖 <b>c&lt;1 的整片区域</b>。</p>
+
+<h2>二、v6 错在哪：两处缺陷的精确定位</h2>
+
+<p>v6 的原式是 <code>min{0, A^(1/3)−1} ≤ D_m ≤ max{A^(1/3), q}−1</code>，<code>A=1+δ</code>、<code>q=(cB)^(1/(3−n))</code>。两个缺陷互不相同，必须分开修。</p>
+
+<h3>缺陷 1（下界）：它偷偷假设了 K_R ≥ A</h3>
+
+<p><code>δ≥0</code> 时 <code>min{0, A^(1/3)−1}=0</code>，等价于断言 <code>D≥0</code>，即 <code>K_R ≥ A</code>。而 <code>K_R=(1−w)A + w·c·f</code>，<code>w=1</code> 时只剩 <code>c·f</code>。只要 <code>c·f &lt; A</code>，根就落到 <code>x&lt;1</code>，<code>D&lt;0</code>。Zhao 的 <code>c=1</code> 时 <code>f(1)=B=1.2968&gt;1</code>，这条恰好成立——<b>这是 c=1 的巧合，不是通式</b>。</p>
+
+<pre><code>c=0.5, δ=0, w=1 的根：
+  x    = 0.855835044351        (&lt; 1)
+  K_R  = c·f = 0.626777676750  (&lt; A = 1)
+  D    = −14.416496%           而 v6 下界给 0%</code></pre>
+
+<h3>缺陷 2（上界）：<code>f ≤ B·x^n</code> 那一步要求 <code>x ≥ 1</code></h3>
+
+<p>推导用了 <code>f(x) ≤ B x^n</code>，等价于 <code>μ_R ≤ 1</code>，等价于 <code>T_M ≥ T_P</code>，也就是 <code>x ≥ 1</code>。当 <code>c&lt;1</code>（或 <code>δ&lt;0</code>）把根推到 <code>x&lt;1</code> 时，<code>μ_R&gt;1</code>，这一步反向。v6 当时补了一句"<code>x&lt;1</code> 时 <code>D&lt;0 ≤ max−1</code>"，但 <code>max{A^(1/3),q}−1</code> 在 <code>c&lt;1</code> 且 <code>δ&lt;0</code> 时是<b>负数</b>，这句话不成立。</p>
+
+<pre><code>同一个根（c=0.5, δ=0, w=1）：
+  x     = 0.855835 &lt; 1  ⇒  T = 587.623 K &lt; T_P = 596.874 K
+  μ_R   = 1.020091208043 &gt; 1        ⇒  f &gt; B·x^n 成立
+  f     = 1.253555353499
+  B·x^n = 1.247336884339
+  f/(B·x^n) = 1.004985397</code></pre>
+
+<h2>三、新结果 1：v6 下界的失效边界是一个精确等式</h2>
+
+<div class="box">
+<p><code>δ=0</code> 时，v6 下界 <code>D ≥ 0</code> 成立 <b>当且仅当</b> <code>w=1</code> 端的根 <code>x ≥ 1</code>，即 <code>c·f(1) ≥ 1</code>。而 <code>x=1</code> 处 <code>T=T_P</code>、<code>μ_R=1</code>，故 <code>f(1)=B</code>，条件化成</p>
+<p style="text-align:center;font-size:17px"><code>c ≥ 1/B = 0.771105412704</code></p>
+</div>
+
+<p>数值交叉验证：直接解 <code>D(w=1)=0</code> 得临界 <code>c₀ = 0.771105412704</code>，与 <code>1/B</code> 差 <code>−3.331e−16</code>。这不是拟合，是恒等。</p>
+
+<p><b>物理含义。</b><code>c = λ/d = (L_M/L_P)/(D_M/D_P)</code>：<code>c=1</code> 是长度与直径同比例缩（几何相似缩比），<code>c&lt;1</code> 是长度方向比直径方向缩得更多，也就是<b>降高度这一类缩比</b>。所以 v6 下界的失效区恰好是降高度区。</p>
+
+<div class="box warn">
+<p><b>这不是无害的边角。</b>论文里唯一的"降高度"案例 KYLIN-II 恰好是 <code>c = 0.5 &lt; 0.7711</code>，正落在失效区内。也就是说 v6 的通式在<b>本项目自己最关心的那个缩比类型上就是错的</b>，只是 Zhao 的 <code>c=1</code> 把问题遮住了。</p>
+</div>
+
+<h3>负向设计例子（复核要求：<code>cB&lt;1</code> 单列）</h3>
+
+<table>
+<thead><tr><th class="num">c</th><th class="num">δ</th><th class="num">cB</th><th class="num">q</th><th>对称界</th><th class="num">D(w=0)</th><th class="num">D(w=1)</th></tr></thead>
+<tbody>
+<tr><td class="num">0.5000</td><td class="num">0.000</td><td class="num">0.648420</td><td class="num">0.854248</td><td class="num">[−14.5752%, 0]</td><td class="num">+0.0000%</td><td class="num">−14.4165%</td></tr>
+<tr><td class="num">0.5000</td><td class="num">−0.300</td><td class="num">0.648420</td><td class="num">0.854248</td><td class="num">[−14.5752%, 0]</td><td class="num">−11.2066%</td><td class="num">−14.4165%</td></tr>
+<tr><td class="num">0.6000</td><td class="num">+0.100</td><td class="num">0.778104</td><td class="num">0.912803</td><td class="num">[−8.7197%, +3.2280%]</td><td class="num">+3.2270%</td><td class="num">−8.6189%</td></tr>
+<tr><td class="num">0.7500</td><td class="num">0.000</td><td class="num">0.972630</td><td class="num">0.989959</td><td class="num">[−1.0041%, 0]</td><td class="num">+0.0000%</td><td class="num">−0.9916%</td></tr>
+<tr><td class="num">0.7711054</td><td class="num">0.000</td><td class="num">1.000000</td><td class="num">1.000000</td><td class="num">[0, 0]</td><td class="num">+0.0000%</td><td class="num">−0.0000%</td></tr>
+</tbody>
+</table>
+
+<p class="small">最后一行 <code>c = 1/B</code> 处 <code>D(w=1)=0</code>，正是临界点：<code>c</code> 一旦小于它，<code>w=1</code> 端变负，v6 的 <code>D≥0</code> 必然错。这就是失效的判定条件，不需要逐例去试。</p>
+
+<h2>四、对称条件界：命题与证明</h2>
+
+<p>复核给出的修正式我复算确认成立，并把它的证明结构写清楚：</p>
+
+<div class="box ok">
+<p>记 <code>A = 1+δ</code>、<code>q = (cB)^(1/(3−n))</code>，则</p>
+<p style="text-align:center;font-size:15.5px"><code>min{1, A^(1/3), q} − 1 ≤ D_m ≤ max{1, A^(1/3), q} − 1</code></p>
+</div>
+
+<pre><code>支一  x ≥ 1。若根处 M ≤ 1、μ_R ≤ 1，则 f ≤ B·x^n，故
+        x³ ≤ (1−w)A + w·c·B·x^n
+      反设 x &gt; max{1, A^(1/3), q}，则 A &lt; x³ 且 cB·x^n &lt; x³，
+      凸组合 (1−w)A + w·cB·x^n &lt; x³，与上式矛盾。
+      故 x ≤ max{1, A^(1/3), q}。
+
+支二  0 &lt; x &lt; 1。若根处 M ≥ 1、μ_R ≥ 1，则 f ≥ B·x^n，故
+        x³ ≥ (1−w)A + w·c·B·x^n
+      反设 x &lt; min{1, A^(1/3), q}，则 A &gt; x³ 且 cB·x^n &gt; x³，
+      该式 &gt; x³，与上式矛盾。
+      故 x ≥ min{1, A^(1/3), q}。
+
+两支穷尽 ⇒ 命题成立。</code></pre>
+
+<p><b>为什么这不是循环论证。</b>它是对"根"的<b>条件</b>命题：不预设根落在哪一支、也不预设 <code>x</code> 的上界，只要求根所在那一支的 <code>M</code>、<code>μ_R</code> 方向成立。这一点必须在正文里写清楚，否则会被读成"用结论证结论"。</p>
+
+<h3>分支前提的数值核验</h3>
+
+<table>
+<thead><tr><th>区间</th><th>需要成立的方向</th><th class="num">抽样点</th><th class="num">违约</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>x ∈ [1, 5.204652]</code></td><td><code>M≤1</code> 且 <code>μ_R≤1</code></td><td class="num">2000</td><td class="num">0</td><td>支一有效</td></tr>
+<tr><td><code>x ∈ [0.30, 1)</code></td><td><code>M≥1</code> 且 <code>μ_R≥1</code></td><td class="num">1400</td><td class="num">0</td><td>支二有效</td></tr>
+<tr><td><code>x &gt; 5.204652</code></td><td>同上，但方向翻转</td><td class="num">—</td><td class="num">失效</td><td><code>M</code> 回升过 1（见第五节）</td></tr>
+</tbody>
+</table>
+
+<table>
+<thead><tr><th>层</th><th>内容</th><th>约束强度</th></tr></thead>
+<tbody>
+<tr><td><b>层一</b> 纯数学</td><td>上面两支，前提是根处 <code>(M, μ_R)</code> 的方向</td><td>无浮点假设，人手可查</td></tr>
+<tr><td><b>层二</b> 本模型</td><td>支一上限 <code>x₁ = 5.204652</code>；网格内最大根 <code>1.626694</code></td><td>远未触顶，不成问题</td></tr>
+<tr><td><b>层三</b> 物性域</td><td>网格内根的最高温度 <b>637.34 K</b></td><td>最窄的一层；比旧说法要求的 875 K <b>宽松得多</b></td></tr>
+</tbody>
+</table>
+
+<h2>五、新结果 2：v6 的物性理由错了一处</h2>
+
+<p>v4/v5/v6 都写过：<code>dlnM/dT</code> 的上确界是 <code>−1.242e−5 &lt; 0</code>，所以 <code>M</code> 随 T 单调递减，于是 <code>M(x) ≤ M(1) = 1</code>。本轮逐点算 <code>dlnM/dT = c_p′/c_p − ρ′/ρ</code>（赵表 4 物性）：</p>
+
+<table>
+<thead><tr><th class="num">T (K)</th><th class="num">dlnM/dT</th><th>方向</th><th class="num">T (K)</th><th class="num">dlnM/dT</th><th>方向</th></tr></thead>
+<tbody>
+<tr><td class="num">400.00</td><td class="num">−3.158584e−05</td><td>M 随 T 减</td><td class="num">737.48</td><td class="num">≈ 0（变号点）</td><td>—</td></tr>
+<tr><td class="num">500.00</td><td class="num">−2.266620e−05</td><td>M 随 T 减</td><td class="num">800.00</td><td class="num">+6.301876e−06</td><td>M 随 T 增</td></tr>
+<tr><td class="num">596.87</td><td class="num">−1.366860e−05</td><td>M 随 T 减</td><td class="num">850.00</td><td class="num">+1.143767e−05</td><td>M 随 T 增</td></tr>
+<tr><td class="num">650.00</td><td class="num">−8.587276e−06</td><td>M 随 T 减</td><td class="num">875.81</td><td class="num">+1.412147e−05</td><td>M 随 T 增</td></tr>
+<tr><td class="num">700.00</td><td class="num">−3.712321e−06</td><td>M 随 T 减</td><td class="num">930.00</td><td class="num">+1.982721e−05</td><td>M 随 T 增</td></tr>
+</tbody>
+</table>
+
+<p><b><code>dlnM/dT</code> 在 <code>T* = 737.4784 K</code>（对应 <code>x* = 3.151520</code>）变号</b>，上确界是正的（约 <code>+1.98e−5</code>），不是负的。所以"<code>M</code> 随 T 单调递减"这句话本身是错的。</p>
+
+<p>但结论没垮：<code>M(x)</code> 先降后升，在 <code>x*</code> 处取到极小 <code>0.999031265</code>，再回到 1（<code>x₁=5.204652</code>）之后才超过 1。所以<b>正确表述是</b>：「<code>M(x) ≤ 1</code> 在 <code>[1, x₁]</code> 上成立」是层二的<b>数值事实</b>，不是由单调性推出来的。</p>
+
+<div class="box warn">
+<p>v4/v5/v6 的这句<b>理由</b>全部作废，<b>结论保留</b>。这正是前面几轮反复出现的同一种错误模式：结论对、理由编得太顺。三个版本号连着抄了一遍，谁都没去算 <code>dlnM/dT</code> 的符号。</p>
+</div>
+
+<h2>六、全域网格与界的松弛度</h2>
+
+<p>网格：<code>c</code> 取 14 档 × <code>δ</code> 取 13 档 × <code>w</code> 取 21 点 = <b>3822 个点</b>。</p>
+
+<table>
+<thead><tr><th>项</th><th>结果</th></tr></thead>
+<tbody>
+<tr><td>v6 通式违约</td><td><b>1323 点（34.6%）</b></td></tr>
+<tr><td>对称界违约</td><td><b>0 点</b>（下界、上界均无越界）</td></tr>
+<tr><td>网格内最大根</td><td><code>x = 1.626694</code>，于 <code>(c, δ, w) = (3.0, −0.9, 1.0)</code></td></tr>
+<tr><td>网格内根的最高温度</td><td><b>637.34 K</b></td></tr>
+</tbody>
+</table>
+
+<p>由 <code>min/max</code> 结构直接得到 <code>|D|</code> 的形式界（界恒含 0，故端点 1 不进入最大值）：</p>
+
+<p style="text-align:center"><code>|D_m| ≤ max{ |A^(1/3) − 1|, |q − 1| }</code></p>
+
+<h3>这条界松不松：按四区统计，不预设原因</h3>
+
+<table>
+<thead><tr><th>区（<code>A^(1/3)</code> 与 <code>q</code> 相对 1 的位置）</th><th class="num">组数</th><th class="num">平均松弛 (pp)</th><th>哪一侧被钉住</th></tr></thead>
+<tbody>
+<tr><td>两者 &lt; 1（<code>δ&lt;0</code> 且 <code>c&lt;1/B</code>）</td><td class="num">6</td><td class="num">16.178</td><td>上界钉 0</td></tr>
+<tr><td>两者 &gt; 1（<code>δ&gt;0</code> 且 <code>c≥1/B</code>）</td><td class="num">4</td><td class="num">12.418</td><td>下界钉 0</td></tr>
+<tr><td>一上一下（<code>δ&lt;0, c≥1/B</code>）</td><td class="num">9</td><td class="num">0.339</td><td>不钉（较紧）</td></tr>
+<tr><td>一上一下（<code>δ&gt;0, c&lt;1/B</code>）</td><td class="num">5</td><td class="num">0.145</td><td>不钉（较紧）</td></tr>
+</tbody>
+</table>
+
+<p>松弛的来源<b>不是 δ 的符号</b>，而是 <code>A^(1/3)</code> 与 <code>q</code> 是否落在 1 的同一侧：</p>
+<ul>
+<li><b>两者都 &gt; 1</b>：<code>min</code> 里 1 胜出，下界被钉在 0，而真实最小值是 <code>min{A^(1/3),q}−1 &gt; 0</code> ⇒ 下侧松。</li>
+<li><b>两者都 &lt; 1</b>：<code>max</code> 里 1 胜出，上界被钉在 0，而真实最大值是 <code>max{A^(1/3),q}−1 &lt; 0</code> ⇒ 上侧松。</li>
+<li><b>一上一下</b>：1 被夹在中间，界紧，<b>平均松弛 0.15–0.34 pp</b>。</li>
+</ul>
+
+<p class="small">同一侧时松弛 12–16 pp，不同侧时不到 0.4 pp，差两个量级。所以这条界的用法必须说清楚：<b>先看 <code>c</code> 与 <code>1/B</code>、<code>δ</code> 与 0 的相对位置，再决定要不要另证单调性改用端点反解。</b>不要一句"保守界"就交差。</p>
+
+<h2>七、摄动：隐式导数与有限差分</h2>
+
+<p><code>F(x,w,δ) = x³ρ_R − G·c_{p,R}</code>，<code>G=(1+δ)+w[(λ/d)f−(1+δ)]</code>，<code>F_x&gt;0</code> 时 <code>dD/dp = −F_p/F_x</code>：</p>
+
+<pre><code>F_w     = −c_{p,R}[(λ/d)·f − (1+δ)]
+F_delta = −c_{p,R}(1 − w)</code></pre>
+
+<table>
+<thead><tr><th>量（c=1, δ=0）</th><th class="num">w = 0.20</th><th class="num">w = 0.50</th></tr></thead>
+<tbody>
+<tr><td><code>D_m</code></td><td class="num">+1.97559815%</td><td class="num">+4.92411228%</td></tr>
+<tr><td><code>F_x</code></td><td class="num">3.065149937198</td><td class="num">3.168519927543</td></tr>
+<tr><td><code>dD/dw</code>（隐式）</td><td class="num">0.098616705220</td><td class="num">0.097902569333</td></tr>
+<tr><td><code>dD/dw</code>（有限差分）</td><td class="num">0.098616705246</td><td class="num">0.097902569385</td></tr>
+<tr><td>差</td><td class="num">−2.65e−11</td><td class="num">−5.20e−11</td></tr>
+<tr><td><code>dD/dδ</code>（隐式）</td><td class="num">0.260956026634</td><td class="num">0.157738181253</td></tr>
+<tr><td><code>dD/dδ</code>（有限差分）</td><td class="num">0.260956026565</td><td class="num">0.157738181406</td></tr>
+<tr><td>差</td><td class="num">+6.90e−11</td><td class="num">−1.52e−10</td></tr>
+</tbody>
+</table>
+
+<p>复核给的点值（<code>w=.2</code>：<code>D=+1.97560%</code>、<code>dD/dw=0.098616705</code>、<code>dD/dδ=0.260956027</code>）逐位吻合，差在 <code>1e−10</code> 量级。<b>摄动给的是局部方向与速率</b>，不承担全域最坏界——这与复核一致，也符合 Sobol′-Kucherenko 2009 §7 的告诫（导数可作界，不能排序）。</p>
+
+<h2>八、一处审计缺陷：v6 的 [D] 核错了文件</h2>
+
+<div class="box warn">
+<p>v6 的 <code>[D]</code> 段读的是硬编码路径 <code>D:/Downloads/zhao-three-percent-design-region-20261102.csv</code>，那是<b>上一轮的 81 行文件</b>，不是 v6 自己产出的 61 行。所以 v6 的"独立复算"实际核的是旧结果，<b>从没验证过自己的输出</b>。</p>
+</div>
+
+<table>
+<thead><tr><th>文件</th><th class="num">数据行</th><th>来源</th><th>v6 是否核过</th></tr></thead>
+<tbody>
+<tr><td><code>zhao-three-percent-design-region-20261102.csv</code></td><td class="num">81</td><td>第五轮</td><td>是（硬编码路径）</td></tr>
+<tr><td><code>zhao_3pct_band.csv</code></td><td class="num">61</td><td>本轮</td><td><span class="tag t-no">否</span></td></tr>
+</tbody>
+</table>
+
+<p>v7 改为读同目录文件，逐行复核：<b>61 个数据行，<code>D_at_w0</code> 最大偏差 4.839e−7 pp</b>（CSV 印 6 位小数，量级相符）。所以这是<b>审计缺陷，不是数值错误</b>——61 行本身是对的，但 v6 当时没有证据说它对。</p>
+
+<h2>九、可宣称 / 不可宣称</h2>
+
+<h3>可宣称（模型内条件结果）</h3>
+<ul>
+<li>对任意 <code>c&gt;0</code>，在根处 <code>(M, μ_R)</code> 方向成立的条件下，<code>|D_m|</code> 被 <code>min/max{1, A^(1/3), q}</code> 包住；<code>c=1</code> 时退化为 Zhao 特例界 <code>[0, +9.913122%]</code>。</li>
+<li>v6 下界 <code>D≥0</code> 的精确适用边界 <code>c ≥ 1/B = 0.771105412704</code>，数值临界点与解析式重合到 <code>3e−16</code>。</li>
+<li>Zhao <code>c=1</code> 的 3% 双侧可行带是精确反解，<b>保留</b>；<code>δ_crit=9.2755604%</code> 等号可行。</li>
+<li>摄动导数闭式与有限差分一致到 <code>1e−10</code>。</li>
+</ul>
+
+<h3>不可宣称</h3>
+<ul>
+<li><b>不得说对称界"紧"</b>。它把 1 纳入 <code>min/max</code> 以保证两支穷尽；同侧时松弛可达 12–16 pp。</li>
+<li><b>不得说"对所有 <code>δ&gt;−1</code>、所有 <code>c</code>"</b>。仍受层二（<code>x≤5.204652</code>）与层三（物性域）限制。</li>
+<li><b>不得把任何一条界说成台架保证</b>。<code>δ</code>、净流道、逐段阻力仍无来源。</li>
+<li><b>不得再说 <code>M</code> 随 T 单调递减</b>。这句话在三个版本里出现过，符号算错了。</li>
+</ul>
+
+<h2>十、下一步</h2>
+
+<ol>
+<li><b>把对称界写回通式</b>，同时给 <code>cB&lt;1</code> 单列一个负向设计例子（本文第三节已给）。Zhao 的 3% 带保留为特例的精确反解。</li>
+<li><b>建 <code>δ</code>/<code>w</code>/净流道的来源台账</b>——当前最难、也最值得投入的关口。逐项标"有原文依据／由适用关联式计算／仅作情景／完全未知"。<b>一侧阻力只能定 <code>w</code>，不能定成对 <code>δ</code>。</b></li>
+<li><b>固定输入域后</b>再做摄动的全局余项检查与 GSA（分布须标明是声明还是有据），再用留出工况检验、不重新标定。</li>
+</ol>
+
+<div class="box">
+<p><b>口径提醒（沿用前几轮，依旧有效）：</b>本文所有界都只针对<b>声明的集总一维模型</b>。净流道几何（赵 <code>d=0.5</code> 只有外形直径支撑）、局部阻力失配 <code>δ</code>、物性适用域（398.15 K 下限出处）三者都仍无装置资料约束。<b>模型界没有变成装置界之前，任何"某台架保证 ≤3%"的写法都不成立。</b></p>
+</div>
+
+<p class="small" style="margin-top:36px">脚本 <code>比例失真_计算/source_free_bound_v7.py</code>（237 行日志 <code>source_free_bound_v7_log.txt</code>）· 依赖 <code>source_free_bound_v5.py</code> · 纯标准库，无第三方依赖</p>
+
+</div>
+</body>
+</html>
