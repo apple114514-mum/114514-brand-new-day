@@ -1,11 +1,12 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。本轮先读**参数溯源表**：已核 Xu/KYLIN 的 26 mm 管内径与赵文表 3、表 5；两案的成对局阻 `δ`、赵文净流通内径和逐段长度仍缺原文数据。v7 上传文件已归档，推导数值与实物参数不能混写。下方旧报告保留审计轨迹；如有冲突，以最新复核及参数原文为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。本轮先读**参数闭合 v1 复核**和原始参数表：Workbuddy 的 131 行日志可复现，但 `δ≤Re_R^{-0.2}−1` 的构件指数没有一手出处；`Re_R≥0.6418` 只对应 Zhao 模型的 `w=0`，不能作为所有设计的 3% 保证线。两案的成对局阻 `δ`、赵文净流通内径和逐段长度仍缺原文数据。下方旧报告保留审计轨迹；如有冲突，以最新复核及参数原文为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
+| **参数闭合 v1 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-review-20261102.md) · [独立复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-audit-20261102.py) · [上传参数表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-upload-20261102.md) · [上传脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-upload-20261102.py) · [上传日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-closure-v1-upload-log-20261102.txt) | 131 行一致；`0.6418` 仅为 `w=0` 门槛，缺 `w` 与内生 Re 联立；A1/A2 未经文献核实，不能据此消除 `δ` 证据缺口 |
 | **参数溯源表（先读）** | [Markdown 原文坐标表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/parameter-provenance-20261102.md) · [论点—证据矩阵](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/paper-workspace/claim-matrix.md) · [论文状态包](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/paper-workspace/paper.origin.md) · [赵 2020 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-2020-original-20261102.pdf) | 逐格区分原文直给、计算值与未找到；明确 Xu 的管内径、赵文泛称“直径”、CFD/实测界线及 `δ/w/λ/d` 缺口 |
 | v7 上传原件 | [v7 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v7-upload-report-20261102.html) | Workbuddy 的通用 `c` 双侧界修订；数学脚本不能替代几何/局阻原始来源，跨案例物理归因以参数溯源表限制为准 |
 | 新增研究技能 | [导入记录与版本 ID](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/WORKBUDDY-IMPORTED-20261102.md) · [GSA 技能](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/zvex-model-sensitivity/SKILL.md) · [论文证据矩阵技能](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/origin-paper-workspace/SKILL.md) · [情景分析备用技能](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/sensitivity-analysis/SKILL.md) | 用户提供压缩包已本地导入；`SALib==1.6.0` 已按用户新指示直连 PyPI 装入 `/workspace/.venv-gsa` 并通过 Morris 冒烟测试；重建步骤在 `setup.sh` |
@@ -28,6 +29,12 @@
 | 共同背景 | [Carnevali 等（2025）原文 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/papers/carnevali-2025-nucengdes-114409.pdf) · [此前的方法定位报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-scaling-method-position-20261101.md) | 失真对 FoM 的影响、可接受性问题与本研究的贡献边界 |
 
 ## 给 Workbuddy 的已核结论
+
+### 本轮参数闭合 v1 更新
+
+- `δ` 通过单 FoM 点与 `w` 混合，说明**单点逆问题**不可辨识；它不意味着局阻不能通过逐段压差、几何和部件关联式独立定量。上传的 `0≤δ≤Re_R^{-0.2}−1` 是待验证 A1/A2 下的条件式，已读三篇原文没有统一指数 `.2` 的适用证据。
+- Zhao 声明模型中 `Re_R≥0.6418` 仅来自 `w=0`。若保留同一假设包络，固定 `w=.1/.2/.3` 所需门槛分别约 `.7158/.8233/.9914`；Re 自身还需由未知流量联立。因此不画“0.64 保证线”，也不把这条规则带到 KYLIN。
+- 上传脚本把 Zhao 表 3 的高度比 `.5` 当路径长度比，把 Xu 标准方案的 `λ/d≈.812` 写成 `.5`，并复用 Zhao 的 `K_+` 判 KYLIN；这些跨案例结论撤回。`US` 保温计算所用外对流、导热率、厚度均为所选情景，暂不升级 L2。
 
 ### 本轮参数溯源更新
 
@@ -68,7 +75,7 @@
 
 ### 2. Zhao 2020 成对 CFD 案例
 
-- 原文表 5 的原型/台架比例偏差：流量 **`+2.876835%`**，温升 **`−4.901244%`**；温升不能改写为 `−2.80%`。表 3 的 `1/0.5 m` 是外形直径，不能直接认定为真实净流面积或水力直径。
+- 原文表 5 的原型/台架比例偏差：流量 **`+2.876835%`**，温升 **`−4.901244%`**；温升不能改写为 `−2.80%`。表 3 的 `1/0.5 m` 行名只写“直径”，不能直接认定为外形、真实净流面积或水力直径。
 - 在所用集总动量式和给定几何理想比下，精确代数关系是 `(1+D_m)^3 = E K_R/ρ_R`，其中 `E=(1+D_m)(1+D_T)=0.978345910`。上传模型用设计功率比构造的 `1+ε_Q=0.979160292` **不等于 E**，因此代入后仍差约 `0.029` 个百分点；该差额不能直接证明两次 CFD 使用了不同的施加功率比。
 - 将台架雷诺数随未知流量内生求解是有效改进，但上传的 `[-1.219%,+7.035%]` 来自角点和随机点，**不是已证明的全盒上界**。新旧温升范围的 `M/P` 与 `P/M` 方向也不一致，须先统一定义。
 - 一个成对工况的两个 FoM 可以在**固定其他假设时**拟合“有效入热量 + 摩擦份额”两个参数；拟合后两个 FoM 都已用尽，仍须独立工况验证。取设计功率 `1.77 MW`、只拟合流量时预测温升约 `131.304 K`，而表 5 为 `136.700 K`；把有效入热量也作为拟合量时可同时命中两者，但该值约 `1.842108 MW` 只是单流道焓代理，不能直接称真实施加热功率。改回赵文表 4 黏度式，主要判断不变。

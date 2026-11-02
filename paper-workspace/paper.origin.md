@@ -5,7 +5,7 @@
 - 创建：2026-11-02
 - 题目（暂定）：铅铋自然循环缩比失真的设计阶段条件界
 - 目标期刊：未定
-- 最近事务：TX-001
+- 最近事务：TX-002
 - 参数原始表：[outputs/parameter-provenance-20261102.md](../outputs/parameter-provenance-20261102.md)
 
 ## source
@@ -33,21 +33,26 @@
 
 `C-01 supported_by E-01`；`C-02 supported_by E-02`；`C-03 supported_by E-03`；`C-04 supported_by E-04`；`C-05 supported_by E-05`；`C-06 supported_by E-06`；`C-07 supported_by E-07`。`C-08` 待补。
 
+`C-09` 是 U-P1/A1–A2 的待验证假设；`C-10` 被独立算式核查反例推翻；`C-11` 被 Z20-P5/表3 与 X26-P4/表1 的来源核读否定。详见 [参数闭合 v1 复核](../outputs/parameter-closure-v1-review-20261102.md)。
+
 ## constraints
 
 - 表中“直径”必须保留原文修饰语；不能把未说明的几何直径改写为流通内径。
 - 表中数值须标为设计输入、CFD 输出、设施档案或实测；当前未见 Li/Yue 全文，不引用其表内值。
 - Xu 式(9) 的 `δ` 是壁厚，与本研究 `k_M/k_P−1` 的局阻失配参数同字母不同义。
 - 参数域和 GSA 分布不能由技能模板、常见公差或 CFD 失真百分点臆定。
+- 局阻的 Re 指数上界须有逐构件适用证据；`Re_R≥0.6418` 仅是 Zhao 声明模型 `w=0` 时的条件门槛，不得作为所有 `w` 或 KYLIN 案例的实物保证。
 
 ## metrics
 
-- 本轮 8 条论点：7 条由已读文献定位或明确检索范围支撑，1 条（`398.15 K` 出处）待补。
+- 当前 11 条论点：7 条由已读文献定位或明确检索范围支撑，2 条待补（物性有效域、局阻指数），2 条已撤回（通用 Re 门槛、误归来源）。
 - 目标期刊格式门禁：未启动；当前不判投稿合格。
 
 ## transactions
 
 `TX-001 | 2026-11-02 | 原文取象 | Z20/X26/I21 页表核读，建立参数表与 claim-matrix；Li/Yue 全文缺席标空 | type=source-audit`
+
+`TX-002 | 2026-11-02 | 参数闭合复核 | U-P1/U-S 的 131 行日志复现；Z20/X26 原文重核；独立脚本证明 0.6418 只适用于 w=0，局阻指数 .2 暂无出处；C-09 待补，C-10/C-11 撤回 | type=model-and-source-audit`
 
 分析采用 norman-paper-reading 技能｜作者：N同学｜小红书：N同学｜B站/抖音：耐心的N同学
 
