@@ -22,6 +22,12 @@ python3 -m pip install --quiet pymupdf python-pptx pillow requests \
   || python3 -m pip install --quiet --break-system-packages pymupdf python-pptx pillow requests \
   || echo "  (pip 安装失败，任务中可重试)"
 
+# GSA 专用环境复用云端已有的 NumPy/SciPy，避免覆盖主运行时的科学计算包。
+GSA_VENV_PATH=/workspace/.venv-gsa
+python3 -m venv --system-site-packages "$GSA_VENV_PATH" \
+  && "$GSA_VENV_PATH/bin/python" -m pip install --quiet SALib==1.6.0 \
+  || echo "  (SALib 安装失败，GSA 前需重试)"
+
 echo "==> [3/4] 可选：LibreOffice 渲染（体积大 ~400MB，按需取消注释）"
 # $SUDO apt-get install -y -qq libreoffice-impress fonts-noto-cjk 2>/dev/null || true
 
@@ -43,6 +49,16 @@ except Exception as e:
 for k, v in mods.items():
     print(f"  {k}: {v}")
 PY
+if [ -x "$GSA_VENV_PATH/bin/python" ]; then
+  "$GSA_VENV_PATH/bin/python" - <<'PY'
+try:
+    from importlib.metadata import version
+    from SALib.sample import morris
+    print(f"  SALib: {version('SALib')} (GSA Python: /workspace/.venv-gsa/bin/python)")
+except Exception as e:
+    print(f"  SALib: FAIL: {e}")
+PY
+fi
 command -v pdftotext >/dev/null 2>&1 && echo "  pdftotext: ok" || echo "  pdftotext: 缺失"
 command -v soffice >/dev/null 2>&1 && echo "  libreoffice: ok" || echo "  libreoffice: 未安装（PPT 预览将跳过）"
 
