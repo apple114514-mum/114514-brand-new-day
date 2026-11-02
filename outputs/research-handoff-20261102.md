@@ -1,12 +1,14 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v3 最新复核**：v3 的 `+9.7782%` 数值端点可复现，但 `1×10^-14` 包含证书仍有导数、箱覆盖和派生常数问题；Xu 的 `<7.3%` FoM 偏差不能推出 Zhao 的 `δ=±7%`。当前可守住的解析条件界为 `[0,+9.914%]`。17.9 kW 仍是待核 Yue/Li 原文与冷端工况的候选对照。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v4 最新复核**：Zhao `δ=0、仅变 w` 的条件区间证书已补强；`δ` 没有物理域时，`+9.7782%` 不是普适上界。KYLIN 宽箱的 `F_w` 跨零也不能推出实际偏差不单调。LFR-21 对几何有帮助，但未给逐段局阻，并且流量计描述自相矛盾。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
-| **v3 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-audit-20261102.py) | v3 数值复现；`F_x` 漏项、箱覆盖空隙、派生常数无包络；Xu `<7.3%` 无法约束 `δ`；`w=0` 闭式反例 |
+| **v4 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-audit-20261102.py) · [IAEA LFR-21 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/lfr-21-kylin-ii-nc-original-20261102.pdf) | Zhao 条件证书评估、`δ=.35` 反例、KYLIN 根区域的单调证明、`.268` 舍入来源、档案仪表矛盾 |
+| v4 上传原件归档（待审计） | [v4 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-upload-report-20261102.html) | 保留 Workbuddy 本轮原始计算；完整运行仍需下方四段修订依赖脚本。 |
+| v3 前轮复核 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-audit-20261102.py) | v3 数值复现；`F_x` 漏项、箱覆盖空隙、派生常数无包络；Xu `<7.3%` 无法约束 `δ`；`w=0` 闭式反例 |
 | v3 上传原件归档（待审计） | [v3 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-upload-report-20261102.html) | 保留本轮 Workbuddy 原始计算与解释。完整复跑时将下方修订依赖脚本复制到同目录并命名为 `loop_audit_repair.py`。 |
 | v2 前轮复核 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-review-20261102.md) · [Xu FR26 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/xu-fr26-170-original-20261102.pdf) · [解析界核查脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-analytic-envelope-check-20261102.py) | Xu 表 1/2 与 Fig. 3 核读；v2 单参数证书的导数与舍入问题；较宽但可论证的解析条件界 |
 | 本轮上传原件归档（待审计） | [v2 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-upload-20261102.py) · [原运行日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v2-upload-report-20261102.html) · [所需依赖脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/loop-audit-repair-corrected-20261101.py) | 保留 Workbuddy 本轮输入原貌；其中“末位认证”和“独立验证”说法需以最新复核为准。运行原脚本时，将所需依赖复制到同目录并命名为 `loop_audit_repair.py`。 |
@@ -18,6 +20,13 @@
 | 共同背景 | [Carnevali 等（2025）原文 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/papers/carnevali-2025-nucengdes-114409.pdf) · [此前的方法定位报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-scaling-method-position-20261101.md) | 失真对 FoM 的影响、可接受性问题与本研究的贡献边界 |
 
 ## 给 Workbuddy 的已核结论
+
+### 本轮 v4 更新
+
+- v4 日志 **212 行逐行复现**。Zhao `d=λ=.5,n=.25,δ=0,w∈[0,1]` 声明模型的 `w=1` 根区间 `[1.09778244634013289,1.09778244634013911]` 可作为依赖程序所述浮点函数误差界的**条件证书**；解析宽界 `[0,+9.914%]` 仍适合作主要解释。
+- `w=1` 的端点对 `δ` 不敏感，**整个 w 域的上界并非如此**：同一模型取 `δ=.35`，`w=0` 偏差 `+10.5176%`，超过 `w=1` 的 `+9.7782%`；阈值约 `δ=.323078`。`δ` 尚无文献/实测域，不能把 `+9.7782%` 写成任意局阻条件的上界。
+- v4 所用 KYLIN 近似输入 `d=.5**.7,Q_R=1/.268` 的根均位于 `x∈[.99998,1.00001]`，沿根管 `(λ/d)f−1<0`、`F_x>0`，故偏差随 `w` **单调下降**；宽箱 `F_w` 跨零只表示判号不充分。其约 `−0.00081%` 来自 `m_R=.268` 三位舍入；用解析 `c^1.9` 则零偏差。
+- IAEA LFR-21 一手档案列 KYLIN-II 的 `24 kW`、`2.6 cm` 管径、HS/HX 长 `1.8/1.5 m`、二次侧油，但**没有逐段阻力**；“电磁流量计下次安装”和仪表栏“Induction flow meter”相互矛盾。Xu 表 2 只有缩比比值，**没有** `K_EV/K_HS/K_pipe` 那组三个阻力数；来源仍待查。
 
 ### 本轮 v3 更新
 
@@ -55,7 +64,7 @@
 
 ## 下一轮给 Workbuddy 的任务说明
 
-> 请先读本文件所链接的**v3 最新复核和 Xu 原文**，再读此前报告，**先核来源，再建界**。v3 已把端点算准，但 `Fx_iv()` 漏掉 `μ_T T_x`，浮点箱有微小空隙，`T_P/Q_M/R_id` 没有从原数学输入做区间包络；修复前请把 `+9.7782%` 称数值端点，把 `[0,+9.914%]` 称解析条件界。Xu 的 `<7.3%` 是 FoM 结果，不能当 `δ=±7%` 的证据；`w=0` 的 `(1+δ)^(1/3)-1` 仅在恒物性时为闭式。优先取得 Yue 2017、Li 2015 全文，核实 17.9 kW 与 24 kW 是否同装置同配置；Xu Fig. 3 已引用 Li 的多功率实验曲线，可先在 Li 原文中寻找同系列留出点。核热源积分、冷端条件、真实流道几何、`UA/US`、逐段阻力的来源。将 24 kW 点用于固定参数，留出点只预测、不重新拟合；由能量平衡反算的流量与温升不能当两个独立测量。建立带来源的联合输入域后，才证明根存在与唯一、全域包含界及设计判据。通用式保留摩擦项的 `L_M/L_P ÷ D_M/D_P`，比热比放在正确位置，并统一理想分母。请不要复用 Zhao 情景的 `w≤0.302`，也不要把抽样范围称为认证上界。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
+> 请先读本文件所链接的**v4 最新复核、Xu 与 LFR-21 原文**，再读此前报告，**先核来源，再建界**。v4 已补强 Zhao `δ=0、仅变 w` 的条件证书；但 `δ=.35,w=0` 的反例说明 `+9.7782%` 不能作为无局阻域时的总上界。KYLIN 的根管可证明其 v4 近似输入的偏差随 `w` 单调下降；`−0.00081%` 是 `m_R=.268` 三位舍入所致，不能归给管径 `.616`。`Fw_iv()` 少了所选残差定义的 `ρ_R` 因子；若需报告真实偏导范围，请修公式。Xu 表 2 不含 `K_EV/K_HS/K_pipe` 数字；找到其真实来源前不得据它给 `δ` 定盒。优先取得 Li 2015、Yue 2017 全文，查逐段压降、净流道尺寸、热源积分、冷端条件和流量测量；LFR-21 仪表描述自相矛盾，不能代论文测点说明。将 24 kW 点用于固定参数，留出点只预测、不重新拟合；由能量平衡反算的流量与温升不能当两个独立测量。建立带来源的联合输入域后，才证明实际设计的包含界及判据。通用式保留摩擦项 `L_M/L_P ÷ D_M/D_P`，比热比放在正确位置，并统一理想分母。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
 
 ## 来源边界
 
