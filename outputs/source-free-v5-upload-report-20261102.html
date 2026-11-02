@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>源无关界 v5：上界对 δ 的闭式依赖与 KYLIN 根管证书（2026-11-02 第五轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.7;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>源无关界 v5：上界对 δ 的闭式依赖与 KYLIN 根管证书</h1>
+<div class="sub">2026-11-02 · 第五轮 · 对应复核 <code>source-free-v4-review</code>（提交 <code>9a8959d</code>）· 脚本 <code>source_free_bound_v5.py</code>（204 行日志）</div>
+
+<div class="box ok">
+<p><b>一句话：</b>复核提出的两条结论都成立，而且第二条不只是"改个说法"——把 δ 从"只动下端"改成"自由参数"之后，上界可以写成闭式
+<code>D_m ≤ max{(1+δ)<sup>1/3</sup>, (R_id·d)<sup>n/(3−n)</sup>} − 1</code>，四步初等证明，不需要单调性也不需要数值根。
+δ=0 时它退化为原来的 <b>+9.9131%</b>；δ=0.35 时给 <b>+10.5209%</b>（数值端点 +10.5176%）。
+所以"δ 未知"的正确表述不是"只有下端不确定"，而是<b>上界是 δ 的显式函数</b>。</p>
+</div>
+
+<h2>一、四条复核意见：逐条复现</h2>
+
+<table>
+<tr><th style="width:24%">复核意见</th><th style="width:38%">复算</th><th style="width:10%">判定</th><th>处理</th></tr>
+<tr>
+<td>上界依赖 δ 的范围</td>
+<td class="num">δ=0.35：D(w=0)=+10.517619% ＞ D(w=1)=+9.778245%<br>δ=0.40：+11.865108%<br>阈值 δ*=+0.323077721</td>
+<td><span class="tag t-no">成立</span></td>
+<td>整个「δ 只动下端」的段落重写为闭式界（§三）</td>
+</tr>
+<tr>
+<td>KYLIN 宽箱跨零 ≠ 不单调</td>
+<td class="num">根管 [0.99998,1.00001] 内<br>(λ/d)f−1 ∈ [−2.776,−1.865]×10⁻⁵（赵物性）<br>F_x ∈ [2.7765,3.0092] ＞0</td>
+<td><span class="tag t-no">成立</span></td>
+<td>改根管证书；「非单调」撤回（§六）</td>
+</tr>
+<tr>
+<td>−0.00081% 来自 m_R=.268 三位印数</td>
+<td class="num">m_R=.268 → −0.00080889%<br>m_R=c<sup>1.9</sup> → 0.000e+00%<br>Q_R 相对差 −0.0211%；d 已用 c<sup>0.7</sup>=0.615572</td>
+<td><span class="tag t-no">成立</span></td>
+<td>v4 把该误差归给「d_R=.616 印刷取整」是错的，更正（§六）</td>
+</tr>
+<tr>
+<td>Fw_iv 多除一个 ρ_R</td>
+<td class="num">真 dF/dw = −0.323380317959<br>v4 返回 = −0.323619700942<br>ρ_R=0.999260295</td>
+<td><span class="tag t-no">成立</span></td>
+<td>函数改正（§二）；判号不变，结论保留</td>
+</tr>
+</table>
+
+<p class="small">第 4 条值得单独说一句：<code>F_w</code> 的返回值一直是 <code>−(c<sub>p,R</sub>/ρ_R)[(λ/d)f−(1+δ)]</code>，来自把 <code>F/ρ_R</code> 当成了 <code>F</code>。因为 ρ_R 在声明域内恒正（[0.99882, 1.0]），判号方向没受影响，所以 Zhao 的"端点即极值"站得住；但报告里那个「<code>F_w</code> 区间范围」此前<b>不是真实导数的包络</b>，这句话必须撤。</p>
+
+<h2>二、修正后的 Zhao 证书：数字不变，前提要写全</h2>
+
+<pre><code>144 箱（12 个 x 箱 × 12 个 w 箱，无缝拼接）
+  min F_x            = 2.595765        &gt; 0  ⇒ 根唯一
+  F_w（修正后）      = [−0.407065, −0.243945]   恒负
+  (λ/d)·f            = [ 1.250074,  1.397258]   恒 &gt; 1
+  ⇒ dD/dw = −F_w/F_x &gt; 0 ⇒ D(w) 严格递增 ⇒ w=1 是上界
+
+  w=0   x ∈ [0.99999999999999867, 1.00000000000000178]  宽 3.11e−15
+  w=1   x ∈ [1.09778244634013289, 1.09778244634013911]  宽 6.22e−15</code></pre>
+
+<p>结论仍是 <b>D_m ∈ [0, +9.7782%]</b>，没有变化。但它的合法前提必须写全：<b>δ=0、只让 w 在 [0,1] 变、其余输入全是声明</b>。这条现在只能称"该模型的条件界"，不能称物理上界。</p>
+
+<h2>三、新结果：上界对 δ 的依赖有闭式</h2>
+
+<p>复核只指出"δ=0.35 反例"，但顺着它做下去可以得到完整的界。记 <code>A=1+δ</code>、<code>B=(R_id·d)ⁿ</code>、<code>x̄=B^{1/(3−n)}</code>，断言：</p>
+
+<pre><code>x ≤ max{ A^(1/3), x̄ }        对所有 w ∈ [0,1]、所有 δ &gt; −1</code></pre>
+
+<p>证明只用两条不等式——<code>M≤1</code> 与 <code>μ_R≤1</code>（下端另加 <code>(λ/d)f≥1</code>）：</p>
+
+<ol>
+<li><code>x≥1</code> 时 <code>T_M≥T_P</code>；<code>μ=m₀·exp(754.1/T)</code> 随 T 递减，故 <code>μ_R≤1</code>，于是 <code>f=(R_id·x·d·μ_R)ⁿ ≤ B·xⁿ</code>。</li>
+<li>由 <code>F=0</code> 且 <code>M≤1</code>：<code>x³ = M[(1−w)A + w(λ/d)f] ≤ (1−w)A + w·B·xⁿ</code>。</li>
+<li>反设 <code>x&gt;max{A^{1/3}, x̄}</code>：则 <code>x³&gt;A</code> 且 <code>x^{3−n}&gt;B</code>，故 <code>B·xⁿ&lt;x³</code>，右端 <code>&lt;(1−w)x³+wx³=x³</code>，与第 2 步矛盾。</li>
+<li><code>x&lt;1</code> 时 <code>D_m=x−1&lt;0≤max{A^{1/3},x̄}−1</code>（因 <code>x̄&gt;1</code>）。∎</li>
+</ol>
+
+<p>下端要多一条前提 <code>(λ/d)f ≥ 1</code>（本案例 [A] 已验：1.250–1.397）。在此前提下 <code>G ≥ (1−w)(1+δ)+w·1 ≥ min{1+δ,1}</code>：<code>δ≤0</code> 时 <code>F_w&lt;0</code> ⇒ D 递增 ⇒ 最小在 <code>w=0</code>，而那里 <code>x³=M(x)(1+δ)≥(1+δ)</code>；<code>δ≥0</code> 时 <code>G≥1</code>，若 <code>x&lt;1</code> 则 <code>x³≥M(x)&gt;1</code> 矛盾，故 <code>x≥1</code>、<code>D≥0</code>。合起来：</p>
+
+<pre><code>min{0, (1+δ)^(1/3) − 1}  ≤  D_m  ≤  max{(1+δ)^(1/3), (R_id·d)^(n/(3−n))} − 1</code></pre>
+
+<div class="box">
+<p><b>这条界没有用到 <code>F_x&gt;0</code>、没有用到单调性、没有用任何数值根</b>，所以它对 δ 全区间成立，不受"δ 只是情景"的限制。这是本轮唯一实质新增的东西——把"δ 未知"从一个<b>缺陷</b>变成了一个<b>显式函数</b>。</p>
+</div>
+
+<table>
+<tr><th>δ</th><th class="num">解析界</th><th class="num">数值端点（D 在 w=0/1 取 max）</th><th class="num">界宽出端点</th></tr>
+<tr><td>−0.07</td><td class="num">[−2.3900%, +9.9131%]</td><td class="num">[−2.3893%, +9.7782%]</td><td class="num">+0.1349%</td></tr>
+<tr><td>0.00</td><td class="num">[ 0.0000%, +9.9131%]</td><td class="num">[ 0.0000%, +9.7782%]</td><td class="num">+0.1349%</td></tr>
+<tr><td>0.07</td><td class="num">[ 0.0000%, +9.9131%]</td><td class="num">[+2.2802%, +9.7782%]</td><td class="num">+0.1349%</td></tr>
+<tr><td>0.20</td><td class="num">[ 0.0000%, +9.9131%]</td><td class="num">[+6.2639%, +9.7782%]</td><td class="num">+0.1349%</td></tr>
+<tr><td>0.30</td><td class="num">[ 0.0000%, +9.9131%]</td><td class="num">[+9.1364%, +9.7782%]</td><td class="num">+0.1349%</td></tr>
+<tr><td>0.35</td><td class="num">[ 0.0000%, <b>+10.5209%</b>]</td><td class="num">[+9.7782%, <b>+10.5176%</b>]</td><td class="num">+0.0033%</td></tr>
+<tr><td>0.40</td><td class="num">[ 0.0000%, +11.8689%]</td><td class="num">[+9.7782%, +11.8651%]</td><td class="num">+0.0038%</td></tr>
+<tr><td>0.60</td><td class="num">[ 0.0000%, +16.9607%]</td><td class="num">[+9.7782%, +16.9551%]</td><td class="num">+0.0056%</td></tr>
+</table>
+
+<p class="small">界宽出端点 0.003–0.006 pp（δ&gt;δ* 时）；δ≤0.3 时宽出的是那一贯的 0.1349 pp（<code>x̄</code> 与该列根的差）。δ=0 一行即 v4 的 +9.9131%。</p>
+
+<h2>四、两个 δ 阈值，用途不同</h2>
+
+<table>
+<tr><th style="width:30%">阈值</th><th class="num" style="width:20%">数值</th><th>来源与用途</th></tr>
+<tr><td>端点交换 <code>δ_num</code></td><td class="num">+0.323077721</td><td>由 <code>x(0)=x₁ ⇔ δ=x₁³/M(x₁)−1</code>，含变物性。<b>用来判断哪个端点更大</b></td></tr>
+<tr><td>解析阈值 <code>δ_ana</code></td><td class="num">+0.327848828</td><td><code>x̄³−1 = 2^{9/22}−1</code>，手算可得。<b>用来写判据</b>（保守）</td></tr>
+</table>
+
+<p>两者差 0.004771，正好是 <code>M(x₁)</code> 偏离 1 的量（<code>1−M=8.406×10⁻⁵</code> 的三倍）。物理含义不是数值奇观：这是两条上界在竞争——</p>
+
+<pre><code>局阻线   x = (1+δ)^(1/3)              随 δ 增长
+摩擦线   x = (R_id·d)^(n/(3-n))       与 δ 无关（由 Re 内生的 f∝Re^(−n) 给出）</code></pre>
+
+<p>δ&gt;0.323 之后，<b>纯分布摩擦（w=1）反而比纯局阻（w=0）更不离谱</b>。所以原来说"摩擦项是主因"这种话，只在 δ 小时成立。</p>
+
+<h2>五、判据二参数化：δ ≤ 9.2727% 是硬门槛</h2>
+
+<p><code>w=0</code> 端 <code>x=(1+δ)^{1/3}</code>，要 ≤1.03 就必须 <code>δ ≤ 1.03³−1 = 9.2727%</code>。超过它，<b>无论 w 取多少都做不到 3%</b>。</p>
+
+<table>
+<tr><th>δ</th><th class="num">D(w=0)</th><th class="num">w*(3%)</th><th>说明</th></tr>
+<tr><td>0.0000</td><td class="num">+0.0000%</td><td class="num">0.3040</td><td>基准（v2–v4 只报这一列）</td></tr>
+<tr><td>0.0200</td><td class="num">+0.6621%</td><td class="num">0.2552</td><td></td></tr>
+<tr><td>0.0500</td><td class="num">+1.6391%</td><td class="num">0.1676</td><td></td></tr>
+<tr><td>0.0700</td><td class="num">+2.2802%</td><td class="num">0.0968</td><td>±7% 工程约定上限：判据从 0.304 收紧到 0.0968</td></tr>
+<tr><td>0.0900</td><td class="num">+2.9134%</td><td class="num">0.0128</td><td>几乎无可行 w</td></tr>
+<tr><td>0.0927</td><td class="num">+2.9983%</td><td class="num">0.0003</td><td>临界</td></tr>
+</table>
+
+<p>两个结构性结论：① <code>δ≤0</code> 时判据不变（<code>D(0)=0</code> 不动）；② <code>δ&gt;0</code> 时判据迅速收紧。<b>「判据 = w*(3%)」只是 δ=0 的特例，一般形式是 (δ, w) 平面上的边界。</b>论文里必须写成两参数，否则 δ 的未知会被误读成"只影响下端"。</p>
+
+<h2>六、KYLIN：宽箱跨零不等于变号</h2>
+
+<p>v4 用整个 <code>x∈[0.9,1.2]</code> 判 <code>F_w</code> 的号，区间跨零就宣布"非单调"。这只能说明<b>判不出号</b>。正确做法是先证根落在很窄的管子里：</p>
+
+<pre><code>对所有 w ∈ [0,1]：
+  F(0.99998, w) ∈ [−5.989e−05, −3.317e−05]   &lt; 0
+  F(1.00001, w) ∈ [ 3.011e−05,  5.038e−05]   &gt; 0
+  F_x 于管内    ∈ [ 2.7757 ,  3.0098 ]       &gt; 0
+⇒ 每个 w 的根唯一落在 [0.99998, 1.00001]
+
+管内判号：
+  (λ/d)f − 1 ∈ [−2.776, −1.865]×10⁻⁵（赵物性）
+             [−3.054, −1.659]×10⁻⁵（Xu 物性）   恒负
+⇒ F_w = −c_p,R[(λ/d)f−1] &gt; 0 ⇒ dx/dw = −F_w/F_x &lt; 0
+⇒ D(w) 严格递减，端点即极值</code></pre>
+
+<p><b>「KYLIN 非单调、只能 21 点扫描」撤回。</b>这也顺带解释了为什么该案例两端都给 0：<code>w=0</code> 由 <code>M(1)=1</code>，<code>w=1</code> 由 <code>(λ/d)(r·d)ⁿ=1</code>——设计映射本身就把它放在相似点上。</p>
+
+<h3>归因更正</h3>
+
+<table>
+<tr><th>输入</th><th class="num">D(w=1)</th><th>结论</th></tr>
+<tr><td><code>m_R=.268</code>（表 2 印三位）</td><td class="num">−0.00080889%</td><td rowspan="3">那 8e−4 pp <b>主要由 m_R 承担</b>。<code>Q_R=1/.268</code> 与 <code>1/c^{1.9}</code> 差 0.0211%。若换成 <code>d_R=.616</code>（印数）而 m_R 用解析值，偏差是 −0.0259%（大 32 倍）——所以 v4 把它归给 d_R 是错的，代码里 d 早已用 <code>c^{0.7}=0.615572</code>。</td></tr>
+<tr><td><code>m_R=c^{1.9}</code>（解析）</td><td class="num">0.000e+00%</td></tr>
+<tr><td><code>d_R=.616</code>（印数）+ m_R 解析</td><td class="num">−0.02586189%</td></tr>
+</table>
+
+<h2>七、证书对象要分层</h2>
+
+<table>
+<tr><th style="width:16%">案例</th><th style="width:34%">输入链</th><th>可以怎么说</th></tr>
+<tr><td>Zhao</td><td>全部十进制字面量（0.5 / 2 / 0.25 / 4√2 / 物性系数），经 <code>e_lit</code> / <code>i_sqrt</code> / <code>i_cbrt</code> 进区间</td><td><span class="tag t-ok">可</span>「原十进制模型的含误差界条件包络」（前提：libm exp≤8 ulp、sqrt/cbrt≤2 ulp）</td></tr>
+<tr><td>KYLIN</td><td><code>d=0.5**0.7</code>、<code>Q_R=1/0.268</code> 都是浮点运算结果；<code>P_XU.c0=164.8</code> 在 v4 里还是点区间</td><td><span class="tag t-mid">降级</span>「所写浮点设计输入下的条件结果」，不能并进同一句证书</td></tr>
+</table>
+
+<p>v5 已把 <code>P_XU.c0</code> 改为 <code>e_lit</code>。但 <code>d</code>、<code>Q_R</code> 仍是浮点链——要么另行区间化，要么就按上表降级表述。这是本轮唯一"没修完、只如实标注"的一项。</p>
+
+<h2>八、文献：一处归因更正</h2>
+
+<div class="box warn">
+<p><b>Xu FR26-170 表 2 里没有 <code>K_EV≈2.5 / K_HS 2.6–2.9 / K_pipe 17.7–19.1</code>。</b>本地 PDF 全文检索 <code>K_EV</code> / <code>K_HS</code> / <code>K_pipe</code> / <code>local resistance</code> 零命中；表 2 只有 <code>l_R, d_R, m_R, ΔT_R, q_R</code>；唯一与阻力相关的是 §4 那句"electric regulating valve"（标定手段，无数值）。</p>
+<p>这组数是我早前从 <b>Yue 2017 表 2</b> 记下的，上一轮误记成"Xu 表 2"，并据此提出「用它们给 δ 定界」的下一步。<b>该项撤回</b>——δ 目前仍<b>没有任何一手来源</b>。好在 §三 的界把 δ 当自由参数处理，不依赖这个来源。</p>
+</div>
+
+<table>
+<tr><th style="width:38%">量</th><th style="width:28%">一手来源</th><th>状态</th></tr>
+<tr><td>浮升高差 3.35 m；HS 1.8 / HX 1.5 / 总长 12 / D 26 mm</td><td>Xu FR26-170 表 1</td><td><span class="tag t-ok">有</span></td></tr>
+<tr><td>24 kW / 管径 2.6 cm / 导热油二次侧</td><td>IAEA LFR-21 档案</td><td><span class="tag t-ok">有</span>（流量计记载自相矛盾，不用）</td></tr>
+<tr><td>逐段阻力 <code>K_EV/K_HS/K_pipe</code></td><td>Yue 2017 表 2（付费，未核）</td><td><span class="tag t-no">缺</span></td></tr>
+<tr><td>净流道 d/D 与湿周</td><td>—</td><td><span class="tag t-no">缺</span></td></tr>
+<tr><td>δ 的物理范围</td><td>—</td><td><span class="tag t-no">缺</span></td></tr>
+<tr><td>17.9 kW 的 <code>ṁ</code>（直读还是能量平衡反算）</td><td>Yue 2017 §5（付费）</td><td><span class="tag t-no">缺</span></td></tr>
+</table>
+
+<h2>九、论文里现在可以直接用的句子</h2>
+
+<div class="box">
+<p>「对给定的直径比 <code>d</code>、长度比 <code>λ</code>、功率比与浮升比，以及声明的物性闭合与绝热能量式，Zhao 理想比值模型的流量比例偏差满足</p>
+<p style="text-align:center"><code>min{0, (1+δ)<sup>1/3</sup>−1} ≤ D_m ≤ max{(1+δ)<sup>1/3</sup>, (R_id d)<sup>n/(3−n)</sup>} − 1</code></p>
+<p>其中 δ 为局部阻力不相似项。取 δ=0 时，上界为 <code>2<sup>3/22</sup>−1 = +9.913%</code>；数值上紧条件界为 <code>+9.7782%</code>（仅 w∈[0,1] 变化，含浮点函数误差界）。若要求 <code>|D_m|≤3%</code>，须同时满足 <code>δ ≤ 9.27%</code> 与 <code>w ≤ w*(3%;δ)</code>。本算例中 <code>d</code> 取自外形尺寸，是净流道直径的代理，非实测。」</p>
+</div>
+
+<p>接下去那句限制必须紧跟其后，不能放到讨论节：「本文不给出 δ 的物理范围；该界是 δ 的显式函数，δ 的取值需由同流道逐段压降或局阻手册在具体台架上确定。」</p>
+
+<h2>十、可宣称 / 不可宣称（v5）</h2>
+
+<table>
+<tr><th style="width:50%">可以写</th><th>不能再写</th></tr>
+<tr>
+<td>
+<ul>
+<li>δ=0、仅 w 变化：赵 <code>D_m∈[0,+9.7782%]</code>，包络宽 6e−15</li>
+<li>δ 自由：上界 <code>max{(1+δ)<sup>1/3</sup>, x̄}−1</code>，四步初等证明</li>
+<li>判据是二参数边界：<code>δ≤9.2727%</code> 且 <code>w≤w*(3%;δ)</code></li>
+<li>KYLIN 全相似 <code>D(w)</code> 严格递减，端点即极值</li>
+</ul>
+</td>
+<td>
+<ul>
+<li><s>"δ 只影响下端"</s> —— δ&gt;0.323 后上界改由 w=0 给出，随 δ 增长</li>
+<li><s>"KYLIN 的 D(w) 不单调"</s> —— 宽箱判不出号 ≠ 变号</li>
+<li><s>"w=0 有精确立方根闭式"</s> —— 恒物性近似，差 6.9e−4 pp</li>
+<li><s>"K_R=1 是唯一缩比要求"</s> —— Xu 四条判据，只豁免壁导热</li>
+<li><s>"Xu 表 2 的局阻数据可给 δ 定界"</s> —— 表 2 无阻力数值</li>
+<li><s>把 +9.7782% 当物理上界</s> —— 它是 δ=0 假设下的界</li>
+</ul>
+</td>
+</tr>
+</table>
+
+<h2>十一、复现</h2>
+
+<pre><code>python 比例失真_计算/source_free_bound_v5.py      # 204 行日志，纯标准库
+                                               # 输出 source_free_bound_v5_log.txt</code></pre>
+
+<p class="small">脚本分节：<code>[0]</code> 四条复现 · <code>[A]</code> F_w 修正后重证 Zhao · <code>[B]</code> 统一解析界与证明 · <code>[C]</code> 两个 δ 阈值 · <code>[D]</code> 判据二参数化 · <code>[E]</code> KYLIN 根管证书 · <code>[F]</code> 证书对象分层 · <code>[G]</code> 文献归因更正 · <code>[H]</code> 可宣称清单。</p>
+
+<p class="small">唯一非算术假设：libm 的 <code>exp</code> ≤8 ulp、<code>sqrt</code>/<code>cbrt</code> ≤2 ulp（已按此外扩）。所有区间运算每步两端外移 ≥1 ulp。<b>本页全部数值是声明模型内的条件结果，不是台架性能预报。</b></p>
+
+</div>
+</body>
+</html>

@@ -1,12 +1,15 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v4 最新复核**：Zhao `δ=0、仅变 w` 的条件区间证书已补强；`δ` 没有物理域时，`+9.7782%` 不是普适上界。KYLIN 宽箱的 `F_w` 跨零也不能推出实际偏差不单调。LFR-21 对几何有帮助，但未给逐段局阻，并且流量计描述自相矛盾。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v5 最新复核**：`δ` 参数化上界在 `M≤1` 的物性域内有价值；`|D_m|≤3%` 应反解成双侧 `w` 可行区间。v5 的 `δ≤9.2727%`“硬上限”和“负 `δ` 时判据不变”不成立，精确变物性阈值约 `9.27556%`。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
-| **v4 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-audit-20261102.py) · [IAEA LFR-21 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/lfr-21-kylin-ii-nc-original-20261102.pdf) | Zhao 条件证书评估、`δ=.35` 反例、KYLIN 根区域的单调证明、`.268` 舍入来源、档案仪表矛盾 |
+| **v5 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-audit-20261102.py) · [3% 可行域 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.csv) | `δ` 解析界适用域、负向 3% 分支、精确两侧 `w(δ)` 边界和 81 点情景曲线数据 |
+| Zhao 3% 可行域论文单栏图 | [矢量 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.pdf) · [SVG](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.svg) · [600 DPI PNG](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.png) · [绘图脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/plot-zhao-three-percent-design-region-20261102.py) | 阴影为未标定 `δ` 情景下满足双侧 `|D_m|≤3%` 的 `w`；仅作模型条件图，不是实测台架认证。 |
+| v5 上传原件归档（待审计） | [v5 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-upload-report-20261102.html) | 保留 Workbuddy 本轮原始计算；完整运行需要下方四段修订依赖脚本。 |
+| v4 前轮复核 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-audit-20261102.py) · [IAEA LFR-21 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/lfr-21-kylin-ii-nc-original-20261102.pdf) | Zhao 条件证书评估、`δ=.35` 反例、KYLIN 根区域的单调证明、`.268` 舍入来源、档案仪表矛盾 |
 | v4 上传原件归档（待审计） | [v4 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-upload-report-20261102.html) | 保留 Workbuddy 本轮原始计算；完整运行仍需下方四段修订依赖脚本。 |
 | v3 前轮复核 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-audit-20261102.py) | v3 数值复现；`F_x` 漏项、箱覆盖空隙、派生常数无包络；Xu `<7.3%` 无法约束 `δ`；`w=0` 闭式反例 |
 | v3 上传原件归档（待审计） | [v3 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v3-upload-report-20261102.html) | 保留本轮 Workbuddy 原始计算与解释。完整复跑时将下方修订依赖脚本复制到同目录并命名为 `loop_audit_repair.py`。 |
@@ -20,6 +23,13 @@
 | 共同背景 | [Carnevali 等（2025）原文 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/papers/carnevali-2025-nucengdes-114409.pdf) · [此前的方法定位报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-scaling-method-position-20261101.md) | 失真对 FoM 的影响、可接受性问题与本研究的贡献边界 |
 
 ## 给 Workbuddy 的已核结论
+
+### 本轮 v5 更新
+
+- v5 日志 **204 行逐行复现**。其上界 `D_m≤max{(1+δ)^(1/3),(R_id d)^(n/(3−n))}−1` 需连同 `M(x)≤1`、`μ_R≤1` 和物性有效域一起报告；**不能无条件写“所有 `δ>−1`”**。下界可用 `x<1` 时 `f(x)>x³` 直接证明，无需全域 `f≥1`。
+- Zhao 声明模型的 `|D_m|≤3%` 设计域是**双侧** `max(0,w_−(δ))≤w≤min(1,w_+(δ))`。`δ=−.10` 时为 `[0.03257,0.47579]`；`δ=+.07` 时为 `[0,0.09678]`。正向 `w=0` 变物性阈值是 `δ≈0.092755604`，不是 v5 称为“硬上限”的 `0.092727`。上方 CSV 提供 81 个未标定情景点。
+- 两个 δ 阈值 `0.327848828−0.323077721≈0.004771107` 的主因是**解析根包络与实际根的间隙** `+0.004882331`，物性项为 `−0.000111224`；不能称“恰好是物性比偏离 1 的三倍”。`F_dep_iv()` 的 `G=1+w[...]` 写法只在 `δ=0` 等价；非零 δ 时须改为 `G=(1+δ)+w[...]`。
+- “K_EV/K_HS/K_pipe 在 Yue 2017 表 2”仍是**未见全文的转述**；即使该表有单台架阻力，也只能帮助阻力份额 `w`，成对局阻失配 `δ` 仍需原型和台架两侧数据。
 
 ### 本轮 v4 更新
 
@@ -64,7 +74,7 @@
 
 ## 下一轮给 Workbuddy 的任务说明
 
-> 请先读本文件所链接的**v4 最新复核、Xu 与 LFR-21 原文**，再读此前报告，**先核来源，再建界**。v4 已补强 Zhao `δ=0、仅变 w` 的条件证书；但 `δ=.35,w=0` 的反例说明 `+9.7782%` 不能作为无局阻域时的总上界。KYLIN 的根管可证明其 v4 近似输入的偏差随 `w` 单调下降；`−0.00081%` 是 `m_R=.268` 三位舍入所致，不能归给管径 `.616`。`Fw_iv()` 少了所选残差定义的 `ρ_R` 因子；若需报告真实偏导范围，请修公式。Xu 表 2 不含 `K_EV/K_HS/K_pipe` 数字；找到其真实来源前不得据它给 `δ` 定盒。优先取得 Li 2015、Yue 2017 全文，查逐段压降、净流道尺寸、热源积分、冷端条件和流量测量；LFR-21 仪表描述自相矛盾，不能代论文测点说明。将 24 kW 点用于固定参数，留出点只预测、不重新拟合；由能量平衡反算的流量与温升不能当两个独立测量。建立带来源的联合输入域后，才证明实际设计的包含界及判据。通用式保留摩擦项 `L_M/L_P ÷ D_M/D_P`，比热比放在正确位置，并统一理想分母。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
+> 请先读本文件所链接的**v5 最新复核及其 3% 可行域 CSV**，再读 Xu、LFR-21 与此前报告，**先核来源，再建界**。v5 的 `δ` 参数化解析式需连同 `M≤1` 的温度/物性有效域报告，不能宣称无条件覆盖所有 `δ>−1`。对 `|D_m|≤3%`，用报告的 `w_−(δ),w_+(δ)` 双侧边界；`δ=−.10` 时 `w=0` 已超负向限，`δ=.09274` 虽超恒物性 `9.2727%` 仍有极窄可行域。修正 `F_dep_iv()`：非零 δ 时应取 `G=(1+δ)+w[(λ/d)f−(1+δ)]`；两个 δ 阈值之差主要来自解析根包络余量。CSV 的 δ 只是未标定情景，不能称制造公差或概率分布。优先取得 Li 2015、Yue 2017 全文，核逐段压降、净流道尺寸、热源积分、冷端条件和流量测量；“Yue 表 2 的阻力数值”尚未见原件，且单侧阻力不能直接给成对 δ 定域。将 24 kW 点用于固定参数，留出点只预测、不重新拟合。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
 
 ## 来源边界
 
