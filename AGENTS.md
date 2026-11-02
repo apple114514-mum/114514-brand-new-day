@@ -48,13 +48,18 @@
 - **norman-fig2ppt v1.3.1**：把论文图片、流程图等重建为可编辑 PowerPoint 对象；使用上游 Linux x64 版。
 - **norman-research-idea v2.0.0**：从研究方向或论文出发，核查文献、比较创新点并设计可执行研究方案；使用上游 Linux x64 版。
 - **norman-humanize v1.3.2**：按用户选择的文体、修改程度和范围润色中英文文字或 Word 文档；使用上游 Linux x64 版。
+- **zvex-model-sensitivity v1.0.2**（作者 zvex；WorkBuddy skillId `skill_2107645256676827136`）：模型敏感性分析、Morris 筛选与 Sobol 等 GSA 方法选型；输入域和分布须有来源或明确标注为情景。
+- **origin-paper-workspace v1.0.0**（WorkBuddy skillId `skill_2104450706215473152`）：建立论文状态包和论点—证据矩阵，检查来源坐标与学术规范。
+- **sensitivity-analysis v1.0.0**（作者 天箭星科技；WorkBuddy skillId `skill_2106758297841381376`）：财务情景测算备用技能；不用于本项目的 GSA 或概率风险评估。
 - **research-plot**：科研数据绘图与出图规范。要画图、出图、统一图表风格、出论文级插图（温度/流量/压力曲线、实验 vs 计算对比）时使用。默认论文插图规格：单栏 8.5 cm、600 DPI、矢量优先、单位齐全。
 - **fluent-post**：Fluent/CFD 结果后处理。给了 monitor `.out`、Reports 积分结果、`.xy`/`.csv` 数据，要判断收敛、提特征量（ΔT、Q、Re、Nu、f）、出工况对比表时使用。**未收敛不出结论**。
 - **paper-archive**：文献归档与整理。要归档 PDF、按规范重命名、查重、生成 `papers/INDEX.md` 清单时使用。
 - **thesis-writing**：中文学术写作与排版。写开题报告、学位论文章节、期刊投稿、研究进展报告时使用；含结构模板、图表公式编号、GB/T 7714 引用规范。
 - **weekly-report**：生成周报与研究进展。用户说"写周报""汇报本周工作""准备组会进展"时使用。结构：本周完成 / 遇到的问题 / 下周计划 / 需要支持。
 
-上述五个 Norman 技能来自 N同学项目（https://github.com/N-tongxue/norman-skill ），版本与来源提交见 `.codex/skills/NORMAN-UPSTREAM.md`，输出须遵守各技能的署名要求；其余五个为本仓库自建，按本组习惯持续修订。
+五个 Norman 技能来自 N同学项目（https://github.com/N-tongxue/norman-skill ），版本与来源提交见 `.codex/skills/NORMAN-UPSTREAM.md`，输出须遵守各技能的署名要求。`research-plot`、`fluent-post`、`paper-archive`、`thesis-writing`、`weekly-report` 为本仓库自建，按本组习惯持续修订。
+
+新增的三个 WorkBuddy 市场技能由用户上传的 `skills_added_2026-11-02.zip` 本地安装，保留原 `_skillhub_meta.json` 供后续核对版本；此处的安装不表示 Codex 与 WorkBuddy 技能市场互通。安装与复验记录见 `.codex/skills/WORKBUDDY-IMPORTED-20261102.md`。
 
 ## 通用约定
 
