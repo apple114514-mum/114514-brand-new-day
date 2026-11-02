@@ -1,12 +1,14 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v5 最新复核**：`δ` 参数化上界在 `M≤1` 的物性域内有价值；`|D_m|≤3%` 应反解成双侧 `w` 可行区间。v5 的 `δ≤9.2727%`“硬上限”和“负 `δ` 时判据不变”不成立，精确变物性阈值约 `9.27556%`。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。请先读下表最上方的**v6 最新复核**：Zhao 模型的双侧 3% 可行带成立，但 v6 声称适用于任意 `λ/d` 的双侧界有反例，已给出有条件的修正式。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
-| **v5 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-audit-20261102.py) · [3% 可行域 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.csv) | `δ` 解析界适用域、负向 3% 分支、精确两侧 `w(δ)` 边界和 81 点情景曲线数据 |
+| **v6 最新复核（先读）** | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-review-20261102.md) · [独立复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-audit-20261102.py) | 一般 `λ/d` 的反例与修正条件界；Zhao 3% 双侧带可保留；摄动在整条方法链中的具体位置 |
+| v6 上传原件 | [v6 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v6-upload-report-20261102.html) · [本轮 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-3pct-band-v6-upload-20261102.csv) | Workbuddy 原始计算；新 CSV 有 61 数据行，脚本核对的 81 行是前轮 CSV |
+| v5 前轮复核 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-audit-20261102.py) · [3% 可行域 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.csv) | `δ` 解析界适用域、负向 3% 分支、精确两侧 `w(δ)` 边界和 81 点情景曲线数据 |
 | Zhao 3% 可行域论文单栏图 | [矢量 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.pdf) · [SVG](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.svg) · [600 DPI PNG](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/zhao-three-percent-design-region-20261102.png) · [绘图脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/plot-zhao-three-percent-design-region-20261102.py) | 阴影为未标定 `δ` 情景下满足双侧 `|D_m|≤3%` 的 `w`；仅作模型条件图，不是实测台架认证。 |
 | v5 上传原件归档（待审计） | [v5 原脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-upload-20261102.py) · [原日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-upload-log-20261102.txt) · [原 HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v5-upload-report-20261102.html) | 保留 Workbuddy 本轮原始计算；完整运行需要下方四段修订依赖脚本。 |
 | v4 前轮复核 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-review-20261102.md) · [复核脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-v4-audit-20261102.py) · [IAEA LFR-21 原文](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/lfr-21-kylin-ii-nc-original-20261102.pdf) | Zhao 条件证书评估、`δ=.35` 反例、KYLIN 根区域的单调证明、`.268` 舍入来源、档案仪表矛盾 |
@@ -23,6 +25,13 @@
 | 共同背景 | [Carnevali 等（2025）原文 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/papers/carnevali-2025-nucengdes-114409.pdf) · [此前的方法定位报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-scaling-method-position-20261101.md) | 失真对 FoM 的影响、可接受性问题与本研究的贡献边界 |
 
 ## 给 Workbuddy 的已核结论
+
+### 本轮 v6 更新
+
+- v6 脚本复跑 205 行；上传日志 202 行完全一致，另三行仅区间末位约 `10^-16` 有平台差异。新上传 CSV 为 **61** 个数据行，逐行与闭式相符；v6 脚本 `[D]` 使用硬编码路径核的 **81** 行是上一轮 CSV。两份文件不能混称。
+- Zhao `c=λ/d=1` 的双侧 `|D_m|≤3%` 带与 `δ_crit≈0.092755604047` 可保留；在临界值处 `w=0` **恰好可行**。`δ→−1` 仍有数学可行带，但实际局阻范围未建立。
+- v6 的**通用双侧界不成立**：同一声明模型改 `c=.5,δ=0,w=1`，实际 `D_m=−14.416496%`，v6 下界却为 `0%`；改 `δ=−.5`，实际 `−14.416496%` 又高于其上界 `−14.575176%`。在根处物性方向成立时，可用 `q=[(λ/d)(R_id d)^n]^{1/(3−n)}` 及 `min{1,(1+δ)^{1/3},q}−1 ≤ D_m ≤ max{1,(1+δ)^{1/3},q}−1`。这是保守模型界，不是物理认证。
+- 摄动已经可具体落实为隐式导数：Zhao `w=.2,δ=0` 点的 `∂D_m/∂w≈0.098616705`、`∂D_m/∂δ≈0.260956027`，与有限差分相符。它给设计点的局部方向；3% 带给条件可行域；GSA 需有来源的联合参数域或明确声明的概率分布，尚未完成。
 
 ### 本轮 v5 更新
 
@@ -74,7 +83,7 @@
 
 ## 下一轮给 Workbuddy 的任务说明
 
-> 请先读本文件所链接的**v5 最新复核及其 3% 可行域 CSV**，再读 Xu、LFR-21 与此前报告，**先核来源，再建界**。v5 的 `δ` 参数化解析式需连同 `M≤1` 的温度/物性有效域报告，不能宣称无条件覆盖所有 `δ>−1`。对 `|D_m|≤3%`，用报告的 `w_−(δ),w_+(δ)` 双侧边界；`δ=−.10` 时 `w=0` 已超负向限，`δ=.09274` 虽超恒物性 `9.2727%` 仍有极窄可行域。修正 `F_dep_iv()`：非零 δ 时应取 `G=(1+δ)+w[(λ/d)f−(1+δ)]`；两个 δ 阈值之差主要来自解析根包络余量。CSV 的 δ 只是未标定情景，不能称制造公差或概率分布。优先取得 Li 2015、Yue 2017 全文，核逐段压降、净流道尺寸、热源积分、冷端条件和流量测量；“Yue 表 2 的阻力数值”尚未见原件，且单侧阻力不能直接给成对 δ 定域。将 24 kW 点用于固定参数，留出点只预测、不重新拟合。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
+> 请先读本文件所链接的**v6 最新复核**，再读 v5、Xu、LFR-21 与此前报告，**先核来源，再建界**。Zhao `λ/d=1` 的 3% 双侧 `w(δ)` 可行带保留，但 v6 把双侧解析界推广至任意 `λ/d` 的式子已有上下界反例；先按 v6 复核中的 `min/max{1,(1+δ)^(1/3),[(λ/d)(R_id d)^n]^(1/(3−n))}` 条件界改写并检验物性域。`δ_crit≈0.092755604` 的**等号可行**；`δ→−1` 仅是数学极限。修正 `F_dep_iv()`：非零 δ 时应取 `G=(1+δ)+w[(λ/d)f−(1+δ)]`。本轮上传 CSV 有 61 行，脚本硬编码读取的前轮 CSV 才有 81 行，请分清。继续建 `δ`、`w`、净流道尺寸的来源台账，优先核原型与台架两侧压降及 Li/Yue 全文；一侧阻力不能定成对 `δ`。摄动用隐式导数做局部排序和线性余项检查，GSA 需明示联合参数域/分布；它们不能替代最坏界。留出点只预测、不重新拟合。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
 
 ## 来源边界
 

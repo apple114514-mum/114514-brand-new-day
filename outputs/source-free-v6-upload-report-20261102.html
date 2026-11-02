@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>源无关界 v6：解析界的适用域与 3% 判据的双侧带（2026-11-02 第六轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.7;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+figure{margin:22px 0 10px;background:var(--card);border:1px solid var(--line);padding:10px 10px 4px}
+figcaption{font-size:13px;color:var(--mute);padding:6px 6px 8px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>源无关界 v6：解析界的适用域与 3% 判据的双侧带</h1>
+<div class="sub">2026-11-02 · 第六轮 · 对应复核 <code>source-free-v5-review</code>（<code>main 42f948f</code>）· 脚本 <code>source_free_bound_v6.py</code>（205 行日志）</div>
+
+<div class="box ok">
+<p><b>一句话：</b>四条复核全部成立。最要紧的不是那两个末位数字，而是<b>判据的形状变了</b>：<code>|D_m|≤3%</code> 不是"<code>δ≤9.2727%</code> 且 <code>w≤w*</code>"，而是 <code>(δ,w)</code> 平面上的一条<b>带</b>——<code>δ=−10%</code> 时 <code>w</code> 必须落在 <b>[0.032573, 0.475787]</b>，把 <code>w</code> 压到 0 反而失真 −3.45%。顺着复核往下查，还发现 v5 的解析界<b>少写了一条前提</b> <code>λ/d≤1</code>（赵恰好 λ=d=0.5，所以"看不出错"）。</p>
+</div>
+
+<h2>一、四条复核：逐条判定</h2>
+
+<table>
+<tr><th style="width:23%">复核意见</th><th style="width:47%">独立复算</th><th style="width:9%">判定</th><th>处理</th></tr>
+<tr>
+<td>"对所有 <code>δ&gt;−1</code>"过强</td>
+<td class="num"><code>M(x)=1</code> 于 x=5.204652（T=875.81 K），集合 <code>{M≤1}</code>=[1, 5.2047]<br>
+反例 x=6：M=1.000927，反定 δ=214.799858，界给 <code>(1+δ)<sup>1/3</sup>=5.998146&lt;6</code></td>
+<td><span class="tag t-no">成立</span></td>
+<td>界改为带域陈述（§二）</td>
+</tr>
+<tr>
+<td>3% 是 <code>w</code> 的双侧区间</td>
+<td class="num">δ=−0.10：<code>w∈[0.032573, 0.475787]</code>；<code>D(w=0)=−3.4501%</code></td>
+<td><span class="tag t-no">成立</span></td>
+<td>"判据二参数化"整段重写（§四）</td>
+</tr>
+<tr>
+<td>9.2727% 不是变物性精确值</td>
+<td class="num"><code>K<sub>+</sub>−1=0.092755604</code> vs <code>1.03³−1=0.092727</code>，相对差 0.031%</td>
+<td><span class="tag t-no">成立</span></td>
+<td>阈值改 <code>K<sub>+</sub>−1</code>；但重点是形状（§四）</td>
+</tr>
+<tr>
+<td><code>F_dep_iv</code> 漏 <code>(1+δ)</code></td>
+<td class="num">δ=0.1, w=0, x=1：<code>F_iv=−0.100000</code>，<code>F_dep_iv=−4.3e−15</code></td>
+<td><span class="tag t-no">成立</span></td>
+<td>改 <code>G=(1+δ)+w[(λ/d)f−(1+δ)]</code>（§六）</td>
+</tr>
+</table>
+
+<p class="small">关于第 ③ 条要说清比例：<code>9.275604%</code> 比 <code>9.2727%</code> 只高 <b>2.86×10<sup>−5</sup></b>（相对 0.031%），在 <code>δ</code> 本身还没有实物范围的前提下毫无工程意义。真正被推翻的是<b>句式</b>——"硬上限"暗示"δ 超过就必然越界"，而实际是"δ 超过就连 w=0 都不行"；以及"<code>δ≤0</code> 时判据不变"这句，它在 <code>δ=−0.10</code> 直接给反例。</p>
+
+<h2>二、上界的适用域：三层，外加一条 v5 没写的前提</h2>
+
+<p>复核只点了 <code>M≤1</code>，但顺着同一条证明链检查，v5 实际用了三件事，写成文字只写了两件：</p>
+
+<pre><code>① M(x) ≤ 1        在根处   —— 物性方向，x≥1 时 T_M≥T_P 且 c_p/ρ 之比 &lt;1
+② μ_R(x) ≤ 1      在根处   —— μ = m₀·exp(754.1/T) 随 T 单调减
+③ λ/d ≤ 1         几何     —— **v5 只写了 ①②，③ 是隐含的**</code></pre>
+
+<p>第 ③ 条来自 <code>G=(1−w)A+w(λ/d)f</code>：只有 <code>λ/d≤1</code> 才能把 <code>(λ/d)f</code> 换成 <code>B·xⁿ</code> 而不放大。赵恰好 <code>λ=d=0.5</code>，<code>λ/d=1</code>，所以 v5 的式子"看起来对"——这与 v2 把 <code>c_p</code> 放分母、漏掉 <code>λ/d</code> 是<b>同一类错误</b>：参数恰好相等，检查者看不出来。一般化闭式是</p>
+
+<pre><code>x ≤ max{ A^(1/3), (c·B)^(1/(3−n)) },    c = λ/d,  B = (R_id·d)ⁿ,  A = 1+δ</code></pre>
+
+<table>
+<tr><th class="num">c=λ/d</th><th class="num">x̄<sub>c</sub>=(cB)<sup>1/(3−n)</sup></th><th class="num">解析上限</th><th class="num">端点 max D</th><th>结论</th></tr>
+<tr><td class="num">0.5</td><td class="num">0.854248</td><td class="num">+0.0000%</td><td class="num">−14.4165%（w=1）</td><td>上限取 <code>A<sup>1/3</sup>=1</code>，仍包住</td></tr>
+<tr><td class="num">1.0</td><td class="num">1.099131</td><td class="num">+9.9131%</td><td class="num">+9.7782%（w=1）</td><td>宽出 +0.1349 pp（即 v5 的数）</td></tr>
+<tr><td class="num">2.0</td><td class="num">1.414214</td><td class="num">+41.4214%</td><td class="num">+40.7220%（w=1）</td><td>宽出 +0.6993 pp</td></tr>
+</table>
+
+<p>于是"适用域"要分三层写，不能混成一句：</p>
+
+<ul>
+<li><b>层一（纯数学）</b>：若根处 <code>M≤1</code>、<code>μ_R≤1</code>、<code>λ/d≤1</code>，则上式成立。</li>
+<li><b>层二（本模型）</b>：<code>M(x)≤1</code> 等价于根 <code>≤x_M=5.204652</code>，在 <code>w=0</code> 支上即 <code>δ≤139.9857</code>。这不是物理界，是把多项式物性硬外推到 875 K 得到的算术边界。</li>
+<li><b>层三（关联式验证域）</b>：比层二<b>窄得多</b>。本项目物性只有 398.15 K 以上有出处，上限出处仍待核。不能拿层二的 875 K 当"物理可用"的证据。</li>
+</ul>
+
+<p>论文里这句话应写成：「在 <code>M(x)≤1</code>、<code>μ_R≤1</code>、<code>λ/d≤1</code> 的物性/几何域内（本案例根 x≤5.2047，即 T≤875.8 K），δ 参数化上界成立」。<b>不写"对所有 δ&gt;−1"。</b>这不等于退回无界——界仍然是 δ 的显式函数，只是加了域。</p>
+
+<h2>三、下界：可以去掉 <code>(λ/d)f≥1</code>，前提是 <code>B&gt;1</code></h2>
+
+<p>复核给的下界论证对：<code>x&lt;1</code> 时 <code>M≥1</code>、<code>μ_R≥1</code>，故 <code>f=B·xⁿ·μ_Rⁿ ≥ B·xⁿ</code>。要再推到 <code>&gt;x³</code> 需要 <code>B &gt; x<sup>3−n</sup></code>；本案例</p>
+
+<pre><code>B = (R_id·d)ⁿ = (2.828427)^0.25 = 1.296840 &gt; 1
+x&lt;1  ⇒  x^(3−n) &lt; 1 &lt; B   ⇒   f(x) &gt; x³ 对所有 x&lt;1 成立</code></pre>
+
+<p>所以 v5 那条"<code>(λ/d)f≥1</code> 于声明域"是多余的，且它本身有反例：<code>δ=−0.99</code>、<code>w=0</code> 的根 <code>x=0.215501</code>，该点 <code>f=0.909520&lt;1</code>（但 <code>f/x³=90.88</code>，要用的正是这个比）。下界数值核对：</p>
+
+<table>
+<tr><th class="num">δ</th><th class="num">A<sup>1/3</sup>−1（界）</th><th class="num">min<sub>w</sub> D</th><th class="num">界−实测</th><th>判定</th></tr>
+<tr><td class="num">−0.99</td><td class="num">−78.4557%</td><td class="num">−78.4499%</td><td class="num">−5.8e−5</td><td>OK</td></tr>
+<tr><td class="num">−0.90</td><td class="num">−53.5841%</td><td class="num">−53.5760%</td><td class="num">−8.1e−5</td><td>OK</td></tr>
+<tr><td class="num">−0.50</td><td class="num">−20.6299%</td><td class="num">−20.6249%</td><td class="num">−5.0e−5</td><td>OK</td></tr>
+<tr><td class="num">−0.20</td><td class="num">−7.1682%</td><td class="num">−7.1662%</td><td class="num">−2.0e−5</td><td>OK</td></tr>
+<tr><td class="num">−0.10</td><td class="num">−3.4511%</td><td class="num">−3.4501%</td><td class="num">−9.8e−6</td><td>OK</td></tr>
+<tr><td class="num">0.00</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td>OK</td></tr>
+<tr><td class="num">+0.09</td><td class="num">0</td><td class="num">+2.9134%</td><td class="num">−2.9e−2</td><td>OK</td></tr>
+</table>
+
+<p class="small">"界−实测"恒为负，说明界始终包住（负值即余量）。<code>δ≥0</code> 时 <code>w=0</code> 支不是最小值，故余量变大——这与 §四 的单调性一致。</p>
+
+<h2>四、主修正：<code>|D_m|≤3%</code> 是一条带，不是两个阈值</h2>
+
+<h3>4.1 闭式怎么来的</h3>
+
+<p>在<b>固定目标点</b> <code>x_t</code> 处，<code>F=0</code> 等价于 <code>G(w)=K_t</code>，其中 <code>K_t=x_t³ρ_R/c<sub>p,R</sub>=x_t³/M(x_t)</code>；而 <code>G(w)=(1−w)A+w·f_t</code> 对 <code>w</code> 是<b>仿射</b>的。于是两边一移项就出闭式，不需要扫 <code>w</code>、不需要求根：</p>
+
+<pre><code>w_t(δ) = (K_t − A) / (f_t − A),        A = 1+δ
+x_t = 0.97  →  w₋(δ)           x_t = 1.03  →  w₊(δ)
+
+可行带：  max(0, w₋(δ)) ≤ w ≤ min(1, w₊(δ)),   且须左端 ≤ 右端</code></pre>
+
+<p>每个设计只算一次两个常数，之后 <code>δ</code> 进显式有理函数：</p>
+
+<pre><code>K₋ = 0.912648800525    f₋ = 1.288319247874
+K₊ = 1.092755604047    f₊ = 1.305130341205
+dw_t/dδ = (K_t − f_t)/(f_t − A)² &lt; 0     ⇒ 两条边界都随 δ 单调下降</code></pre>
+
+<figure>
+<svg viewBox="0 0 660 386" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, serif">
+<rect x="0" y="0" width="660" height="386" fill="#ffffff"/>
+<line x1="62.0" y1="334.0" x2="638.0" y2="334.0" stroke="#e8e4dc" stroke-width="1"/>
+<text x="55.0" y="338.0" font-size="11" fill="#6b6b6b" text-anchor="end">0.0</text>
+<line x1="62.0" y1="271.6" x2="638.0" y2="271.6" stroke="#e8e4dc" stroke-width="1"/>
+<text x="55.0" y="275.6" font-size="11" fill="#6b6b6b" text-anchor="end">0.2</text>
+<line x1="62.0" y1="209.2" x2="638.0" y2="209.2" stroke="#e8e4dc" stroke-width="1"/>
+<text x="55.0" y="213.2" font-size="11" fill="#6b6b6b" text-anchor="end">0.4</text>
+<line x1="62.0" y1="146.8" x2="638.0" y2="146.8" stroke="#e8e4dc" stroke-width="1"/>
+<text x="55.0" y="150.8" font-size="11" fill="#6b6b6b" text-anchor="end">0.6</text>
+<line x1="62.0" y1="84.4" x2="638.0" y2="84.4" stroke="#e8e4dc" stroke-width="1"/>
+<text x="55.0" y="88.4" font-size="11" fill="#6b6b6b" text-anchor="end">0.8</text>
+<line x1="62.0" y1="22.0" x2="638.0" y2="22.0" stroke="#e8e4dc" stroke-width="1"/>
+<text x="55.0" y="26.0" font-size="11" fill="#6b6b6b" text-anchor="end">1.0</text>
+<line x1="80.5" y1="22.0" x2="80.5" y2="334.0" stroke="#f2efe8" stroke-width="1"/>
+<text x="80.5" y="350.0" font-size="11" fill="#6b6b6b" text-anchor="middle">−0.20</text>
+<line x1="172.8" y1="22.0" x2="172.8" y2="334.0" stroke="#f2efe8" stroke-width="1"/>
+<text x="172.8" y="350.0" font-size="11" fill="#6b6b6b" text-anchor="middle">−0.15</text>
+<line x1="265.1" y1="22.0" x2="265.1" y2="334.0" stroke="#f2efe8" stroke-width="1"/>
+<text x="265.1" y="350.0" font-size="11" fill="#6b6b6b" text-anchor="middle">−0.10</text>
+<line x1="357.4" y1="22.0" x2="357.4" y2="334.0" stroke="#f2efe8" stroke-width="1"/>
+<text x="357.4" y="350.0" font-size="11" fill="#6b6b6b" text-anchor="middle">−0.05</text>
+<line x1="449.7" y1="22.0" x2="449.7" y2="334.0" stroke="#f2efe8" stroke-width="1"/>
+<text x="449.7" y="350.0" font-size="11" fill="#6b6b6b" text-anchor="middle">+0.00</text>
+<line x1="542.0" y1="22.0" x2="542.0" y2="334.0" stroke="#f2efe8" stroke-width="1"/>
+<text x="542.0" y="350.0" font-size="11" fill="#6b6b6b" text-anchor="middle">+0.05</text>
+<line x1="634.3" y1="22.0" x2="634.3" y2="334.0" stroke="#f2efe8" stroke-width="1"/>
+<text x="634.3" y="350.0" font-size="11" fill="#6b6b6b" text-anchor="middle">+0.10</text>
+<polygon points="80.5,262.0 89.5,264.4 98.5,266.9 107.5,269.4 116.5,272.0 125.5,274.6 134.5,277.3 143.5,280.1 152.5,282.9 161.5,285.7 170.5,288.7 179.5,291.7 188.6,294.7 197.6,297.9 206.6,301.1 215.6,304.3 224.6,307.7 233.6,311.1 242.6,314.7 251.6,318.3 260.6,322.0 269.6,325.8 278.6,329.7 287.6,333.6 296.7,334.0 305.7,334.0 314.7,334.0 323.7,334.0 332.7,334.0 341.7,334.0 350.7,334.0 359.7,334.0 368.7,334.0 377.7,334.0 386.7,334.0 395.7,334.0 404.7,334.0 413.8,334.0 422.8,334.0 431.8,334.0 440.8,334.0 449.8,334.0 458.8,334.0 467.8,334.0 476.8,334.0 485.8,334.0 494.8,334.0 503.8,334.0 512.8,334.0 521.8,334.0 530.9,334.0 539.9,334.0 548.9,334.0 557.9,334.0 566.9,334.0 575.9,334.0 584.9,334.0 593.9,334.0 602.9,334.0 611.9,334.0 620.9,334.0 620.9,334.0 611.9,327.0 602.9,320.3 593.9,313.9 584.9,307.7 575.9,301.9 566.9,296.2 557.9,290.8 548.9,285.6 539.9,280.5 530.9,275.7 521.8,271.1 512.8,266.6 503.8,262.2 494.8,258.1 485.8,254.0 476.8,250.1 467.8,246.4 458.8,242.7 449.8,239.2 440.8,235.8 431.8,232.5 422.8,229.2 413.8,226.1 404.7,223.1 395.7,220.2 386.7,217.3 377.7,214.6 368.7,211.9 359.7,209.2 350.7,206.7 341.7,204.2 332.7,201.8 323.7,199.5 314.7,197.2 305.7,194.9 296.7,192.8 287.6,190.6 278.6,188.6 269.6,186.6 260.6,184.6 251.6,182.7 242.6,180.8 233.6,178.9 224.6,177.2 215.6,175.4 206.6,173.7 197.6,172.0 188.6,170.4 179.5,168.8 170.5,167.2 161.5,165.7 152.5,164.2 143.5,162.7 134.5,161.2 125.5,159.8 116.5,158.4 107.5,157.1 98.5,155.8 89.5,154.5 80.5,153.2" fill="#1f4e79" fill-opacity="0.11" stroke="none"/>
+<polyline points="80.5,153.2 89.5,154.5 98.5,155.8 107.5,157.1 116.5,158.4 125.5,159.8 134.5,161.2 143.5,162.7 152.5,164.2 161.5,165.7 170.5,167.2 179.5,168.8 188.6,170.4 197.6,172.0 206.6,173.7 215.6,175.4 224.6,177.2 233.6,178.9 242.6,180.8 251.6,182.7 260.6,184.6 269.6,186.6 278.6,188.6 287.6,190.6 296.7,192.8 305.7,194.9 314.7,197.2 323.7,199.5 332.7,201.8 341.7,204.2 350.7,206.7 359.7,209.2 368.7,211.9 377.7,214.6 386.7,217.3 395.7,220.2 404.7,223.1 413.8,226.1 422.8,229.2 431.8,232.5 440.8,235.8 449.8,239.2 458.8,242.7 467.8,246.4 476.8,250.1 485.8,254.0 494.8,258.1 503.8,262.2 512.8,266.6 521.8,271.1 530.9,275.7 539.9,280.5 548.9,285.6 557.9,290.8 566.9,296.2 575.9,301.9 584.9,307.7 593.9,313.9 602.9,320.3 611.9,327.0 620.9,334.0" fill="none" stroke="#1f4e79" stroke-width="2"/>
+<polyline points="80.5,262.0 89.5,264.4 98.5,266.9 107.5,269.4 116.5,272.0 125.5,274.6 134.5,277.3 143.5,280.1 152.5,282.9 161.5,285.7 170.5,288.7 179.5,291.7 188.6,294.7 197.6,297.9 206.6,301.1 215.6,304.3 224.6,307.7 233.6,311.1 242.6,314.7 251.6,318.3 260.6,322.0 269.6,325.8 278.6,329.7 287.6,333.6 296.7,334.0 305.7,334.0 314.7,334.0 323.7,334.0 332.7,334.0 341.7,334.0 350.7,334.0 359.7,334.0 368.7,334.0 377.7,334.0 386.7,334.0 395.7,334.0 404.7,334.0 413.8,334.0 422.8,334.0 431.8,334.0 440.8,334.0 449.8,334.0 458.8,334.0 467.8,334.0 476.8,334.0 485.8,334.0 494.8,334.0 503.8,334.0 512.8,334.0 521.8,334.0 530.9,334.0 539.9,334.0 548.9,334.0 557.9,334.0 566.9,334.0 575.9,334.0 584.9,334.0 593.9,334.0 602.9,334.0 611.9,334.0 620.9,334.0" fill="none" stroke="#8c2f1f" stroke-width="2"/>
+<line x1="620.9" y1="22.0" x2="620.9" y2="334.0" stroke="#2f6b3a" stroke-width="1.6" stroke-dasharray="5 4"/>
+<text x="614.9" y="38.0" font-size="11" fill="#2f6b3a" text-anchor="end">&#948;<tspan font-style="italic">crit</tspan> = 9.2756%</text>
+<line x1="62.0" y1="334.0" x2="638.0" y2="334.0" stroke="#1a1a1a" stroke-width="1.4"/>
+<line x1="62.0" y1="22.0" x2="62.0" y2="334.0" stroke="#1a1a1a" stroke-width="1.4"/>
+<text x="350.0" y="374.0" font-size="12.5" fill="#1a1a1a" text-anchor="middle">&#948; = k<tspan font-style="italic">M</tspan>/k<tspan font-style="italic">P</tspan> &#8722; 1&#160;（未标定）</text>
+<text x="16.0" y="178.0" font-size="12.5" fill="#1a1a1a" text-anchor="middle" transform="rotate(-90 16.0 178.0)">w（摩擦份额）</text>
+<text x="311.2" y="171.8" font-size="11.5" fill="#1f4e79">上界 w<tspan font-size="9" baseline-shift="sub" font-style="italic">+</tspan>&#160;|D<tspan font-size="9" baseline-shift="sub" font-style="italic">m</tspan>| = +3%</text>
+<text x="95.2" y="301.2" font-size="11.5" fill="#8c2f1f">下界 w<tspan font-size="9" baseline-shift="sub" font-style="italic">&#8722;</tspan>&#160;|D<tspan font-size="9" baseline-shift="sub" font-style="italic">m</tspan>| = &#8722;3%</text>
+<text x="412.8" y="323.1" font-size="10.5" fill="#6b6b6b">下界被 w = 0 截断（&#948; &#8819; &#8722;0.0866）</text>
+</svg>
+<figcaption>赵声明模型的 3% 可行带。<b>阴影</b>为满足双侧 <code>|D_m|≤3%</code> 的 <code>(δ,w)</code> 组合；蓝线上界为 <code>+3%</code>，红线下界为 <code>−3%</code>；<code>δ≳−0.0866</code> 后下界被 <code>w=0</code> 截断（红线贴轴）。横轴 <code>δ</code> 是<b>未标定情景参数</b>，不是制造公差、不是概率分布；纵轴 <code>w</code> 是名义点摩擦份额。此图为模型条件曲线，不是台架认证。</figcaption>
+</figure>
+
+<h3>4.2 数值与复核逐点一致</h3>
+
+<table>
+<tr><th class="num">δ</th><th class="num">D(w=0)</th><th class="num">w₋(δ)</th><th class="num">w₊(δ)</th><th class="num">可行 w</th></tr>
+<tr><td class="num">−0.200000</td><td class="num">−7.1662%</td><td class="num">0.230687</td><td class="num">0.579564</td><td class="num">[0.230687, 0.579564]</td></tr>
+<tr><td class="num">−0.150000</td><td class="num">−5.2717%</td><td class="num">0.142930</td><td class="num">0.533376</td><td class="num">[0.142930, 0.533376]</td></tr>
+<tr><td class="num">−0.100000</td><td class="num">−3.4501%</td><td class="num">0.032573</td><td class="num">0.475787</td><td class="num"><b>[0.032573, 0.475787]</b></td></tr>
+<tr><td class="num">−0.090000</td><td class="num">−3.0939%</td><td class="num">0.007001</td><td class="num">0.462520</td><td class="num">[0.007001, 0.462520]</td></tr>
+<tr><td class="num">−0.050000</td><td class="num">−1.6948%</td><td class="num">−0.110402</td><td class="num">0.401981</td><td class="num">[0, 0.401981]</td></tr>
+<tr><td class="num">0</td><td class="num">0</td><td class="num">−0.302967</td><td class="num">0.303987</td><td class="num">[0, 0.303987]</td></tr>
+<tr><td class="num">+0.050000</td><td class="num">+1.6391%</td><td class="num">−0.576333</td><td class="num">0.167583</td><td class="num">[0, 0.167583]</td></tr>
+<tr><td class="num">+0.070000</td><td class="num">+2.2802%</td><td class="num">−0.720739</td><td class="num">0.096779</td><td class="num">[0, 0.096779]</td></tr>
+<tr><td class="num">+0.090000</td><td class="num">+2.9134%</td><td class="num">−0.894271</td><td class="num">0.012809</td><td class="num">[0, 0.012809]</td></tr>
+<tr><td class="num">+0.092700</td><td class="num">+2.9983%</td><td class="num">−0.920417</td><td class="num">0.000262</td><td class="num">[0, 0.000262]</td></tr>
+<tr><td class="num">+0.092756</td><td class="num">+3.0000%</td><td class="num">−0.920963</td><td class="num">0.000000</td><td class="num">[0, 0] 带宽归零</td></tr>
+</table>
+
+<p>端点回代验证：<code>δ=−0.20</code> 给 <code>D(w₋)=−3.000000%</code>、<code>D(w₊)=+3.000000%</code>；<code>δ=−0.10</code> 同；<code>δ=0</code> 时 <code>w₋</code> 被 0 截断，故 <code>D(w₋)=D(0)=0</code>。复核 CSV 的 81 行用本脚本闭式独立复算，最大偏差 <b>w_min 1.2×10<sup>−12</sup>、w_max 1.9×10<sup>−12</sup>、D(w=0) 4.9×10<sup>−10</sup> pp</b>——一致到其打印位数。</p>
+
+<h3>4.3 三个结构性结论</h3>
+
+<div class="box">
+<p><b>① 正向有上限、负向没有。</b>正向上限是 <code>δ<sub>crit</sub>=K₊−1=9.2755604%</code>（这时 <code>w₊→0</code>，带宽归零）。负向 <code>δ→−1</code> 时 <code>w₋→K₋/f₋=0.708403</code>、<code>w₊→K₊/f₊=0.837277</code>，<b>带仍非空</b>（宽 0.1289）。物理读法：局阻偏小可以靠提高摩擦份额救回来；局阻偏大过 9.28% 则怎么分配都救不回来。</p>
+<p><b>② <code>δ&lt;0</code> 时 <code>w=0</code> 已越 −3%。</b><code>δ=−0.10</code>、<code>w=0</code> 时 <code>D=−3.4501%</code>，必须把 <code>w</code> 抬到 0.0326 以上才回到带内。所以 v5 的"<code>w≤w*</code>"是<b>只写下界不写上界</b>的写法——它在 <code>δ≤0</code> 时恰好掩盖了负向越界。</p>
+<p><b>③ 判据可移植的是函数，不是数。</b>两个设计只要各自算出 <code>(K₋,K₊,f₋,f₊)</code>，曲线就有同一形状：<code>w_t=(K_t−A)/(f_t−A)</code>。这与前几轮"数不可移植、函数可移植"是同一条。</p>
+</div>
+
+<p>区间包络（<code>A</code> 以十进制字面量进区间，不是点值）：</p>
+
+<pre><code>δ=−0.10   w₋ ∈ [0.03257320000043006, 0.03257320000045025]
+          w₊ ∈ [0.47578664060011872, 0.47578664060015624]
+δ= 0.00   w₊ ∈ [0.30398682635374702, 0.30398682635379215]
+δ=+0.07   w₊ ∈ [0.09677867998902397, 0.09677867998907497]</code></pre>
+
+<p class="small">包络宽约 1×10<sup>−15</sup>，与点值同号同序。这只配叫"该浮点模型的条件包含"，仍不是实测界——理由与前几轮相同：常数 <code>K±</code> 本身来自模型，而模型的前提（<code>λ/d</code>、<code>US</code>、单点标定的 <code>k</code>）没有被这一步证明。</p>
+
+<h2>五、两个 δ 阈值之差：主项是根包络间隙，不是物性</h2>
+
+<pre><code>δ_num = x₁³/M(x₁) − 1 = +0.323077721      x₁ = 1.097782446340,  M(x₁) = 0.999915935700
+δ_ana = x̄³ − 1        = +0.327848828      x̄  = 1.099131222559
+
+δ_ana − δ_num = [x̄³ − x₁³] + x₁³[1 − 1/M(x₁)]
+              = +0.004882331  +  (−0.000111224)  =  +0.004771107</code></pre>
+
+<p>主项占 <b>102.3%</b>（物性项为负、起抵消作用），所以正确说法是"<b>保守包络造成的阈值间隙</b>"。v5 写的"正好是 <code>1−M(x₁)</code> 的三倍"是错的：<code>1−M=8.41×10<sup>−5</sup></code>，三倍 <code>2.52×10<sup>−4</sup></code>，与真正的物性项 <code>1.11×10<sup>−4</sup></code> 还差两个量级，与总差 <code>4.77×10<sup>−3</sup></code> 差一个半量级。</p>
+
+<h2>六、<code>F_dep_iv</code>：缺陷、污染范围与修正</h2>
+
+<p>原式 <code>G=(1+δ)+w[(λ/d)f−(1+δ)]</code>；v5 写成 <code>G=1+w[(λ/d)f−(1+δ)]</code>，只有 <code>δ=0</code> 时等价。反例：</p>
+
+<pre><code>δ=0.1, w=0, x=1:  F_iv     = [−0.100000000000005, −0.099999999999995]
+                  F_dep_iv = [−4.33e−15, +4.33e−15]     ← 把非根判成根
+
+修正后（G=(1+δ)+w[...]）：
+δ=0.1, w=0.3, x=1.02:  F_iv = [−0.0994744419313034, −0.0994744419312921]
+                       修正版 = [−0.0994744419313032, −0.0994744419312923]</code></pre>
+
+<p><b>污染范围</b>：v5 只在 KYLIN 根管一段调用 <code>F_dep_iv</code>，而那里 <code>Model</code> 默认 <code>δ=0</code>，因此<b>已印出的 KYLIN 根管结论（严格递减、端点即极值、−8×10<sup>−4</sup> pp 来自 <code>m_R=.268</code>）不受影响</b>。今后凡非零 <code>δ</code> 的判根/判号，必须先改成上面的形式。</p>
+
+<h2>七、文献边界：<code>δ</code> 仍然没有实物范围</h2>
+
+<p>Yue 2017 表 2 的 <code>K_EV≈2.5 / K_HS 2.6–2.9 / K_pipe 17.7–19.1</code> 仍为<b>转述</b>（DOI <code>10.1007/s41365-017-0187-x</code>；<code>nst.sinap.ac.cn</code> 站内检索实测返回空集）。即使该表确为同一装置的逐段阻力分解：</p>
+
+<ul>
+<li>它只给<b>单侧</b>（台架）的阻力分解 → 只能帮 <code>w</code>；</li>
+<li><code>δ = k_M/k_P − 1</code> 需要<b>原型与台架两侧</b>的局阻 → 单侧给不出；</li>
+<li>因此 <code>δ</code> 的实物域仍为空，本报告的 <code>δ</code> 一律是"未标定情景参数"。</li>
+</ul>
+
+<table>
+<tr><th>量</th><th>来源</th><th>状态</th></tr>
+<tr><td><code>R_id=5.656854</code>（=4√2）</td><td>本模型 + 赵表 1/3</td><td><span class="tag t-ok">有</span></td></tr>
+<tr><td><code>K₋,K₊,f₋,f₊</code></td><td>本脚本单点求值</td><td><span class="tag t-ok">有（模型内）</span></td></tr>
+<tr><td><code>λ/d</code></td><td>赵表 3 外形尺寸，非净流道</td><td><span class="tag t-mid">弱</span></td></tr>
+<tr><td><code>w</code> 的实物值</td><td>单点反标定，与 <code>k</code> 不可分</td><td><span class="tag t-mid">弱</span></td></tr>
+<tr><td><code>δ</code> 的实物范围</td><td>无</td><td><span class="tag t-no">缺</span></td></tr>
+</table>
+
+<h2>八、可宣称 / 不可宣称</h2>
+
+<div class="box ok">
+<p><b>可宣称</b></p>
+<ol>
+<li>在 <code>M(x)≤1</code>、<code>μ_R≤1</code>、<code>λ/d≤1</code> 的物性/几何域内，
+<code>min{0,A<sup>1/3</sup>−1} ≤ D_m ≤ max{A<sup>1/3</sup>,(cB)<sup>1/(3−n)</sup>}−1</code>，<code>c=λ/d</code>。本案例该域为根 x≤5.2047（T≤875.8 K）；<code>δ=0</code> 时退化为 <b>+9.9131%</b>。</li>
+<li><code>|D_m|≤3%</code> 的判据是一条<b>带</b>：<code>δ &lt; K₊−1 = 9.2755604%</code> 且 <code>w ∈ [max(0,w₋), min(1,w₊)]</code>，<code>w_±=(K_±−A)/(f_±−A)</code>。两条边界对 <code>δ</code> 单调下降。</li>
+<li>负向无阈值：<code>δ→−1</code> 仍存在可行带 <code>[0.708403, 0.837277]</code>（模型内）。</li>
+<li>KYLIN 根管结论不受 <code>F_dep_iv</code> 缺陷影响（该处 <code>δ=0</code>）。</li>
+</ol>
+</div>
+
+<div class="box warn">
+<p><b>不可宣称</b></p>
+<ol type="a">
+<li>「界对所有 <code>δ&gt;−1</code> 成立」——x=6 反例；需 <code>M≤1</code>。</li>
+<li>「<code>δ≤9.2727%</code> 是硬上限」「<code>δ≤0</code> 时判据不变」——漏负向分支，且阈值应取 <code>K₊−1</code>。</li>
+<li>「<code>λ/d</code> 不影响界」——v5 隐含 <code>c=1</code>；<code>c≠1</code> 时第二支要乘 <code>c</code>。</li>
+<li>「<code>δ</code> 有实物范围」——Yue 表 2 未核，且单侧不够。</li>
+<li>任何把上面的带当"台架保证 ≤3%"的句子——它是<b>模型条件曲线</b>。</li>
+</ol>
+</div>
+
+<h2>九、文件与复现</h2>
+
+<table>
+<tr><th>文件</th><th>内容</th></tr>
+<tr><td><code>source_free_bound_v6.py</code> · <code>source_free_bound_v6_log.txt</code></td>
+<td>[0]/A–H 九段，205 行日志；依赖同目录 <code>source_free_bound_v5.py</code>（区间核与 <code>Model</code>，v5 的 <code>main</code> 不执行）</td></tr>
+<tr><td><code>plot_zhao_3pct_band.py</code> · <code>zhao_3pct_band.svg</code> · <code>zhao_3pct_band.csv</code></td>
+<td>3% 可行带图（61 点）与本轮 CSV；CSV 含 <code>w_min/w_max</code> 截断前与截断后两列</td></tr>
+</table>
+
+<p class="small">复现命令（在 <code>比例失真_计算/</code> 下）：<code>python source_free_bound_v6.py</code>；<code>python plot_zhao_3pct_band.py</code>。上一轮（v5）报告已<b>加部分作废横幅</b>：作废的是"对所有 δ&gt;−1"的量词与"δ≤9.2727% 且 w≤w*"的判据形状；其 δ=0 条件包络与 KYLIN 根管证书仍有效。</p>
+
+<p class="small">下一轮的三件事（按限制程度）：① Yue 2017 全文（付费墙）核表 2 表头与功率条件；② Li 2015 的 24 kW 之外第二个实测点作留出验证，只预测不重标定；③ 若拿不到成对局阻，就把 <code>δ</code> 明确写成"声明模型的自由参数"，论文正文只出 <code>D(δ)</code> 与判据带，不出现任何"本台架保证 ≤3%"。</p>
+
+</div>
+</body>
+</html>
