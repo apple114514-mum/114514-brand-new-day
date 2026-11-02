@@ -1,11 +1,12 @@
 # 自然循环缩比失真研究：文件索引与 Workbuddy 交接
 
-更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**；完整推导、表格及证据边界请看下方两份报告。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
+更新日期：2026-11-02。**本文件是下载入口和下一轮工作素材**。本日新增的“源无关条件界”复核应作为**最新版本**阅读：它修正了比热比方向、摩擦段 `L/D` 因子，并将 17.9 kW 降级为待核原文的候选外部对照。下方旧报告保留审计轨迹；如有冲突，以最新复核为准。链接使用完整仓库地址，单独下载这份 Markdown 后仍可点击；本地使用前执行 `git pull`。
 
 ## 文件下载
 
 | 主题 | 文件 | 用途 |
 |---|---|---|
+| **最新复核（先读）** | [源无关条件界复核 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-review-20261102.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-review-20261102.md) · [复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-audit-20261102.py) · [结果 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/source-free-bound-audit-20261102.csv) | 检查通用 `K_R` 的长度因子、比热比方向和 KYLIN 热损反例；分清候选留出点与已验证工况 |
 | Zhao 成对前向模型 | [复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-review-20261101.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-review-20261101.md) | 流量/温升口径、精确关系、Re 内生求解及“认证上界”审查 |
 | Zhao 成对前向模型 | [复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-consistency-20261101.py) · [原上传黏度结果 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-consistency-20261101.csv) · [赵文同版黏度结果 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/paired-forward-zhao-property-20261101.csv) | 用两种黏度式复算同一条件模型；CSV 可由脚本重新生成 |
 | KYLIN-II 四段模型 | [第二轮复核报告 PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-second-review-audit-20261101.pdf) · [可编辑 Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-second-review-audit-20261101.md) | 名义摩擦份额、共同阻力成对扫描、缩比参照口径及跨案例判据审查 |
@@ -44,7 +45,7 @@
 
 ## 下一轮给 Workbuddy 的任务说明
 
-> 请以本文件和链接中的两份复核报告为当前版本，**先核来源，再建界**。优先找到 KYLIN-II 的 24 kW 之外一个同装置独立工况，以及热源积分、冷端参数、真实流道几何、`UA/US`、逐段阻力的来源。将 24 kW 点用于固定参数，留出点只预测、不重新拟合。若找不到可靠第二点，请明确标注当前只能做模型内条件情景，改用有公开几何及多工况数据的回路也可以。建立带来源的联合输入域、物性/相态有效域后，才证明两侧根存在与唯一、全域包含界及设计判据。请不要复用 Zhao 情景的 `w≤0.302`，也不要把抽样范围称为认证上界。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
+> 请先读本文件所链接的**最新“源无关条件界”复核**，再读此前两份报告，**先核来源，再建界**。优先取得 Yue 2017、Li 2015、Xu FR26 原文，核实 17.9 kW 与 24 kW 是否同装置同配置，以及热源积分、冷端条件、真实流道几何、`UA/US`、逐段阻力的来源。将 24 kW 点用于固定参数，留出点只预测、不重新拟合；由能量平衡反算的流量与温升不能当两个独立测量。若找不到可靠第二点，请明确标注当前只能做模型内条件情景。建立带来源的联合输入域后，才证明根存在与唯一、全域包含界及设计判据。通用式务必保留摩擦项的 `L_M/L_P ÷ D_M/D_P`，比热比放在正确位置，并统一理想分母。请不要复用 Zhao 情景的 `w≤0.302`，也不要把抽样范围称为认证上界。输出按“选用什么—依据是什么—可复核结果—局限—下一步”组织，不需要 PPT。
 
 ## 来源边界
 
