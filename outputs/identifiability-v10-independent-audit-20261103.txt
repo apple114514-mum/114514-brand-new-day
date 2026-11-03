@@ -1,0 +1,21 @@
+single paired point: x=1.028768352858, D=2.876835286%, K=1.088839060851
+one equation: A+B*f(x)=1.088839060851; reference A=0.708527840000, B=0.291472160
+calibration line: B=0.000000000, A=1.088839061, same observed D=2.876835%
+calibration line: B=0.262324944, A=0.746558962, same observed D=2.876835%
+calibration line: B=0.291472160, A=0.708527840, same observed D=2.876835%
+calibration line: B=0.320619376, A=0.670496718, same observed D=2.876835%
+calibration line: B=0.600000000, A=0.305962465, same observed D=2.876835%
+fixed A,B, varying unmeasured c=0.6: w=0.485787, delta=+37.7888%
+fixed A,B, varying unmeasured c=1.0: w=0.291472, delta=-0.0000%
+fixed A,B, varying unmeasured c=1.5: w=0.194315, delta=-12.0590%
+two-sided |D|<=3% model band at B=0.291472160: 0.537139606578 <= A <= 0.712346444415
+reference A=0.708527840000; lower margin=0.171388233; upper margin=0.003818604
+reported point lies 0.123165 percentage points below +3%
+v10 hypothetical Q ratio=1.25: |df|=0.024039, sigma_B_absolute=0.882455, sigma_B/B=302.8%
+v10 hypothetical Q ratio=2.00: |df|=0.073232, sigma_B_absolute=0.289669, sigma_B/B=99.4%
+v10 hypothetical Q ratio=5.00: |df|=0.163771, sigma_B_absolute=0.129530, sigma_B/B=44.4%
+v10 hypothetical Q ratio=10.00: |df|=0.227812, sigma_B_absolute=0.093117, sigma_B/B=31.9%
+paired common Q multiplier=1.0: relative flow multiplier=1.000000, Re_P/Re_M=2.889338342 (unchanged)
+paired common Q multiplier=5.0: relative flow multiplier=1.709976, Re_P/Re_M=2.889338342 (unchanged)
+paired common Q multiplier=10.0: relative flow multiplier=2.154435, Re_P/Re_M=2.889338342 (unchanged)
+audit complete: all numbers above are conditional on the archived v5 model

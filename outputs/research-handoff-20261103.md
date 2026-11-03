@@ -1,6 +1,17 @@
-# 自然循环缩比研究：2026-11-03 原文与逐构件复核交接
+# 自然循环缩比研究：2026-11-03 当前交接
 
-这份 Markdown 是给 Workbuddy 的**当前下载入口**。以本轮原文核读与[复核报告](component-re-v2-review-20261103.md)为准；此前文件保留演变记录，不应直接引用作废的来源归属或设计保证。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读下方第十轮可辨识性复核，再读第九轮[逐构件复核](component-re-v2-review-20261103.md)；此前文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+
+## 第十轮新增：先看这里
+
+| 文件 | 下载链接 | 用法 |
+|---|---|---|
+| **可辨识性复核** | [PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-review-20261103.pdf) · [Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-review-20261103.md) | 保留单点 `A+Bf=K` 退化；修正 δ 的物理含义、两点识别、误差表与双侧 3% 带 |
+| **独立数值** | [复算脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-independent-audit-20261103.py) · [输出](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-independent-audit-20261103.txt) · [原脚本可运行 ZIP](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-repro-20261103.zip) | v10 248 行原日志已复现；独立脚本显示假设十倍功率跨度的 `σ_B/B≈32%`，不是 9.3% |
+| **Workbuddy 上传原件** | [HTML](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-upload-report-20261103.html) · [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-upload-20261103.py) · [日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/identifiability-v10-upload-log-20261103.txt) · [README](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/lit-mirror-upload-readme-20261103.txt) | 用于追踪原命题与数值；解释以复核报告为准 |
+| **文献镜像与新技能** | [三篇原文＋逐页文本＋证据卡 ZIP](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/literature-mirror-20261103.zip) · [上传技能包](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/lit-mirror-upload-skillpack-20261103.zip) · [本地适配说明](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/.codex/skills/LIT-MIRROR-IMPORTED-20261103.md) | 新装 `lit-mirror`；未覆盖旧技能；镜像 3 PDF/3 TXT/5 断言，审计通过但仍需核 PDF 内容 |
+
+**第十轮结论边界：** 单个成对流量 FoM 只识别一条 `A,B` 等值线；`δ` 可由同口径成对局阻独立约束，不能说“永不可观测”。Li/Yue 是 KYLIN 单侧资料，不是两套装置的两条方程。Zhao 的条件点值 `+2.876835%` 距 +3% 为 `0.123165 pp`；`B±10%` 固定 `A` 的带是无来源情景，不是该点的测量不确定度。下一轮请先执行下文的 KYLIN 单侧闭合与 17.9 kW 留出核验，再讨论成对参数域和 GSA。
 
 ## 先下载
 

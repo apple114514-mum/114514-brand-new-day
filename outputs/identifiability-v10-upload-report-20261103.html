@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可辨识性与参数域：δ 到底能不能「确认」（2026-11-03 第十轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.hit{background:#fdf0d5}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>可辨识性与参数域：<span class="mono"><span class="gk">δ</span></span> 到底能不能「确认」</h1>
+<div class="sub">2026-11-03 · 第十轮 · 10 节 8 表 · 脚本 <code>identifiability_v10.py</code>（248 行日志）· 技能包 <code>lit-mirror_skillpack_2026-11-03.zip</code></div>
+
+<div class="box warn">
+<p><b>一句话结论。</b>前九轮一直在给 <code><span class="gk">δ</span></code> 找范围——Re 包络、逐构件 <code>K<sub>i</sub></code>(Re)、参数溯源。
+本轮换了个更靠前的问题：<b><code><span class="gk">δ</span></code> 在这个模型里有没有观测足迹</b>。答案是没有，而且这不是数据不足。</p>
+<p>把 <code>c = <span class="gk">λ</span>/d</code> 从 0.6 扫到 1.5，<code><span class="gk">δ</span></code> 从 <b>−12.06%</b> 走到 <b>+37.79%</b>（跨 49.8 pp），
+而自洽解 <code>x</code> 每一位数字都不变（差异 <code>0.00e+00</code>）。<b>50 pp 的 <code><span class="gk">δ</span></code> 差别不产生任何可观测量差别。</b></p>
+<p>所以「一直确认不了」不是做得不够，是<b>在给一个不可观测的坐标找范围</b>。
+但这不坏——方程里真正出现的只有两个量 <code>A</code>、<code>B</code>，它们是可辨识的，
+而且 3% 判据只依赖它们。<b>转过身来做可辨识量，这条路当天就通了。</b></p>
+</div>
+
+<h2>一、结构事实：方程里只有两个数</h2>
+
+<p>模型方程（<code>source_free_bound_v5.py</code> 的 <code>F_s</code>）是</p>
+
+<pre><code>x³ · <span class="gk">ρ</span><sub>T</sub>/<span class="gk">ρ</span><sub>TP</sub> = G(x,w) · c<sub>p,T</sub>/c<sub>p,TP</sub>
+G(x,w) = (1−w)(1+<span class="gk">δ</span>) + w·(<span class="gk">λ</span>/d)·f(x)
+f(x)   = (R<sub>id</sub> · x · d · <span class="gk">μ</span><sub>R</sub>(T))<sup>n</sup></code></pre>
+
+<p>记</p>
+
+<pre><code>A = (1−w)(1+<span class="gk">δ</span>)      ← 与 Re 无关的那一块（形阻 + 几何）
+B = w·(<span class="gk">λ</span>/d)          ← 随 Re 软化那一块的幅度（摩擦）</code></pre>
+
+<p>则 <code>G = A + B·f(x)</code>，而 <code>f</code> 只依赖 <code>(x; d, R<sub>id</sub>, <span class="gk">μ</span><sub>R</sub>, n)</code>。于是</p>
+
+<pre><code>F = 0  ⟺  x³·<span class="gk">ρ</span>/c<sub>p</sub> = A + B·f(x)</code></pre>
+
+<p><b><code>A</code>、<code>B</code> 之外的参数一个都不出现。</b>这不是近似，是方程的形式。
+反解也直接：<code>w = B/c</code>、<code><span class="gk">δ</span> = A/(1−w) − 1</code>。所以
+<code>(w, <span class="gk">δ</span>)</code> 是 <code>(A, B, c)</code> 的<b>坐标变换</b>，不是三个独立物理量。</p>
+
+<div class="box">
+<p>一个坐标变换的结果能不能「从文献确认」，取决于被变换的量是否可观测。
+<code><span class="gk">δ</span></code> 恰恰不可观测——下面三节就是证明，一层比一层狠。</p>
+</div>
+
+<h2>二、单点：<code>D</code> 可辨识，<code>(A,B)</code> 与 <code><span class="gk">δ</span></code> 都不可辨识</h2>
+
+<p>一个成对工况只给一个方程：<code>A + B·f(x<sub>R</sub>) = K<sub>R</sub></code>。两个未知量，约束集是一条<b>直线</b>。
+沿这条线走，<code>B</code> 取不同值、<code>A</code> 反着调平，解出<b>同一个</b> <code>x</code>：</p>
+
+<table>
+<thead><tr>
+<th class="num">w</th><th class="num">B = w·c</th><th class="num">A = K<sub>R</sub> − B·f<sub>R</sub></th>
+<th class="num"><span class="gk">δ</span> = A/(1−w) − 1</th><th class="num">x</th><th class="num">D<sub>m</sub></th>
+</tr></thead>
+<tbody>
+<tr><td class="num">0.0000</td><td class="num">0.000000</td><td class="num">1.088839</td><td class="num">+8.8839%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+<tr><td class="num">0.0500</td><td class="num">0.050000</td><td class="num">1.023599</td><td class="num">+7.7473%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+<tr><td class="num">0.1000</td><td class="num">0.100000</td><td class="num">0.958360</td><td class="num">+6.4844%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+<tr><td class="num">0.2000</td><td class="num">0.200000</td><td class="num">0.827880</td><td class="num">+3.4850%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+<tr class="hit"><td class="num">0.2915</td><td class="num">0.291472</td><td class="num">0.708528</td><td class="num">−0.0000%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+<tr><td class="num">0.4000</td><td class="num">0.400000</td><td class="num">0.566921</td><td class="num">−5.5131%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+<tr><td class="num">0.6000</td><td class="num">0.600000</td><td class="num">0.305962</td><td class="num">−23.5094%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+<tr><td class="num">0.8000</td><td class="num">0.800000</td><td class="num">0.045004</td><td class="num">−77.4982%</td><td class="num">1.028768353</td><td class="num">+2.8768%</td></tr>
+</tbody>
+</table>
+
+<p class="small">基准点 <code>x<sub>R</sub> = 1.028768353</code>、<code>f<sub>R</sub> = 1.304794327</code>、
+<code>M<sub>R</sub> = 0.999974892</code>、<code>K<sub>R</sub> = 1.088839061</code>。整张表由 <code>identifiability_v10.py [C]</code> 生成。</p>
+
+<h3>物理前提把线截成一段</h3>
+
+<p><code><span class="gk">δ</span> ≥ 0</code> 是物理要求（局阻不像摩擦那样随 Re 软化）。它给出</p>
+
+<pre><code><span class="gk">δ</span> ≥ 0  ⟺  K<sub>R</sub> − w·f<sub>R</sub> ≥ 1 − w  ⟺  w ≤ (K<sub>R</sub>−1)/(f<sub>R</sub>−1) = 0.291472160</code></pre>
+
+<p>于是单点 + <code><span class="gk">δ</span>≥0</code> + <code>c=1</code> 把 <code><span class="gk">δ</span></code> 夹到 <b><code>[0, +8.8839%]</code></b>。
+这比第九轮 Re 包络给的 <code>[0, 23.64%]</code> <b>紧 2.66 倍</b>——成对数据比文献关联式更有约束力。</p>
+
+<div class="box warn">
+<p><b>但两件事必须同时说清。</b>（a）上端 <code>+8.8839%</code> 取自 <code>w=0</code>（零摩擦），是「数据允许」的边界，不是物理可信值；
+（b）整个区间是在 <code>c=1</code> 下算的。<code>c</code> 一改，区间整体搬家——见下一节。</p>
+</div>
+
+<h2>三、规范自由度：<code>c</code> 一动，<code><span class="gk">δ</span></code> 走 49.8 pp，<code>x</code> 不动</h2>
+
+<p>固定 <code>(A, B)</code>，只改 <code>c = <span class="gk">λ</span>/d</code>，再按 <code>w = B/c</code>、<code><span class="gk">δ</span> = A/(1−w)−1</code> 换回原坐标：</p>
+
+<table>
+<thead><tr>
+<th class="num">c = <span class="gk">λ</span>/d</th><th class="num">w = B/c</th><th class="num"><span class="gk">δ</span></th><th class="num">x</th><th class="num">D<sub>m</sub></th><th class="num">|x − x<sub>R</sub>|</th>
+</tr></thead>
+<tbody>
+<tr><td class="num">0.60</td><td class="num">0.485787</td><td class="num"><b>+37.7888%</b></td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr><td class="num">0.70</td><td class="num">0.416389</td><td class="num">+21.4041%</td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr><td class="num">0.80</td><td class="num">0.364340</td><td class="num">+11.4634%</td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr><td class="num">0.90</td><td class="num">0.323858</td><td class="num">+4.7898%</td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr class="hit"><td class="num">1.00</td><td class="num">0.291472</td><td class="num">−0.0000%</td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr><td class="num">1.10</td><td class="num">0.264975</td><td class="num">−3.6050%</td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr><td class="num">1.20</td><td class="num">0.242893</td><td class="num">−6.4164%</td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr><td class="num">1.35</td><td class="num">0.215905</td><td class="num">−9.6375%</td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+<tr><td class="num">1.50</td><td class="num">0.194315</td><td class="num"><b>−12.0590%</b></td><td class="num">1.028768353</td><td class="num">+2.876835%</td><td class="num">0.00e+00</td></tr>
+</tbody>
+</table>
+
+<p>基准 <code>A = 0.708527840</code>、<code>B = 0.291472160</code>。<b>这是本轮的主结果</b>：
+<code><span class="gk">δ</span></code> 的 49.8 pp 跨度不产生任何可观测量差别。任何「<code><span class="gk">δ</span></code> 的物理域」的说法，
+都只在 <code>c</code> 被声明之后才有意义。</p>
+
+<p>而 <code>c = (L<sub>M</sub>/L<sub>P</sub>)/(D<sub>M</sub>/D<sub>P</sub>)</code> 是<b>两台装置的图纸量</b>：</p>
+
+<ul>
+<li>赵案可由表 3 八行全 2:1 的均匀缩放签名推出 <code>c = 1</code>（L2，第八轮已定）；</li>
+<li>KYLIN 案推不出——Xu 表 2 不给水平段/竖直段分配（第九轮已撤回 <code>d<sub>R</sub></code> 那处引用）。</li>
+</ul>
+
+<h3>顺带解开一个旧疙瘩：<code>c ≤ 1</code> 那条前提就是 <code><span class="gk">δ</span> ≥ 0</code></h3>
+
+<p><code><span class="gk">δ</span> ≥ 0 ⟺ A ≥ 1−w = 1−B/c ⟺ c ≤ B/(1−A)</code>。基准点 <code>A = 0.708527840</code>、<code>B = 0.291472160</code>，于是</p>
+
+<pre><code>c* = B/(1−A) = 1.000000000000</code></pre>
+
+<table>
+<thead><tr><th class="num">c</th><th class="num">w = B/c</th><th class="num"><span class="gk">δ</span></th><th>判定</th></tr></thead>
+<tbody>
+<tr><td class="num">0.95</td><td class="num">0.306813</td><td class="num">+2.2131%</td><td><span class="tag t-ok"><span class="gk">δ</span> ≥ 0</span></td></tr>
+<tr><td class="num">0.99</td><td class="num">0.294416</td><td class="num">+0.4173%</td><td><span class="tag t-ok"><span class="gk">δ</span> ≥ 0</span></td></tr>
+<tr><td class="num">1.00</td><td class="num">0.291472</td><td class="num">−0.0000%</td><td><span class="tag t-ok">边界</span></td></tr>
+<tr><td class="num">1.01</td><td class="num">0.288586</td><td class="num">−0.4057%</td><td><span class="tag t-no"><span class="gk">δ</span> &lt; 0</span></td></tr>
+<tr><td class="num">1.05</td><td class="num">0.277593</td><td class="num">−1.9213%</td><td><span class="tag t-no"><span class="gk">δ</span> &lt; 0</span></td></tr>
+</tbody>
+</table>
+
+<p>基准点满足 <code>A + B = 1</code>（这正是「<code>c=1</code> 处 <code><span class="gk">δ</span>=0</code>」的定义），所以 <code>B/(1−A)</code> 恰好是 1。
+<b>第五轮漏写的那条 <code>c = <span class="gk">λ</span>/d ≤ 1</code> 的前提，不是额外的数学条件，是物理前提 <code><span class="gk">δ</span>≥0</code> 的坐标翻译。</b>
+这也解释了为什么它「恰好」在赵案上看不出错——赵案 <code>c</code> 正好等于 1。</p>
+
+<h2>四、两点才可辨识：<code>B</code> 来自 <code>K<sub>R</sub>(x)</code> 的斜率</h2>
+
+<p>两个工况给两个方程，<code>A</code>、<code>B</code> 就能分开：</p>
+
+<pre><code>A + B·f(x₁) = K₁
+A + B·f(x₂) = K₂
+⇒  B = (K₁−K₂)/(f₁−f₂),   A = K₁ − B·f₁
+⇒  |dB| ≈ √2·<span class="gk">σ</span><sub>K</sub>/|f₁−f₂|,   <span class="gk">σ</span><sub>K</sub> ≈ 3<span class="gk">σ</span><sub>D</sub></code></pre>
+
+<p>自然循环下 <code>ṁ ∝ Q<sup>1/3</sup></code>（第八轮弹性锚），故 <code>Re</code> 比 = <code>(Q比)<sup>1/3</sup></code>，
+<code>f</code> 比 = <code>(Q比)<sup>−1/12</sup></code>。功率跨度越大，<code>f₁−f₂</code> 越大：</p>
+
+<table>
+<thead><tr>
+<th class="num">Q<sub>hi</sub>/Q<sub>lo</sub></th><th class="num">Re 比</th><th class="num">f₁ − f₂</th>
+<th class="num">dB/B @ <span class="gk">σ</span><sub>D</sub>=0.5 pp</th><th class="num">dB/B @ <span class="gk">σ</span><sub>D</sub>=0.1 pp</th>
+</tr></thead>
+<tbody>
+<tr><td class="num">1.25</td><td class="num">1.0772</td><td class="num">0.024039</td><td class="num">88.2%</td><td class="num">17.6%</td></tr>
+<tr><td class="num">1.50</td><td class="num">1.1447</td><td class="num">0.043351</td><td class="num">48.9%</td><td class="num">9.8%</td></tr>
+<tr><td class="num">2.00</td><td class="num">1.2599</td><td class="num">0.073232</td><td class="num">29.0%</td><td class="num">5.8%</td></tr>
+<tr><td class="num">3.00</td><td class="num">1.4422</td><td class="num">0.114150</td><td class="num">18.6%</td><td class="num">3.7%</td></tr>
+<tr><td class="num">5.00</td><td class="num">1.7100</td><td class="num">0.163771</td><td class="num">13.0%</td><td class="num">2.6%</td></tr>
+<tr><td class="num">10.00</td><td class="num">2.1544</td><td class="num">0.227812</td><td class="num">9.3%</td><td class="num">1.9%</td></tr>
+</tbody>
+</table>
+
+<div class="box">
+<p>即使功率从 10% 扫到 100%（10 倍），<code>B</code> 也只能定到约 <b>9%</b>（<code>D</code> 准到 0.5 pp）。
+这是<b>实验设计要求</b>，不是文献缺口：一个功率扫描就能做，但要宽。</p>
+<p>单点（赵现在的情况）对应 <code>Q比 = 1</code> ⇒ <code>f₁−f₂ = 0</code> ⇒ <code>dB</code> 无穷。
+<b>这就是为什么前九轮都「算不出」：单点上 <code>A</code> 与 <code>B</code> 不可分离，数据再准也没用。</b></p>
+</div>
+
+<h2>五、3% 判据在 <code>(A,B)</code> 平面：<code>A ≤ A<sub>crit</sub>(B)</code></h2>
+
+<p><code>F=0</code> 在 <code>x = 1.03</code> 处成立，等价于 <code>A + B·f(x<sub>t</sub>) = K<sub>t</sub></code>，故</p>
+
+<pre><code>A<sub>crit</sub>(B) = K<sub>t</sub> − B·f(x<sub>t</sub>)
+K<sub>t</sub> = 1.03³/M(1.03) = 1.092755604,   f(x<sub>t</sub>) = 1.305130341</code></pre>
+
+<table>
+<thead><tr>
+<th class="num">B</th><th class="num">A<sub>crit</sub>(B)</th><th class="num">A = K<sub>R</sub> − B·f<sub>R</sub></th>
+<th class="num"><span class="gk">Δ</span>A</th><th class="num">相对裕度</th>
+</tr></thead>
+<tbody>
+<tr><td class="num">0.2000</td><td class="num">0.831729536</td><td class="num">0.827880195</td><td class="num">+0.3849%</td><td class="num">+0.4650%</td></tr>
+<tr><td class="num">0.2500</td><td class="num">0.766473019</td><td class="num">0.762640479</td><td class="num">+0.3833%</td><td class="num">+0.5025%</td></tr>
+<tr class="hit"><td class="num">0.2915</td><td class="num">0.712346444</td><td class="num">0.708527840</td><td class="num">+0.3819%</td><td class="num"><b>+0.5389%</b></td></tr>
+<tr><td class="num">0.3500</td><td class="num">0.635959985</td><td class="num">0.632161046</td><td class="num">+0.3799%</td><td class="num">+0.6009%</td></tr>
+<tr><td class="num">0.4000</td><td class="num">0.570703468</td><td class="num">0.566921330</td><td class="num">+0.3782%</td><td class="num">+0.6671%</td></tr>
+<tr><td class="num">0.5000</td><td class="num">0.440190433</td><td class="num">0.436441897</td><td class="num">+0.3749%</td><td class="num">+0.8589%</td></tr>
+</tbody>
+</table>
+
+<p>斜率 <code>dA<sub>crit</sub>/dB = −f(x<sub>t</sub>) = −1.305130</code>。
+赵案在 <code>B = 0.291472</code> 处的裕度 <code>0.003818604 = +0.5389%</code>——
+<b>与第九轮算的 <code><span class="gk">δ</span><sub>allow</sub> = +0.5389%</code> 是同一个数，两套算法互校通过。</b></p>
+
+<h2>六、判决的脆弱性：<code>B</code> 的 ±10% 是裕度的 10 倍</h2>
+
+<p>注意第二节里 <code>D</code> 不变，是因为 <code>A</code> 被 <code>A = K<sub>R</sub> − B·f<sub>R</sub></code> 反着调平了。
+真正的敏感度要把 <code>A</code> 固定（<code>A</code> 是独立聚合量，不能跟着 <code>B</code> 变）：</p>
+
+<table>
+<thead><tr>
+<th class="num">B 偏移</th><th class="num">B</th><th class="num">A（固定）</th><th class="num">x</th><th class="num">D<sub>m</sub></th><th class="num">相对基准</th>
+</tr></thead>
+<tbody>
+<tr><td class="num">−20.0%</td><td class="num">0.233178</td><td class="num">0.708528</td><td class="num">1.003706357</td><td class="num">+0.3706%</td><td class="num">−2.5062%</td></tr>
+<tr><td class="num">−10.0%</td><td class="num">0.262325</td><td class="num">0.708528</td><td class="num">1.016364010</td><td class="num"><b>+1.6364%</b></td><td class="num">−1.2404%</td></tr>
+<tr class="hit"><td class="num">0.0%</td><td class="num">0.291472</td><td class="num">0.708528</td><td class="num">1.028768353</td><td class="num">+2.8768%</td><td class="num">0.0000%</td></tr>
+<tr><td class="num">+10.0%</td><td class="num">0.320619</td><td class="num">0.708528</td><td class="num">1.040931356</td><td class="num"><b>+4.0931%</b></td><td class="num">+1.2163%</td></tr>
+<tr><td class="num">+20.0%</td><td class="num">0.349767</td><td class="num">0.708528</td><td class="num">1.052864136</td><td class="num">+5.2864%</td><td class="num">+2.4096%</td></tr>
+</tbody>
+</table>
+
+<p><code>B</code> 偏 ±10% 使 <code>D<sub>m</sub></code> 动 <b>2.46 pp</b>，即 ±1.22 pp。
+而 <code>D<sub>m</sub> = +2.8768%</code> 距 3% 只有 <b>0.12 pp</b>——这段余量是 <code>B</code> 不确定度的
+<b>1/9.9</b>。<b>「<code>D<sub>m</sub> ≤ 3%</code>?」这个问题用现有数据不可判。</b></p>
+
+<div class="box ok">
+<p><b>可写的不是二元判决，是区间：</b><code>D<sub>m</sub> ∈ [+1.6364%, +4.0931%]</code>（<code>B</code> 的 ±10% 诱导，<code>A</code> 固定）。</p>
+<p>这正是 Carnevali 2025 说的「判据要给出对 FoM 本身的影响」——<b>报告 FoM 的区间，而不是报告「通过/不通过」。</b>
+量级（<code>≈3%</code>）是站得住的，判决（<code>≤3%</code>）站不住。这个区分本身就是方法学贡献。</p>
+</div>
+
+<h2>七、直接回答「一直确认不了吗」：三种人三种答案</h2>
+
+<table>
+<thead><tr><th>角色</th><th>能不能确认 <code><span class="gk">δ</span></code></th><th>先决条件</th></tr></thead>
+<tbody>
+<tr><td>有图纸 + 有功率扫描</td><td><span class="tag t-ok">能</span></td><td>先定 <code>c</code>，再由 <code>A</code>、<code>B</code> 反算 <code><span class="gk">δ</span></code></td></tr>
+<tr><td>只有论文（含我们）</td><td><span class="tag t-no">不能，且是结构性不能</span></td><td><code>c</code> 与 <code>B</code> 都拿不到，<code><span class="gk">δ</span></code> 无足迹</td></tr>
+<tr><td>论文作者</td><td><span class="tag t-mid">不该报 <span class="gk">δ</span></span></td><td>报 <code>(A,B)</code> 与 <code>D</code> 的区间</td></tr>
+</tbody>
+</table>
+
+<p>三样东西各缺一路，而且<b>没有一样是文献检索能补的</b>：</p>
+
+<table>
+<thead><tr><th>量</th><th>是什么</th><th>从哪里来</th><th>文献能给吗</th></tr></thead>
+<tbody>
+<tr><td><code>B</code></td><td><code>w·(<span class="gk">λ</span>/d)</code>，摩擦块幅度</td><td>功率扫描（实验）</td><td>不能</td></tr>
+<tr><td><code>c</code></td><td><code><span class="gk">λ</span>/d</code>，段长/管径比</td><td>两台装置图纸</td><td>不能（原文不给分配）</td></tr>
+<tr><td><code><span class="gk">δ</span></code></td><td><code>A/(1−B/c) − 1</code>，是导出的</td><td>由 <code>A</code>、<code>B</code>、<code>c</code> 算出</td><td><b>不能，它不是观测量</b></td></tr>
+</tbody>
+</table>
+
+<p>前九轮把 <code><span class="gk">δ</span></code> 当成第三样独立信息去找——它其实是前两样的函数。
+这就是为什么包络、逐构件 <code>K<sub>i</sub></code>(Re)、参数溯源三条路都走不到底：
+<b>它们都在给一个没有观测足迹的坐标找范围。</b></p>
+
+<h2>八、关于「Codex 看不到文献」这件事</h2>
+
+<div class="box warn">
+<p><b>技能装不出网络。</b>技能是文本加脚本，不能让一个不能联网的链路看到网页。
+所以「Codex 视角受限」靠装技能解决不了，得<b>换角色</b>：联网侧只负责取件、抽文本、定级；
+推理侧只读工作区里的 <code>.txt</code>，按页码引。<b>把「检索者」改成「读者」</b>，局限就消失了。</p>
+</div>
+
+<p>这就是随这份报告一起交付的 <code>lit-mirror</code> 技能在做的事：</p>
+
+<ol>
+<li><b>取件单</b>——给联网侧的具体要求（要哪张表、哪个式子、哪页），不是「帮我找一下 XX 文献」。
+判断值不值得付一次全文费的三条：逐段/逐构件数据、多功率点、测量方法与不确定度。三条都没有，付费也白花。</li>
+<li><b><code>pdf2txt.py</code></b>——PDF 抽成带 <code>[[pN]]</code> 页码锚的纯文本，离线、只依赖 pypdf。
+扫描件会报 <code>EMPTY_PAGE</code>，不许凭印象补。</li>
+<li><b>证据卡 + <code>claims.csv</code></b>——每条数字后面必须跟 <code>[[pN]] 表M</code>；定级只用 L1/L2/L3/L4，L3 不得当 L1 用。</li>
+<li><b><code>mirror_check.py</code></b>——审计缺件，退出码 0 才算过。<b>缺件清单就是下一张取件单</b>，这是这个技能真正的输出。</li>
+</ol>
+
+<p>交给推理侧只需要一句：「你只能引用 <code>claims.csv</code> 里 grade ≥ L2 的条目，每条要给 <code>[[pN]] 表M</code>；其余写未核。」
+<b>不要给它 PDF</b>——它读不了，还会假装读过。</p>
+
+<h2>九、可写 / 不可写</h2>
+
+<div class="box ok">
+<p><b>可写</b></p>
+<ol>
+<li>把模型重参数化为 <code>x³·<span class="gk">ρ</span>/c<sub>p</sub> = A + B·f(x)</code>，<code>A</code>、<code>B</code> 是两个可辨识聚合量；</li>
+<li>单成对工况下 <code>D</code> 可辨识、<code>(A,B)</code> 不可辨识——这是<b>模型的结构性质</b>，可证明、可复算；</li>
+<li><code><span class="gk">δ</span></code> 是 <code>(A,B,c)</code> 的坐标变换结果，报它的<b>诱导区间</b>并注明所声明的 <code>c</code>；</li>
+<li>3% 判据写成 <code>A ≤ A<sub>crit</sub>(B) = K<sub>t</sub> − B·f(x<sub>t</sub>)</code>，即对形阻块的设计要求——<b>这就是「可反解的设计要求」</b>；</li>
+<li>判决脆弱性给成 <code>D</code> 的区间，不给二元结论；</li>
+<li>实验要求：功率扫描跨度 ↔ <code>B</code> 精度 ↔ <code>D</code> 精度的换算表（第四节）。</li>
+</ol>
+</div>
+
+<div class="box warn">
+<p><b>不可写</b></p>
+<ol>
+<li>「<code><span class="gk">δ</span></code> 的物理参数域是 <code>[0, 23.6%]</code>」——先声明 <code>c</code>，否则这句话无意义；</li>
+<li>「赵案满足 3%」——裕度 0.54%，而 <code>B</code> 的 ±10% 是其 10 倍；</li>
+<li>「补到某篇文献的逐段阻力就能确认」——逐段阻力只能定 <code>w</code>，定不了 <code>B</code> 与 <code>c</code>；</li>
+<li>「<code><span class="gk">δ</span></code> 需要留白」——留白的是 <code>B</code> 与 <code>c</code>；<code><span class="gk">δ</span></code> 不留白，它是算出来的。</li>
+</ol>
+</div>
+
+<h2>十、下一步</h2>
+
+<ol>
+<li><b>把 <code>(A,B)</code> 作为正文参数</b>，<code><span class="gk">δ</span></code> 降为附录里的导出量。这一步不改任何数值，只改叙述结构，但能让「物理参数域」这个关口消失。</li>
+<li><b>找一份多功率数据</b>。Li 2015 若有功率扫描（<code>Xu Fig.3b/3c</code> 的实验点全引自它），那它就是分离 <code>A</code>、<code>B</code> 的唯一现成数据集——<b>这是本轮之后最值得花的一次全文费</b>。</li>
+<li><b>功率扫描的设计要求</b>（第四节表）写进论文的「实验建议」：跨度 <code>Q<sub>hi</sub>/Q<sub>lo</sub> ≥ 5</code> 才能把 <code>B</code> 定到 13% 以内。</li>
+<li>赵案的 <code>c=1</code> 要写成 L2 并给依据（表 3 八行全 2:1 的均匀缩放签名）；KYLIN 案的 <code>c</code> 只能声明为自由假设——<b>「<code>c</code> 不唯一」要写进局限，而不是藏起来。</b></li>
+</ol>
+
+<p class="small" style="margin-top:40px;border-top:1px solid var(--line);padding-top:14px">
+复算：<code>python identifiability_v10.py</code>（248 行日志，<code>%%</code> 残留 0 处）。
+技能包：<code>lit-mirror_skillpack_2026-11-03.zip</code>（61 文件，1.1 MB）。<br>
+本轮不含任何新的文献主张；所有数字来自 <code>source_free_bound_v5.py</code> 的模型与上表所列输入。
+</p>
+
+</div>
+</body>
+</html>

@@ -1,2 +1,4 @@
 *.pdf binary
 *.png binary
+*.zip binary
+outputs/identifiability-v10-upload-log-20261103.txt whitespace=-blank-at-eof

@@ -50,6 +50,7 @@
 - **norman-humanize v1.3.2**：按用户选择的文体、修改程度和范围润色中英文文字或 Word 文档；使用上游 Linux x64 版。
 - **zvex-model-sensitivity v1.0.2**（作者 zvex；WorkBuddy skillId `skill_2107645256676827136`）：模型敏感性分析、Morris 筛选与 Sobol 等 GSA 方法选型；输入域和分布须有来源或明确标注为情景。
 - **origin-paper-workspace v1.0.0**（WorkBuddy skillId `skill_2104450706215473152`）：建立论文状态包和论点—证据矩阵，检查来源坐标与学术规范。
+- **lit-mirror v1.0（本地适配）**：将已有 PDF 抽为带 `[[pN]]` 页码的文本、证据卡与断言表，供跨客户端交接；当前云端也能直接核 PDF，审计脚本只检查文件和页码结构，不证明引文内容。导入与修补见 `.codex/skills/LIT-MIRROR-IMPORTED-20261103.md`。
 - **sensitivity-analysis v1.0.0**（作者 天箭星科技；WorkBuddy skillId `skill_2106758297841381376`）：财务情景测算备用技能；不用于本项目的 GSA 或概率风险评估。
 - **research-plot**：科研数据绘图与出图规范。要画图、出图、统一图表风格、出论文级插图（温度/流量/压力曲线、实验 vs 计算对比）时使用。默认论文插图规格：单栏 8.5 cm、600 DPI、矢量优先、单位齐全。
 - **fluent-post**：Fluent/CFD 结果后处理。给了 monitor `.out`、Reports 积分结果、`.xy`/`.csv` 数据，要判断收敛、提特征量（ΔT、Q、Re、Nu、f）、出工况对比表时使用。**未收敛不出结论**。
