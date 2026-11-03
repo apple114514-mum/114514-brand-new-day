@@ -1,6 +1,15 @@
 # 自然循环缩比研究：2026-11-03 当前交接
 
-这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读第十二轮复核，再看第十一轮及更早材料；旧文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读同篇五功率趋势检查和第十二轮复核，再看第十一轮及更早材料；旧文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+
+## 新增：Yue 同篇五功率趋势检查
+
+| 文件 | 下载链接 | 用法 |
+|---|---|---|
+| **趋势检查** | [PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-same-paper-trend-review-20261103.pdf) · [Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-same-paper-trend-review-20261103.md) | Yue §5.1 同一油侧设定，17.9 kW 作锚，四条实验曲线作图读条件对照；4.3 kW 低功率点偏离联合固定闭合 |
+| **原图与复算** | [Yue Fig.4 原图](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/yue-2017-fig4-original-20261103.png) · [五点 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-same-paper-trend-20261103.csv) · [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-same-paper-trend-20261103.py) · [输出](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-same-paper-trend-20261103.txt) | 四个低功率流量为图读约值；`±0.03 kg/s` 是读图敏感性情景，不是仪表误差 |
+
+**给 Workbuddy 的下一步：** 同篇 4.3/7.6/11.2/15.3/17.9 kW 序列比 Li↔Yue 跨论文点更适合先做趋势检查；Yue §5.1 明言油侧条件保持相同，仍未给逐点阀位。固定 `K、η、H、C` 的三次方律从 17.9 kW 预测 4.3 kW `ṁ≈0.696`，Fig.4(c) 平台约 `0.62 kg/s`。不要把残差归给单一机制，也不要用 `ṁc_pΔT_HS≈P` 作独立热账，因为文中流量正是这样反算。优先找二次油进出口焓差、加热器电功率/热损与阀位记录；否则把此结果写成“联合固定闭合的条件趋势诊断”，成对 `δ` 仍空。
 
 ## 第十二轮新增：口径分级和判别门槛
 

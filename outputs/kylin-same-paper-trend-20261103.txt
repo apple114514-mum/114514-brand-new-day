@@ -1,0 +1,8 @@
+ 4.3 kW  observed~0.62  pred=0.696236 kg/s  P/m3 ratio=1.416
+ 7.6 kW  observed~0.82  pred=0.841792 kg/s  P/m3 ratio=1.082
+11.2 kW  observed~0.94  pred=0.957943 kg/s  P/m3 ratio=1.058
+15.3 kW  observed~1.06  pred=1.062912 kg/s  P/m3 ratio=1.008
+17.9 kW  observed~1.12  pred=1.120000 kg/s  P/m3 ratio=1.000
+4.3 kW residual beyond +/-0.03 graph-read stress = 0.046236 kg/s
+using graph-only 17.9 kW anchor~1.10, low-power residual beyond +/-0.03 = 0.033803 kg/s
+Wrote kylin-same-paper-trend-20261103.csv; graph-read stress is not instrument uncertainty
