@@ -1,0 +1,26 @@
+P/m^3 ratio low/high: 1.416101635
+correct momentum+energy elimination: m^3 = H*P_net/(C*K)
+if H alone varies, H_low = H_high/ratio = 2.338745 m
+if K alone varies, K_low = K_high*ratio = 32.655304
+v13's 4.689 m uses the wrong H direction; its fitted L ratios cancel H
+X26-property C(483)/C(633): 1.001496824
+X26-property C max/min on 423.15-773.15 K scan: 1.002187319
+483 K and 633 K are heater temperatures in the 17.9 kW figure, not low/high power means
+absolute model at 500 K, H=3.3119 m: Q_net required for 1.12 kg/s = 18.750932 kW
+relative to 17.9 kW electric input, L_equiv = -0.850932 kW
+Therefore the +1.25 kW relative-fit offset is not an independently calibrated absolute heat loss
+IF reported m=P_electric/(cp*dT_HS) and L is HS external loss: true m_low/high = 0.439767/1.041788 kg/s
+For fixed K,C,H: m_reported is proportional to P^(1/3)*eta^(-2/3); lower eta raises the low-power reported-flow ratio
+v13 Table-2 interpolation K(.62), K(1.12): 24.008000, 23.060000
+in-sample loss fit on four graph points plus anchor: 1.250294 kW
+leave out  4.3 kW: L(train)=0.744825 kW; predicted=0.654446; graph~0.62; residual=+0.034446 kg/s
+leave out  7.6 kW: L(train)=1.366538 kW; predicted=0.801799; graph~0.82; residual=-0.018201 kg/s
+leave out 11.2 kW: L(train)=1.255342 kW; predicted=0.938413; graph~0.94; residual=-0.001587 kg/s
+leave out 15.3 kW: L(train)=1.253833 kW; predicted=1.056420; graph~1.06; residual=-0.003580 kg/s
+Fig.4(b) plateau reread: analyst approximate values, not experimental errors
+ 4.3 kW: dT~ 46.0 K; m*cp*dT/P~0.9710
+ 7.6 kW: dT~ 63.0 K; m*cp*dT/P~0.9951
+11.2 kW: dT~ 80.0 K; m*cp*dT/P~0.9830
+15.3 kW: dT~ 97.0 K; m*cp*dT/P~0.9839
+17.9 kW: dT~108.6 K; m*cp*dT/P~0.9948
+This closure is not independent: the published m is computed by heater energy balance

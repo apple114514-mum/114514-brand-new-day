@@ -1,6 +1,16 @@
 # 自然循环缩比研究：2026-11-03 当前交接
 
-这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读同篇五功率趋势检查和第十二轮复核，再看第十一轮及更早材料；旧文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读第十三轮复核，再看同篇五功率趋势检查与第十二轮复核；旧文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+
+## 第十三轮新增：拟合 `L` 与物理热损分账
+
+| 文件 | 下载链接 | 用法 |
+|---|---|---|
+| **v13 复核** | [PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-review-20261103.pdf) · [Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-review-20261103.md) | 修 `H` 的公式位置；保留 `L≈1.25 kW` 为相对拟合；审计绝对热量口径、局阻“上限”、温差图读及留一功率检验 |
+| **独立复算** | [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-independent-audit-20261103.py) · [结果](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-independent-audit-20261103.txt) | 原 241 行日志隔离复现；绝对水平 `18.75 kW`、单点高度正确方向 `2.339 m`、留一最低功率预测 `0.654 kg/s` |
+| **Workbuddy 上传原件** | [HTML](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-upload-report-20261103.html) · [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-upload-20261103.py) · [日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-upload-log-20261103.txt) · [参数表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v13-upload-provenance-20261103.md) | 留存原命题；解释以复核报告为准 |
+
+**给 Workbuddy 的修订重点：** 由动量与能量式得到 `ṁ³=H·P_net/(C·K)`，`H` 在分子；高度单独解释图读比值需低功率 `H≈2.339 m`，非 `4.69 m`。`0.77` 是特定水/空气弯头拟合项的指数，不能给 KYLIN 总局阻上界，所以“阻力至多 63% / 热账至少 37%”和 `0.66/1.38 kW` 三分支不能作为物理判据。`L≈1.25 kW` 是 17.9 kW 锚点归一化后的曲线偏移：选用的理论 K、H、C 绝对代回需约 `18.75 kW` 净热，高于 `17.9 kW` 输入；若 L 指加热段外漏，Yue 按输入功率反算的报告流量也必须同步重算。留下 4.3 kW 不参与拟合时 `L≈0.745 kW`、该点残差 `+0.034 kg/s`。下一步须测与原流量反算独立的入流体热量或主流量，并记录逐点阀位及压降；至少两功率点检验“恒定热损”。
 
 ## 新增：Yue 同篇五功率趋势检查
 

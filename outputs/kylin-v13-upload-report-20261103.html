@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>功率趋势的三份账：Yue 同篇五工况复核（2026-11-03 第十三轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>功率趋势的三份账：Yue 同篇五工况复核</h1>
+<div class="sub">2026-11-03 · 第十三轮 · 7 节 / 10 表 · 脚本 <code>closure_v13.py</code>（241 行日志，<code>%%</code> 残留 0 处）<br>
+复核输入：<a href="https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-same-paper-trend-review-20261103.md">kylin-same-paper-trend-review</a>（main <code>499d36c</code>）· Fig.4 原图 · 五点 CSV<br>
+原文位置：Yue 2017 PDF p4–p6（表 2、式 (9)、§5.1/§5.2、Fig.4）· Li 2015 PDF p5（§3.3）</div>
+
+<div class="box warn">
+<strong>一句话结论。</strong>上一轮说「联合固定闭合解释不了低功率趋势，且不能单独归给散热、阀位或摩擦」——这一轮把这句话拆成可核对的三份账：
+<strong>物性 0.4%、高度 0、阻力 12%（表内口径）到 63%（越界上限）</strong>，剩下的至少 37% 必须由热账承担。
+把热账参数化成<strong>一个恒定热损 <span class="gk">L</span></strong>，五点全部落进读图扰动内（残差 ≤ 1.84%），<span class="gk">L</span> ≈ 1.2–1.4 kW。
+但它只是拟合值，量级检查的假设范围恰好覆盖它——<strong>报告的可写结论是「该测一个 1 kW 级的量」，不是「已经查明是散热」</strong>。
+</div>
+
+<h2>1. 先复现：三条数与复核逐位对上，另有一条要补</h2>
+
+<p>固定闭合 <code>mdot(P) = 1.12&times;(P/17.9)^(1/3)</code> 要求 <code>K</code>、净热份额 <span class="gk"><span class="gk">&eta;</span></span>、<code>H</code>、物性组合 <code>C</code> 全部不变。按此复算：</p>
+
+<table>
+<tr><th>功率 kW</th><th class="num">图读 mdot</th><th class="num">固定闭合预测</th><th class="num">差</th><th class="num">R=(P/mdot^3)/R₀</th><th class="num">1/R</th></tr>
+<tr><td>4.3</td><td class="num">0.62</td><td class="num">0.696236</td><td class="num">&minus;0.076236</td><td class="num">1.416102</td><td class="num">0.706164</td></tr>
+<tr><td>7.6</td><td class="num">0.82</td><td class="num">0.841792</td><td class="num">&minus;0.021792</td><td class="num">1.081865</td><td class="num">0.924330</td></tr>
+<tr><td>11.2</td><td class="num">0.94</td><td class="num">0.957943</td><td class="num">&minus;0.017943</td><td class="num">1.058365</td><td class="num">0.944854</td></tr>
+<tr><td>15.3</td><td class="num">1.06</td><td class="num">1.062912</td><td class="num">&minus;0.002912</td><td class="num">1.008265</td><td class="num">0.991802</td></tr>
+<tr><td>17.9</td><td class="num">1.12</td><td class="num">1.120000</td><td class="num">0</td><td class="num">1.000000</td><td class="num">1.000000</td></tr>
+</table>
+
+<p><code>0.696236</code>、<code>&minus;0.076236</code>、上移 0.03 后仍差 <code>0.046236</code>——三项与复核一致。</p>
+
+<p><strong>要补的一条</strong>：如果允许 <code>K</code> 按作者自己的 Table 2 随流量变（<code>K(0.62)=24.008</code>、<code>K(1.12)=23.060</code>），4.3 kW 的预测降到 <code>0.687989</code>，缺口变成 <code>0.067989</code>——<strong>只吃掉 10.8%</strong>。方向和预期一致（低流量阻力大、流量更低），量级极小。这条限制了下文的起点：真正要解释的不是 0.076，而是 0.068。</p>
+
+<h2>2. 三份账：只有第三份有量级</h2>
+
+<p>闭合式 <code>mdot^3 = P_net/(K&middot;C&middot;H)</code> 取对数微分：<code>dln(mdot) = (1/3)[dln(P_net) &minus; dln K &minus; dln C &minus; dln H]</code>。要解释 <code>R = 1.4161</code>，需要括号内累计 <code>&minus;0.3479</code>。逐项算：</p>
+
+<h3>2.1 物性组合 <code>C = c_p/(2&beta;&rho;²gA²)</code>：0.4%</h3>
+
+<p>用同一套 LBE 物性（X26 式 15–18）在 483 K 与 633 K 两端（Fig.4(a) 的加热段温度量级）算：</p>
+
+<table>
+<tr><th class="num">T K</th><th class="num">c_p</th><th class="num"><span class="gk">&beta;</span></th><th class="num"><span class="gk">&rho;</span></th><th class="num">C</th></tr>
+<tr><td class="num">483</td><td class="num">146.7313</td><td class="num">1.265690e&minus;4</td><td class="num">10456.75</td><td class="num">1917.0340</td></tr>
+<tr><td class="num">633</td><td class="num">143.7304</td><td class="num">1.290184e&minus;4</td><td class="num">10258.22</td><td class="num">1914.1689</td></tr>
+</table>
+
+<p><code>C(483)/C(633) = 1.001497</code>——<strong>150 K 的温度跨度只带来 0.15% 的变化</strong>。原因是 <code>c_p</code> 降、<span class="gk"><span class="gk">&rho;</span></span> 降、<span class="gk"><span class="gk">&beta;</span></span> 升三者几乎精确抵消。折算成流量是 &minus;0.05%，方向与观测一致，但比 11% 的缺口小两个数量级。</p>
+
+<div class="box ok">
+<strong>这一条本身是个有用的结论：</strong>在 LBE 回路里，<code>C</code> 是最稳的组合量——它把物性的温度依赖几乎完全吸收掉了。所以「物性口径不同」不能用来解释任何功率趋势。这是可以写进正文的正面结果，而不是缺口。
+</div>
+
+<h3>2.2 有效高度 <code>H</code>：0</h3>
+
+<p><code>mdot &prop; H^(1/3)</code>，但 <code>H</code> 在闭合式的分母上，故 <code>R = H/H₀</code>。要补满缺口需 <code>H = 3.3119 &times; 1.4161 = 4.69 m</code>——比 v12 六行反解的 <code>3.3119&plusmn;0.0197 m</code> 高 41.6%，也超过 Xu 表 1 给出的浮升 3.35 m。同一不变几何里没有这个自由度，排除。</p>
+
+<h3>2.3 总阻力 <code>K</code>：12%（表内）到 63%（越界上限）</h3>
+
+<p>这是唯一需要认真算的一份账，因为它确实有量级。Table 2 的等效 Re 指数只有 <code>0.068</code>；要让阻力<strong>单独</strong>解释整个趋势，需要 <code>0.588</code>——<strong>差 8.6 倍</strong>。</p>
+
+<p>但 v11 已经查明 Table 2 的 0.068 是口径问题（等效 <code>&epsilon;/D &asymp; 9.5e&minus;3</code>、<code>&epsilon; &asymp; 0.25 mm</code>），<strong>不是物理</strong>。所以不能拿表内指数当阻力上限，改从锚点做物理分解：<code>K_pipe = 1 + (K_pipe,hi&minus;1)&middot;r^(−0.25)</code>、<code>K_local = K_local,hi&middot;r^(−m_local)</code>，其中 <code>r = mdot/1.12</code>。</p>
+
+<table>
+<tr><th class="num">m_local</th><th class="num">K_pipe</th><th class="num">K_local</th><th class="num">K_total</th><th class="num">K 比</th><th class="num">占 ln(R) 份额</th></tr>
+<tr><td class="num">0.25</td><td class="num">20.6019</td><td class="num">5.9729</td><td class="num">26.5748</td><td class="num">1.1524</td><td class="num">40.8%</td></tr>
+<tr><td class="num">0.40</td><td class="num">20.6019</td><td class="num">6.5269</td><td class="num">27.1288</td><td class="num">1.1764</td><td class="num">46.7%</td></tr>
+<tr><td class="num">0.60</td><td class="num">20.6019</td><td class="num">7.3464</td><td class="num">27.9483</td><td class="num">1.2120</td><td class="num">55.3%</td></tr>
+<tr><td class="num">0.77</td><td class="num">20.6019</td><td class="num">8.1233</td><td class="num">28.7252</td><td class="num">1.2457</td><td class="num">63.1%</td></tr>
+</table>
+
+<p>0.77 是 Al-Tameemi–Ricco 2018 弯头关联式 <code>K = 427.5Re^(−0.77)+0.9</code> 的幂次；该式只对水/空气、<code>500 &le; Re &le; 6e4</code> 成立，套到 KYLIN 的 LBE 上<strong>已经是越界借用</strong>。即便借到这个上限，阻力也只解释 <code>R</code> 的 63%——<strong>单独不够，但参与得不小</strong>。</p>
+
+<div class="box">
+<strong>三份账的形状：不是「谁也解释不了」，而是「阻力至多六成，热账至少四成」。</strong>
+比起上一轮的「不能归给任何单一机制」，这一轮给出了份额——这才能变成设计判据（见 §6）。
+</div>
+
+<h2>3. 剩下那份：热账要低多少</h2>
+
+<p>把恒定热损 <span class="gk">L</span> 定义为 <code>&eta;(P) = (P&minus;L)/P</code>（辐射 + 自然对流，壁温变化有限时 <span class="gk">L</span> 近似与功率无关），求 <span class="gk">L</span> 使 4.3 kW 的闭合解回到图读的 <code>0.62</code>：</p>
+
+<table>
+<tr><th>阻力口径</th><th class="num">K(0.62)</th><th class="num">需 L kW</th><th class="num">K 比</th><th class="num"><span class="gk">&eta;</span>(4.3)/<span class="gk">&eta;</span>(17.9)</th></tr>
+<tr><td>Table 2 直接插值</td><td class="num">24.0080</td><td class="num">1.3829</td><td class="num">1.0411</td><td class="num">0.7352</td></tr>
+<tr><td>物理分解 m_local = 0.25</td><td class="num">26.5748</td><td class="num">0.9952</td><td class="num">1.1524</td><td class="num">0.8138</td></tr>
+<tr><td>物理分解 m_local = 0.60</td><td class="num">27.9483</td><td class="num">0.7802</td><td class="num">1.2120</td><td class="num">0.8559</td></tr>
+<tr><td>物理分解 m_local = 0.77（越界上限）</td><td class="num">28.7252</td><td class="num">0.6562</td><td class="num">1.2457</td><td class="num">0.8796</td></tr>
+</table>
+
+<p>阻力借得越狠，需要的热损越小；但<strong>任何一档都不能把 <span class="gk">L</span> 压到 0</strong>——即使借到越界上限，仍要 0.66 kW 的热账，<span class="gk"><span class="gk">&eta;</span></span> 仍须低 12%。用 Table 2 口径则要低 26.5%。</p>
+
+<p>另有一层必须说清：<strong>流动的 <code>mdot</code> 本来就是由加热段能量平衡反算的</strong>（Yue §5.1）。所以 Fig.4(c) 已经把作者隐含的热账吸收进去了——这条曲线对 <span class="gk"><span class="gk">&eta;</span></span> 的读数是<strong>对作者反算口径的读数</strong>，不是对 <span class="gk"><span class="gk">&eta;</span></span> 的独立测量。这层自指上一轮点过，本轮不改变它，也不被它推翻：比值仍然可观测，只是「谁造成的」不能由它单独决定。</p>
+
+<h2>4. 一个参数覆盖全部五个点</h2>
+
+<p>固定 <span class="gk">L</span>，逐点解 <code>mdot^3&middot;K(mdot) = (P&minus;L)/(C&middot;H)</code>（以 17.9 kW 锚定 <code>C&middot;H</code>）：</p>
+
+<table>
+<tr><th class="num">L kW</th><th class="num">4.3</th><th class="num">7.6</th><th class="num">11.2</th><th class="num">15.3</th><th class="num">17.9</th><th class="num">max|res|</th></tr>
+<tr><td class="num">0.0</td><td class="num">+0.068</td><td class="num">+0.015</td><td class="num">+0.013</td><td class="num">+0.001</td><td class="num">+0.000</td><td class="num">0.0680</td></tr>
+<tr><td class="num">0.8</td><td class="num">+0.032</td><td class="num">&minus;0.003</td><td class="num">+0.004</td><td class="num">&minus;0.002</td><td class="num">+0.000</td><td class="num">0.0317</td></tr>
+<tr><td class="num">1.2</td><td class="num">+0.011</td><td class="num">&minus;0.014</td><td class="num">&minus;0.001</td><td class="num">&minus;0.003</td><td class="num">+0.000</td><td class="num">0.0137</td></tr>
+<tr><td class="num">1.4</td><td class="num">&minus;0.001</td><td class="num">&minus;0.019</td><td class="num">&minus;0.003</td><td class="num">&minus;0.004</td><td class="num">+0.000</td><td class="num">0.0191</td></tr>
+<tr><td class="num">2.0</td><td class="num">&minus;0.040</td><td class="num">&minus;0.037</td><td class="num">&minus;0.012</td><td class="num">&minus;0.007</td><td class="num">+0.000</td><td class="num">0.0404</td></tr>
+</table>
+
+<p>最小二乘 <code>L = 1.250 kW</code>，五点残差：</p>
+
+<table>
+<tr><th class="num">P kW</th><th class="num">模型</th><th class="num">图读</th><th class="num">残差</th><th class="num">相对</th></tr>
+<tr><td class="num">4.3</td><td class="num">0.627676</td><td class="num">0.620</td><td class="num">+0.0077</td><td class="num">+1.24%</td></tr>
+<tr><td class="num">7.6</td><td class="num">0.804936</td><td class="num">0.820</td><td class="num">&minus;0.0151</td><td class="num">&minus;1.84%</td></tr>
+<tr><td class="num">11.2</td><td class="num">0.938476</td><td class="num">0.940</td><td class="num">&minus;0.0015</td><td class="num">&minus;0.16%</td></tr>
+<tr><td class="num">15.3</td><td class="num">1.056433</td><td class="num">1.060</td><td class="num">&minus;0.0036</td><td class="num">&minus;0.34%</td></tr>
+<tr><td class="num">17.9</td><td class="num">1.120000</td><td class="num">1.120</td><td class="num">0.0000</td><td class="num">0.00%</td></tr>
+</table>
+
+<p>最大残差 1.84%，全部落在读图扰动之内；而 <code>L = 0</code> 时 4.3 kW 差 10.97%。<strong>一个自由参数，四点独立，残差降到读图精度。</strong></p>
+
+<h3>4.1 但这个数只能报到一位小数</h3>
+
+<table>
+<tr><th>口径</th><th class="num">L kW</th><th>说明</th></tr>
+<tr><td>4.3 kW 单点定标</td><td class="num">1.3829</td><td>不用其他四点</td></tr>
+<tr><td>五点最小二乘（K 线性插值）</td><td class="num">1.2505</td><td>正文采用</td></tr>
+<tr><td>五点最小二乘（K 幂律插值 <code>23.28&middot;mdot^(−0.0429)</code>）</td><td class="num">1.3260</td><td>Table 2 只有五点，插法不唯一</td></tr>
+<tr><td>图读 4.3 kW 取 0.59 / 0.65</td><td class="num">1.85 / 0.83</td><td>人为读图扰动，不是仪表误差</td></tr>
+</table>
+
+<p>单点定标与五点拟合差 0.13 kW，说明 <span class="gk">L</span> 不是靠五个点硬凑的；插值口径又给 0.08 kW（6%）。读图扰动给的最宽，<code>[0.83, 1.85]</code>。<strong>合起来：<code>L &asymp; 1.2–1.4 kW</code>，一位小数。</strong></p>
+
+<div class="box warn">
+<strong>不能写的话。</strong>「5 点 1 参数拟合 = 验证」——4 个自由度配 1 参数，残差小是<strong>必然</strong>的，不是证据。恒热损能拟好，只说明它<strong>不被这组数据排除</strong>，不说明它成立。真正把它变成证据的，是独立测到这个量（见 §6）。
+</div>
+
+<h2>5. 量级检查与外部对照：相容，但都不构成验证</h2>
+
+<h3>5.1 保温层外表面热损（粗糙估算，只为判量级）</h3>
+
+<table>
+<tr><th>情景</th><th class="num">外表面积 m²</th><th class="num">h W/m²K</th><th class="num"><span class="gk">&Delta;</span>T K</th><th class="num">推算热损 kW</th></tr>
+<tr><td>保守：保温好、附件少</td><td class="num">4.0</td><td class="num">8.0</td><td class="num">10</td><td class="num">0.32</td></tr>
+<tr><td>中性：含换热器/膨胀箱/法兰</td><td class="num">7.5</td><td class="num">10.0</td><td class="num">15</td><td class="num">1.12</td></tr>
+<tr><td>宽松：未保温段多</td><td class="num">10.0</td><td class="num">12.0</td><td class="num">20</td><td class="num">2.40</td></tr>
+</table>
+
+<p>推算区间 0.3–2.4 kW，中性 1.1 kW，拟合值 1.25 kW 落在中位。<strong>这是量级相容，不是验证</strong>：面积、保温热阻、附件数量全是假设，而可假设的范围<strong>恰好覆盖</strong>了拟合值——这正是「循环」的典型形状。要定 <span class="gk">L</span>，只能实测。</p>
+
+<h3>5.2 一个反向的外部对照</h3>
+
+<p>Li 2015 §3.3 给 24 kW、<code>1.21 kg/s</code>（最大温差且最大阀开度）。用同一条曲线外推：</p>
+
+<table>
+<tr><th class="num">L kW</th><th class="num">预测 24 kW</th><th class="num">对实测 1.21</th></tr>
+<tr><td class="num">0.00</td><td class="num">1.2393</td><td class="num">+2.42%</td></tr>
+<tr><td class="num">1.25</td><td class="num">1.2474</td><td class="num">+3.09%</td></tr>
+<tr><td class="num">1.45</td><td class="num">1.2488</td><td class="num">+3.21%</td></tr>
+</table>
+
+<p><strong><code>L = 0</code> 反而更接近 1.21。</strong>如实记：这个跨论文点既不支持 <span class="gk">L</span> &gt; 0，也不否定它——它的阀位（最大开度）与 Yue 五点的阀位关系未知，<code>K</code> 不可比。<strong>这一格是空白，不是佐证。</strong>把它写成「与 Li 一致」会是第四次同类错误。</p>
+
+<h3>5.3 一个对我自己不利的读数</h3>
+
+<p>图 (b) 与图 (c) 同源：若 <code>mdot = P/(c_p&middot;&Delta;T)</code>，则 <code>mdot&middot;c_p&middot;&Delta;T/P</code> 应恒为 1。用图 (b) 平台读数粗核，五点给出 <code>0.950 / 0.916 / 0.885 / 0.964 / 0.995</code>——<strong>不是随机散布，是系统性偏低 0–11%</strong>。说明我的 <span class="gk"><span class="gk">&Delta;</span></span>T 平台读数普遍取低了一点（每个差 0–5 K，仍在 ±5 K 内）。</p>
+
+<div class="box warn">
+这恰好是读图误差的直接证据，必须写进来：<strong>11% 的缺口只是 ±0.03 读图扰动的 2.5 倍，而我自己的读图一致性就有 6–11% 的不确定度。</strong>
+所以正文不能说「这是铁证」，只能说「量级提示」。反而恒定热损能把残差压到 1.84%——<strong>比读图自洽性还好</strong>，这一点才支持它。
+</div>
+
+<h2>6. 秩亏：这条曲线分不开 K 与 <span class="gk">&eta;</span></h2>
+
+<p>观测只有一条 <code>mdot(P)</code>。闭合式给出</p>
+
+<pre><code>K(P)/&eta;(P) = P / (mdot^3 &middot; C &middot; H)</code></pre>
+
+<p>右边是观测量，左边是<strong>两个未知函数的比值</strong>。给定 <code>C</code>、<code>H</code>，一条曲线只能定 <code>K/&eta;</code>；要分开，必须有第二个不经过能量平衡的量。这与本项目主线的「不可辨识量不进盒」是同一条：</p>
+
+<ul>
+<li>Zhao 侧：单个成对工况只给 <code>A + B&middot;f = K_R</code> 一条等值线；</li>
+<li>KYLIN 侧：一条功率曲线只给 <code>K/&eta;</code> 一个组合。</li>
+</ul>
+
+<p><strong>两侧是同一个秩缺陷的两个面孔。</strong>这不是数据不够多，是方程结构决定的上限——再多测几个功率点，也只能多定几个 <code>K/&eta;</code> 的值。</p>
+
+<h3>6.1 能分开的两个独立量</h3>
+
+<ol>
+<li><strong>加热段外表面热损</strong>（热流计或分段能量平衡）：直接给 <code>L(P)</code>，即本轮的 <span class="gk">L</span>，不必从流量反推。<strong>最便宜，信息最对口。</strong></li>
+<li><strong>直接测主流量</strong>（电磁/科氏/文丘里）：绕开能量平衡，直接给 <code>mdot</code>。对 LBE 需高温湿部兼容，代价最高，信息最直接。</li>
+</ol>
+
+<p>二次油侧焓差 <code>m&middot;c_p&middot;&Delta;T</code> 只能给换热器热负荷，<strong>不能单独定加热段净热</strong>——需要一个外部热损边界才能闭合，单独用它会重复 §5.3 的自指。</p>
+
+<h3>6.2 判据：测一个 1 kW 级的量就能判</h3>
+
+<table>
+<tr><th class="num">实测 L</th><th>含义</th><th>结论</th></tr>
+<tr><td class="num">&ge; 1.38 kW</td><td>相当于 Table 2 口径，阻力几乎不动</td><td><span class="tag t-ok">热账全责</span>恒定热损成立，五点闭合，单侧闭合可用</td></tr>
+<tr><td class="num">0.66 – 1.38 kW</td><td>阻力参与</td><td><span class="tag t-mid">两项分担</span>需同时引入 <code>K(P)</code>（局阻指数 0.25–0.77）</td></tr>
+<tr><td class="num">&le; 0.66 kW</td><td>连阻力上限也补不上</td><td><span class="tag t-no">模型缺机制</span>单侧闭合作废，须查未建模的热/流路径</td></tr>
+</table>
+
+<p>三条都可证伪、都可执行。比起「补阀位记录」，这条判据更直接：<strong>阀位只影响 <code>K</code> 的一支，而热损直接影响那条秩亏方程本身。</strong>阀位仍要记（它是 <code>K</code> 的可比性前提），但不足以判别。</p>
+
+<h2>7. 这一轮改变了什么</h2>
+
+<h3>7.1 可写</h3>
+<ul>
+<li>同篇五功率、油侧同设定，是比跨论文拼接更干净的内部趋势检查（<span class="tag t-ok">L1</span> 功率与 17.9 kW 流量 + <span class="tag t-mid">L4</span> 四条图读）。</li>
+<li>固定闭合在 4.3 kW 差 <code>&minus;0.076 kg/s</code>（&minus;11.0%），是 <code>&plusmn;0.03</code> 读图扰动的 2.5 倍；但读图一致性本身有 6–11% 的不确定度 ⇒ <strong>量级提示，不是铁证</strong>。</li>
+<li>三份账：物性 0.4%、高度 0、阻力 12%（表内）到 63%（越界上限）。<strong>阻力单独不够，但参与得不小。</strong></li>
+<li>恒定热损 <code>L &asymp; 1.2–1.4 kW</code> 可把五点压到 1.84% 以内（读图精度内）；<strong>它不被排除，但未经独立验证</strong>。</li>
+<li>该曲线对 <code>(K, &eta;)</code> 秩亏，判据须落在独立量上（§6.2 三条）。</li>
+</ul>
+
+<h3>7.2 不可写</h3>
+<ul>
+<li>「4.3 kW 偏差来自散热」——恒定热损只是一种参数化，未验证。</li>
+<li>「<code>L = 1.25 kW</code> 是实测热损」——它是拟合值；量级检查的假设范围恰好覆盖它。</li>
+<li>「<span class="gk"><span class="gk">&eta;</span></span>(4.3) = 0.71」——等效值，不是热效率读数。</li>
+<li>「阻力已排除」——只排除到「单独不够」，没排除「参与」。</li>
+<li>「17.9 kW 是留出验证点」——仍是锚点；同篇内部就有 11% 的未解释漂移。</li>
+<li>「5 点 1 参数拟合 = 验证」——4 个自由度配 1 参数，残差小是必然的。</li>
+</ul>
+
+<h3>7.3 下一步（按顺序）</h3>
+<ol>
+<li><strong>测加热段外表面热损</strong>（或分段能量平衡）——直接落在 §6.2 的判据上，一个数就能把三种情形分开。</li>
+<li><strong>固定并记录阀位</strong>——<code>K</code> 的可比性前提；没有它连「哪一条 <code>K(mdot)</code> 曲线」都定不下来。</li>
+<li><strong>独立测主流量</strong>（若条件允许）——一次解决秩亏，但代价最高，放在热损之后。</li>
+<li>把 <span class="gk">L</span>(<code>P</code>) 与逐构件 <code>m_i(Re)</code> 一起纳入前向模型，再做成对 <span class="gk"><span class="gk">&delta;</span></span> 与 GSA 的输入域。</li>
+</ol>
+
+<div class="box">
+<strong>方法学上这一轮真正的收获。</strong>不是「找到了 1.25 kW 这个数」，而是<strong>判据的形态变了</strong>：从「模型准不准」（需要真值，拿不到）变成「一个可测的中间量落在哪个区间」（一次测量即可判，且三条出口都写好了后果）。这与本项目主线一致——<strong>把不可辨识的东西换成可测量，把可测量的东西写成判据。</strong>
+</div>
+
+<p class="small">全部数值由 <code>closure_v13.py</code> 一次运行生成（241 行日志，<code>%%</code> 残留 0 处）。图读值仅精确到约百分位；<code>&plusmn;0.03 kg/s</code> 是人为设置的读图扰动情景，<strong>不是实验误差条</strong>。Table 2 属作者理论计算（L1），不是实测。</p>
+
+</div>
+</body>
+</html>
