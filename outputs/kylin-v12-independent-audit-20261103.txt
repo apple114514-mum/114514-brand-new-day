@@ -1,0 +1,14 @@
+Li Fig.4 graph-read (P/m^3)_5/(P/m^3)_20: 2.662000
+eta_5/eta_20 if K,H,properties fixed: 0.375657
+eta_5 if eta_20=0.8 under those assumptions: 0.300526
+illustrative m±0.00 kg/s, fixed P ratio, proxy range: [2.662,2.662]
+illustrative m±0.05 kg/s, fixed P ratio, proxy range: [1.739,4.172]
+conditional flow gap: 0.005652 kg/s
+half-gap / nominal flow: 0.002826 kg/s; 0.257%
+two 95% (±1.96 sigma) bands nonoverlap if: sigma < 0.001442 kg/s
+95% correct nearest-mean classification, ideal normal error, if: sigma < 0.001718 kg/s
+observed - model .05 / .25: 0.024008 / 0.029660 kg/s
+K-only factor to match 1.12: 0.940467
+(net heat/H)-only factor to match 1.12: 1.063302
+friction-share nominal difference: 24.53–25.23 percentage points
+friction-share nominal factor: 1.50–1.52

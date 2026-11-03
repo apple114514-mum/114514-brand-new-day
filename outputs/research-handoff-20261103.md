@@ -1,6 +1,17 @@
 # 自然循环缩比研究：2026-11-03 当前交接
 
-这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读下方第十一轮单侧闭合复核，再读第十轮可辨识性复核与第九轮[逐构件复核](component-re-v2-review-20261103.md)；此前文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读第十二轮复核，再看第十一轮及更早材料；旧文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+
+## 第十二轮新增：口径分级和判别门槛
+
+| 文件 | 下载链接 | 用法 |
+|---|---|---|
+| **v12 复核** | [PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-review-20261103.pdf) · [Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-review-20261103.md) | 保留五档溯源、正指数求根与控制体修正；收窄 `P/ṁ³`、热损百分数、留出点和统计判别门槛 |
+| **独立复算** | [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-independent-audit-20261103.py) · [输出](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-independent-audit-20261103.txt) | 271 行原日志逐行复现；代理比 `2.662`、条件 `η₅/η₂₀=0.375657`、理想 95% 区分尺度及份额差 |
+| **工况台账** | [修订 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-reviewed-condition-ledger-20261103.csv) · [Workbuddy 原 CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-upload-ledger-20261103.csv) | 原 6 行保留，增加复核说明；将 `0.002826 kg/s` 从统一留出验收条件降为特定半差示例 |
+| **Workbuddy 上传原件** | [HTML](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-upload-report-20261103.html) · [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-upload-20261103.py) · [日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-upload-log-20261103.txt) · [参数表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-upload-provenance-20261103.md) · [可运行 ZIP](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v12-repro-20261103.zip) | 原样留存；ZIP 含 v5 依赖。解释以复核报告和证据矩阵为准 |
+
+**给 Workbuddy 的修订重点：** `P/ṁ³≈2.66` 是图读电功率与热平衡反算流量组成的代理；跨工况比例还含物性因子 `C=c_p/(2βρ²gA²)`。只有令 `K、H、C` 均不变，才有 `η₅/η₂₀≈0.376`；不能宣称实物 5 kW 热效率恰为 38%。两斜率情景差 `0.005652 kg/s`，半差 `0.002826` 只是理想化规则，且两个预测都比 17.9 kW 观测低 `0.024–0.030 kg/s`。先对齐阀位、油侧、净热与误差链，再称留出检验；若设定不同但有记录并纳入模型，也可检验。Yue 理论份额与四段反标定份额名义差约 25 个百分点、倍率 1.5，属于口径诊断。
 
 ## 第十一轮新增：KYLIN 单侧闭合
 

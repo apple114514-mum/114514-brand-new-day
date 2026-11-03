@@ -1,0 +1,7 @@
+﻿source_id,pdf_page,source_locator,record_type,heater_power_kW,mass_flow_kg_s,mass_flow_method,HS_inlet_outlet_deltaT_K,hot_cold_leg_deltaT_K,secondary_oil_flow_kg_s,valve_position,net_heat_kW,measurement_uncertainty,use_status,gate_fail,must_fill,acceptance_for_holdout
+L15,4,Fig.4 and Sec.3.2.1,experimental plotted approximate,~5,~0.5,heater energy balance,,~68,1.02,not reported,,not reported,descriptive only; Fig.4(b) is hot/cold leg,门1阀位/门3净热/门4误差链,阀位开度；加热段进出口温度；电功率与净热差；主流量独立测量,不作留出点：仅作 P/mdot^3 条件算术（约读）
+L15,4,Fig.4 and Sec.3.2.1,experimental plotted approximate,~10,~0.8,heater energy balance,,~89,1.02,not reported,,not reported,descriptive only; do not set P=mcp*hotcold_deltaT,门1阀位/门3净热/门4误差链,同上,同上
+L15,4,Fig.4 and Sec.3.2.1,experimental plotted approximate,~20,~1.1,heater energy balance,,~125,1.02,not reported,,not reported,descriptive only; heat loss unquantified,门1阀位/门3净热/门4误差链,同上,同上
+L15,5,Sec.3.3,experimental reported,24,1.21,heater energy balance,,,~1.0,maximum opening,,not reported,24 kW calibration anchor only,门3净热/门4误差链,净热=电功率-热损；主流量独立测量,作标定锚点：阀位已知（最大开度），净热与误差链待补
+Y17,6,Sec.5.2,experimental reported,17.9,1.12,heater energy balance,108.6,,same secondary conditions; absolute value not reported here,not reported,,not reported,候选留出点：需阀位/油侧/控制体对齐,门1阀位/门2二次油/门4误差链,17.9 kW 时阀位开度；二次油流量与入口温度；sigma(mdot),门4：需 sigma(mdot) <= 0.0028 kg/s（0.26%）才能分开指数 0.05 与 0.25
+Y17,4,Table 3,theoretical calculation,24,1.215,model calculation,134.4,,not applicable,not specified,not specified,not applicable,理论行：非 Li 实验温度，不得混入实验回归,不适用（理论）,无,不作留出点：仅用于 H_eff 反解（L1c 条件反算）
