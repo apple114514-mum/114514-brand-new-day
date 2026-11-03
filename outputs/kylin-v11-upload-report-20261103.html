@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>单侧闭合与三处改判：KYLIN 阻力逐项复算（2026-11-03 第十一轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>单侧闭合与三处改判：KYLIN 阻力逐项复算</h1>
+<div class="sub">2026-11-03 · 第十一轮 · 7 节 / 12 表 · 脚本 <code>closure_v11.py</code>（379 行日志，<code>%%</code> 残留 0 处）<br>
+复核输入：<code>identifiability-v10-review-20261103</code>（main <code>4a35464</code>）· 原始文献：Yue 2017 PDF、Li 2015 PDF</div>
+
+<div class="box">
+<p><strong>一句话。</strong>三处意见全部成立，其中两处是我的算术错误、一处是我把结论说过头了。改完之后，本轮把复核给的下一道关口做了：用 Yue 的 Table 1/2/3 与式(3)(6)–(9) 逐项重算 KYLIN 的单侧阻力，得到两个可核的新数——<strong>H<sub>eff</sub> = 3.312 m（与 Xu 表 1 的 3.35 m 差 1.1%）</strong>，以及<strong>Table 2 反解的 f 比 Blasius 高 61%、指数只有 0.049（Blasius 是 0.25）</strong>。后者决定 Table 2 只能定 L3。</p>
+</div>
+
+<h2>一、三处认账</h2>
+
+<h3>1.1 「<span class="mono"><span class="gk">δ</span></span> 没有观测足迹」说过头了</h3>
+
+<p>站得住的部分是秩分析：方程 <code>F=0</code> 只含 <code>A=(1−w)(1+δ)</code> 与 <code>B=w·(λ/d)</code> 两个聚合量，所以<strong>一个成对流量 FoM 只能给出一条直线</strong> <code>A + B·f = K</code>。这一点复核也保留。</p>
+
+<p>站不住的是由此推出「<span class="mono"><span class="gk">δ</span></span> 不可观测、文献永远补不了」。<span class="mono"><span class="gk">δ</span></span> = k<sub>M</sub>/k<sub>P</sub> − 1 是成对局部阻力系数比，它在<strong>逐段压差</strong>里有直接足迹。正确的表述是：<span class="mono"><span class="gk">δ</span></span> 在「这一个 FoM」里没有足迹，不在「任何观测」里没有足迹。</p>
+
+<p>连带两处也要改：v10 的 <code>w=0.95</code> 那行给出 <code>A=−0.150716</code>、<span class="mono"><span class="gk">δ</span></span>&lt;−1，已离开非负局阻定义域，不能再当物理候选；<code>δ≥0</code> 也不是普适前提——阀门开度不同可以让局阻失配为负，所以 v10 的 <code>δ∈[0, 8.88%]</code> 只能读作「c=1 且 <span class="mono"><span class="gk">δ</span></span>≥0 的声明情景」。</p>
+
+<h3>1.2 σ<sub>B</sub>/B：漏了除以 B</h3>
+
+<p>v10 打印的是 <code>100·σ<sub>B</sub></code>，即绝对量，却贴了百分号。复算如下（<code>σ<sub>D</sub>=0.5 pp</code>，<code>σ<sub>K</sub>=3σ<sub>D</sub></code>）：</p>
+
+<table>
+<tr><th>假设功率跨度</th><th class="num">f<sub>1</sub>−f<sub>2</sub></th><th class="num">σ<sub>B</sub> 绝对</th><th class="num">σ<sub>B</sub>/B（正确）</th><th class="num">v10 写的</th></tr>
+<tr><td>1.25</td><td class="num">0.024039</td><td class="num">0.8825</td><td class="num">302.8%</td><td class="num">88.2%</td></tr>
+<tr><td>2</td><td class="num">0.073232</td><td class="num">0.2897</td><td class="num">99.4%</td><td class="num">29.0%</td></tr>
+<tr><td>5</td><td class="num">0.163771</td><td class="num">0.1295</td><td class="num">44.4%</td><td class="num">13.0%</td></tr>
+<tr><td>10</td><td class="num">0.227812</td><td class="num">0.0931</td><td class="num"><strong>31.9%</strong></td><td class="num">9.3%</td></tr>
+</table>
+
+<p>差 3.4 倍，方向单一：v10 把 B 的精度夸大了 3.4 倍。而且这张表本身也不该存在——见第二节，那个「十倍功率跨度」在成对台架上不成立。</p>
+
+<h3>1.3 3% 判据必须写成双侧</h3>
+
+<p>在 <code>g(x)=K(x)−B·f(x)</code> 于 [0.97, 1.03] 单调增的条件下（已核对：<code>B∈[0.15,0.60]</code> 时 <code>min dg/dx = +2.65~+2.78</code>，全部 &gt; 0），</p>
+
+<pre><code>|D_m| ≤ 3%  ⟺  K(0.97) − B·f(0.97) ≤ A ≤ K(1.03) − B·f(1.03)
+              0.537139607 ≤ A ≤ 0.712346444</code></pre>
+
+<p>与复核给的两位数逐位一致。点值 <code>A = 0.708527840</code>：</p>
+
+<table>
+<tr><th>量</th><th class="num">值</th><th>读法</th></tr>
+<tr><td>距上边界</td><td class="num">0.003818604</td><td>= <span class="mono">+0.5389%</span>，与第九轮 <code>δ_allow</code> 同数</td></tr>
+<tr><td>距下边界</td><td class="num">0.171388233</td><td>比上边界宽 <strong>45.0 倍</strong></td></tr>
+<tr><td>换成 <span class="mono"><span class="gk">δ</span></span>（c=1）</td><td class="num">[−24.1893%, +0.5389%]</td><td>唯一紧的一端在上侧</td></tr>
+</table>
+
+<div class="box warn">
+<p><strong>这一条比「补上另一半」更有用。</strong>v10 的单侧 <code>δ∈[0, +8.88%]</code> 把「上端只有 0.54%」藏在了区间中段；写成双侧之后，读者一眼能看到<strong>裕度全部集中在 +3% 这一侧</strong>，而 −3% 那一侧宽 45 倍，等于没约束。判据的形式不是排版问题，是它决定了读者能不能看出结论的脆弱点。</p>
+</div>
+
+<h2>二、识别设计重做：功率不是旋钮，<span class="mono">μ<sub>R</sub></span> 才是</h2>
+
+<p>复核那句「功率跨度本身不保证两侧 Re 比发生变化」，在模型里有精确的代数形式。模型的 <code>f</code> 是</p>
+
+<pre><code>f(x) = (x·R_id·d·μ_R)^n，而 x·R_id = r_m（流量比）
+     ⇒  f = (r_m · d · μ_R)^n</code></pre>
+
+<p><strong>里面没有功率，也没有 Re。</strong>一对成对工况在 24 kW 与 240 kW 上，只要两侧同按 P<sup>1/3</sup> 走，<code>r_m</code>、<code>d</code>、<code>μ<sub>R</sub></code> 全都不变 ⇒ <code>f</code> 逐位相同 ⇒ 是同一个方程。v10 的 <code>f<sub>2</sub>/f<sub>1</sub>=(Q比)<sup>−1/12</sup></code> 隐含「只有一侧流量变」，成对台架上不成立。</p>
+
+<h3>2.1 真正的旋钮是 <span class="mono">μ<sub>R</sub></span>（两台装置的工作温度比）</h3>
+
+<table>
+<tr><th class="num">T<sub>M</sub> (K)</th><th class="num">μ(T<sub>M</sub>) / 10<sup>−3</sup></th><th class="num">μ<sub>R</sub>（T<sub>P</sub>=750 K）</th><th class="num">f</th><th class="num">Δf/f（相对 500 K）</th><th class="num">σ<sub>B</sub>/B @σ<sub>D</sub>=0.5 pp</th></tr>
+<tr><td class="num">300</td><td class="num">6.1010</td><td class="num">0.2213</td><td class="num">0.89581</td><td class="num">−22.2%</td><td class="num"><strong>28.4%</strong></td></tr>
+<tr><td class="num">350</td><td class="num">4.2604</td><td class="num">0.3169</td><td class="num">0.97995</td><td class="num">−14.9%</td><td class="num">42.3%</td></tr>
+<tr><td class="num">400</td><td class="num">3.2545</td><td class="num">0.4149</td><td class="num">1.04820</td><td class="num">−9.0%</td><td class="num">70.2%</td></tr>
+<tr><td class="num">450</td><td class="num">2.6394</td><td class="num">0.5115</td><td class="num">1.10456</td><td class="num">−4.1%</td><td class="num">154.0%</td></tr>
+<tr><td class="num">500</td><td class="num">2.2322</td><td class="num">0.6049</td><td class="num">1.15181</td><td class="num">0</td><td class="num">∞</td></tr>
+</table>
+
+<p>LBE 的 <span class="mono">μ</span> 在 350–500 K 内变 1.91 倍，这才是有信息的那一维。但 KYLIN 的运行温区是 150–500 °C，两侧都在里面，达不到 200 K 的温差。</p>
+
+<h3>2.2 现实精度下 B 仍然定不出来</h3>
+
+<p><code>σ<sub>D</sub></code> 这次有了出处（不再是凭空 0.5 pp）：K 型热电偶 ±1.5 K 在 ΔT=108.6 K 上给 1.4%；<code>c<sub>p</sub></code> 关联式离散（145–149 J/kg·K）给 1.4%；两者独立合成 2.0%。</p>
+
+<table>
+<tr><th class="num">σ<sub>D</sub></th><th class="num">σ<sub>K</sub>=3σ<sub>D</sub></th><th class="num">σ<sub>B</sub></th><th class="num">σ<sub>B</sub>/B</th><th>判读</th></tr>
+<tr><td class="num">0.20%</td><td class="num">0.0060</td><td class="num">0.0331</td><td class="num">11.4%</td><td>无出处（v10 设定）</td></tr>
+<tr><td class="num">0.50%</td><td class="num">0.0150</td><td class="num">0.0829</td><td class="num">28.4%</td><td>乐观：须独立测流量</td></tr>
+<tr><td class="num">1.40%</td><td class="num">0.0420</td><td class="num">0.2320</td><td class="num">79.6%</td><td>只有热电偶</td></tr>
+<tr><td class="num">2.00%</td><td class="num">0.0600</td><td class="num">0.3314</td><td class="num">113.7%</td><td>热电偶 + c<sub>p</sub>，独立</td></tr>
+<tr><td class="num">2.80%</td><td class="num">0.0840</td><td class="num">0.4640</td><td class="num">159.2%</td><td>同源相关</td></tr>
+</table>
+
+<p>（表里用的是<strong>最好情况</strong>的 Δf = 0.2560，即 200 K 温差；v10 那个 10 倍功率跨度给的 0.2278 根本不可得。）</p>
+
+<p><strong>结论：即使设计到最优，现实精度下 B 也只能定到 114%。</strong>不是样本不够，是分母太小：<code>B = 0.291</code>，而 <code>σ<sub>D</sub>=2%</code> 给 <code>σ<sub>K</sub>=0.06</code>，乘 √2 再除以 Δf=0.256 就是 0.33，超过 B 本身。所以「从流量 FoM 识别 (A,B)」这条路应当放弃，改为：报 (A,B) 的等值线 + 明细写区间；<span class="mono"><span class="gk">δ</span></span> 走另一条观测（成对逐段压差）。</p>
+
+<h2>三、KYLIN 几何与阻力：Table 2 的五个点逐项重算</h2>
+
+<p>输入全部取自 Yue PDF：p2 Table 1（总高 5 m、HS 长 1.8 m、活性 0.8 m、主管内径 26 mm、HS 内径 54 mm、棒径 22 mm）、p3 式(3)(6)–(9)、p4 Table 2。</p>
+
+<h3>3.1 面积与水力直径</h3>
+
+<pre><code>A_pipe = π/4 × 0.026²  = 5.30929e−4 m²
+A_HS   = π/4 × (0.054² − 0.022²) = 1.91009e−3 m²
+D_h,HS = 0.054 − 0.022 = 0.032 m
+A_pipe/A_HS = 0.277961   ⇒  (A_pipe/A_HS)² = 0.077262</code></pre>
+
+<p>那个 0.077 就是 K<sub>HS</sub> 只有 2.6 的原因：<code>K<sub>l,eff</sub> = f·(1.8/0.032)·0.077 = 4.346·f</code>。漏掉这个因子，HS 段损失会被放大 12.9 倍（0.169 → 2.19）。</p>
+
+<h3>3.2 K<sub>pipe</sub> 反解 f</h3>
+
+<p>由式(9) <code>K<sub>pipe</sub> = f·L/D + 1</code>，取 L=11 m：</p>
+
+<table>
+<tr><th class="num">ṁ (kg/s)</th><th class="num">Re<sub>tube</sub></th><th class="num">ρ（由 Δp 反解）</th><th class="num">μ（由 Re 反解）</th><th class="num">f 反解</th><th class="num">f<sub>Blasius</sub></th><th class="num">f/f<sub>Bla</sub></th></tr>
+<tr><td class="num">0.25</td><td class="num">5 560</td><td class="num">10 370.69</td><td class="num">2.2019e−3</td><td class="num">0.042782</td><td class="num">0.036641</td><td class="num">1.168</td></tr>
+<tr><td class="num">0.50</td><td class="num">11 100</td><td class="num">10 370.41</td><td class="num">2.2059e−3</td><td class="num">0.042309</td><td class="num">0.030825</td><td class="num">1.373</td></tr>
+<tr><td class="num">0.75</td><td class="num">16 700</td><td class="num">10 370.03</td><td class="num">2.1993e−3</td><td class="num">0.041364</td><td class="num">0.027833</td><td class="num">1.486</td></tr>
+<tr><td class="num">1.00</td><td class="num">22 300</td><td class="num">10 370.05</td><td class="num">2.1960e−3</td><td class="num">0.040418</td><td class="num">0.025892</td><td class="num">1.561</td></tr>
+<tr><td class="num">1.25</td><td class="num">27 800</td><td class="num">10 369.98</td><td class="num">2.2019e−3</td><td class="num"><strong>0.039473</strong></td><td class="num"><strong>0.024503</strong></td><td class="num"><strong>1.611</strong></td></tr>
+</table>
+
+<p>复核点名的那个数：<code>f = (17.7−1)×0.026/11 = 0.039473</code>，对 Blasius 的 0.024503 是 <strong>1.61 倍</strong>。</p>
+
+<p class="small">副产物：ρ 与 μ 两列几乎是常数（10 370.2 与 2.201e−3，波动 &lt;0.03%）——<strong>Table 2 是在一个物性点上算的，没有按功率迭代温度</strong>。这一点第五节还要用。</p>
+
+<h3>3.3 K<sub>HS</sub> 列：能对上水平，对不上斜率</h3>
+
+<p><code>K<sub>HS</sub> = K<sub>in</sub>(1.29+0.64=1.93) + K<sub>out</sub>(≈0.5) + 4.346·f = 2.43 + 4.346 f</code>。反解并与 Blasius 比：</p>
+
+<table>
+<tr><th class="num">Re<sub>HS</sub></th><th class="num">K<sub>HS</sub></th><th class="num">f 反解</th><th class="num">f<sub>Bla</sub></th><th class="num">f/f<sub>Bla</sub></th><th class="num">K<sub>fit</sub> = K<sub>HS</sub> − 4.346 f<sub>Bla</sub></th></tr>
+<tr><td class="num">1 900</td><td class="num">2.90</td><td class="num">0.1081</td><td class="num">0.0479</td><td class="num">2.257</td><td class="num">2.6917</td></tr>
+<tr><td class="num">3 810</td><td class="num">2.80</td><td class="num">0.0851</td><td class="num">0.0403</td><td class="num">2.114</td><td class="num">2.6250</td></tr>
+<tr><td class="num">5 710</td><td class="num">2.80</td><td class="num">0.0851</td><td class="num">0.0364</td><td class="num">2.339</td><td class="num">2.6418</td></tr>
+<tr><td class="num">7 620</td><td class="num">2.70</td><td class="num">0.0621</td><td class="num">0.0339</td><td class="num">1.835</td><td class="num">2.5528</td></tr>
+<tr><td class="num">9 520</td><td class="num">2.60</td><td class="num">0.0391</td><td class="num">0.0320</td><td class="num">1.221</td><td class="num">2.4608</td></tr>
+</table>
+
+<p>高端（Re<sub>HS</sub>=9520）反解 f 只比 Blasius 高 22%，<strong>水平对得上</strong>；低端（Re<sub>HS</sub>=1900）高 126%，层流 64/Re 给的 0.0337 比 Blasius 还低——<strong>也不是层流</strong>。</p>
+
+<div class="box ok">
+<p>把摩擦按 Blasius 扣掉后，余下的构件项 <code>K<sub>fit</sub></code> 从 2.692 降到 2.461（−9%），等效指数 <code>m<sub>fit</sub> = 0.0557</code>。<strong>所以 K<sub>HS</sub> 列的下降不是错误，是弯头/三通的 K 在动</strong>——而式(7)(8) 把它写成了常数。这正是 <span class="mono"><span class="gk">δ</span></span> 该住的地方：第九轮 Al-Tameemi 给的 0.615 是这类构件的上限指数，这里只需要 0.056。</p>
+</div>
+
+<h2>四、f = 0.0395 与 0.0245 的差从哪来</h2>
+
+<h3>4.1 先排除「长度记错了」</h3>
+
+<p>若坚持 Blasius 的 0.024503，复现 K<sub>pipe</sub>=17.7 需要 <code>L<sub>eff</sub> = 16.70×0.026/0.024503 = 17.72 m</code>，是 11 m 的 1.61 倍。但长度改不了斜率：L=17.72 m 在 Re=5560 处给 K<sub>pipe</sub>=25.97，表里是 19.1（高 36%）。<strong>长度只能平移，不能改斜率 ⇒ 长度不是原因。</strong></p>
+
+<h3>4.2 表内是一条干净的幂律，指数 0.049</h3>
+
+<pre><code>log f = a − m·log Re  ⇒  m = 0.04865,  a = 0.065747
+残差：+1.02% / −1.23% / −0.96% / −0.06% / +1.25%</code></pre>
+
+<p>残差全在 ±1.2% 内——正好是 K 只保留一位小数的舍入量。这说明作者<strong>确实用了某个具体关联式</strong>，只是没写出来；而它的等效指数是 0.049，不是 Blasius 的 0.25。</p>
+
+<table>
+<tr><th>若 m 取</th><th class="num">K<sub>pipe</sub> 从 Re 5560 到 27800</th><th class="num">ΔK</th><th>与表对比</th></tr>
+<tr><td>0.25（Blasius）</td><td class="num">16.50 → 11.37</td><td class="num">5.14</td><td>表里 19.1 → 17.7，Δ=1.4</td></tr>
+<tr><td>0（常数 f）</td><td class="num">不变</td><td class="num">0</td><td>也不太对，表里确实降</td></tr>
+<tr><td>0.049（表内）</td><td class="num">19.10 → 17.70</td><td class="num">1.40</td><td><span class="tag t-ok">吻合</span></td></tr>
+</table>
+
+<p><strong>表里的 K<sub>pipe</sub> 比 Blasius 平 3.7 倍。</strong></p>
+
+<h3>4.3 能不能用一个粗糙度解释</h3>
+
+<p>Colebrook，逐点求根：</p>
+
+<table>
+<tr><th class="num">ε/D</th><th class="num">f(27 800)</th><th class="num">f(5 560)</th><th class="num">f 比</th><th class="num">表/算 @27 800</th></tr>
+<tr><td class="num">0.00005</td><td class="num">0.024039</td><td class="num">0.036334</td><td class="num">1.5115</td><td class="num">1.642</td></tr>
+<tr><td class="num">0.00050</td><td class="num">0.025160</td><td class="num">0.036857</td><td class="num">1.4649</td><td class="num">1.569</td></tr>
+<tr><td class="num">0.00200</td><td class="num">0.028380</td><td class="num">0.038547</td><td class="num">1.3582</td><td class="num">1.391</td></tr>
+<tr><td class="num">0.00500</td><td class="num">0.033446</td><td class="num">0.041706</td><td class="num">1.2470</td><td class="num">1.180</td></tr>
+<tr><td class="num"><strong>0.00950</strong></td><td class="num"><strong>0.039379</strong></td><td class="num">0.046029</td><td class="num">1.1689</td><td class="num"><strong>1.002</strong></td></tr>
+<tr><td class="num">0.02000</td><td class="num">0.050008</td><td class="num">0.054860</td><td class="num">1.0970</td><td class="num">0.789</td></tr>
+</table>
+
+<p>要复现 0.0395 需 <code>ε/D ≈ 9.5e−3</code>，即 <code>ε ≈ 0.25 mm</code>。316L 冷拔管的 ε = 0.0015–0.045 mm ⇒ ε/D = 5.8e−5 ~ 1.7e−3。<strong>要的粗糙度比 316L 大 5–170 倍。</strong>而且即使取 ε/D=9.5e−3，Colebrook 的斜率（1.16 倍）仍比表里的（1.08 倍）陡。</p>
+
+<div class="box warn">
+<p><strong>定级：L3。</strong>Table 2 的 f 口径未公开，且不可由本文给定的输入（316L、11 m、光滑管）复现。它既不能升 L2（不是「由声明适用域的关联式算出」），更不能当 L1。这一条对论文的意义是：Table 2 是 KYLIN 单侧闭合<strong>唯一现成的阻力分解</strong>，但它自己的 f 就复现不出来——用它做闭合，只能写「复现作者口径」，不能写「独立验证」。</p>
+</div>
+
+<h2>五、物性与 H<sub>eff</sub>：从 Table 3 反解</h2>
+
+<h3>5.1 Table 2 的 (ρ, μ) 不是同一个温度</h3>
+
+<p>由 3.2 的反解，表 2 用的物性是 <code>ρ = 10 370 kg/m³</code>、<code>μ = 2.2019e−3 Pa·s</code>。代入两套已核物性：</p>
+
+<table>
+<tr><th>物性集</th><th class="num">ρ=10 370 对应温度</th><th class="num">μ=2.2019e−3 对应温度</th><th class="num">差</th></tr>
+<tr><td>X26 式(15)–(18)</td><td class="num">548.5 K</td><td class="num">504.6 K</td><td class="num">44.0 K</td></tr>
+<tr><td>Zhao 2020 表 4</td><td class="num">607.8 K</td><td class="num">430.7 K</td><td class="num">177.2 K</td></tr>
+</table>
+
+<p>两套都对不上。作者要么用了第三套物性，要么 ρ 与 μ 取了不同参考温度——两种都必须在原文写明，否则 K(Re) 无法复核。</p>
+
+<h3>5.2 H<sub>eff</sub> = 3.312 m，与 Xu 表 1 的 3.35 m 差 1.1%</h3>
+
+<p>先由 Table 3 的 <code>c<sub>p</sub> = P/(ṁ·ΔT)</code> 逐行反算：六行全落在 146.90–147.06，<strong>作者固定取了 c<sub>p</sub>=147</strong>；由 <code>v</code> 反算的 ρ 为 10 350–10 403，与 Table 2 的 10 370 一致。再用式(5)解 H：</p>
+
+<table>
+<tr><th class="num">P (kW)</th><th class="num">ṁ (Table 3)</th><th class="num">K(ṁ)（Table 2 插值）</th><th class="num">H<sub>eff</sub> (m)</th><th class="num">正向复算 ṁ</th><th class="num">dev</th></tr>
+<tr><td class="num">4</td><td class="num">0.657</td><td class="num">23.95</td><td class="num">3.2875</td><td class="num">0.6586</td><td class="num">+0.25%</td></tr>
+<tr><td class="num">8</td><td class="num">0.834</td><td class="num">23.63</td><td class="num">3.3179</td><td class="num">0.8335</td><td class="num">−0.06%</td></tr>
+<tr><td class="num">12</td><td class="num">0.957</td><td class="num">23.39</td><td class="num">3.3072</td><td class="num">0.9575</td><td class="num">+0.05%</td></tr>
+<tr><td class="num">16</td><td class="num">1.058</td><td class="num">23.18</td><td class="num">3.3226</td><td class="num">1.0568</td><td class="num">−0.11%</td></tr>
+<tr><td class="num">20</td><td class="num">1.143</td><td class="num">23.01</td><td class="num">3.3270</td><td class="num">1.1412</td><td class="num">−0.16%</td></tr>
+<tr><td class="num">24</td><td class="num">1.215</td><td class="num">22.87</td><td class="num">3.3093</td><td class="num">1.2153</td><td class="num">+0.03%</td></tr>
+</table>
+
+<p><code>H<sub>eff</sub> = 3.3119 ± 0.0197 m</code>。</p>
+
+<div class="box ok">
+<p><strong>这是本轮唯一一次真正的两篇文献互校。</strong>Yue Table 3 的六行（P, ṁ, ΔT, v）出自 2017 年的理论计算，Xu FR26-170 表 1 的浮升高度 3.35 m 是另一篇原文直接给出的几何量——两者独立，在 H<sub>eff</sub> 上落到同一个数（差 −1.14%）。前面几轮的「自洽」都是同文自洽（作者的模型对作者的表），这一次不是。</p>
+</div>
+
+<h2>六、24 kW → 17.9 kW：能算，但检验力有限</h2>
+
+<h3>6.1 标定</h3>
+
+<p>用 Li §3.3 的 24 kW / 1.21 kg/s（最大开度、最大温差）反解：<code>K<sub>24</sub> = 23.173</code>；与 Table 2 在 ṁ=1.21 的插值 <code>22.880</code> 差 +1.28%——与 H<sub>eff</sub> 自身 ±1% 的不确定度同阶，可以认为 24 kW 点与作者模型是同一个 K。</p>
+
+<h3>6.2 四种算法，结论一致</h3>
+
+<table>
+<tr><th>K 的假设</th><th class="num">ṁ(17.9 kW)</th><th class="num">相对实测 1.12</th><th>说明</th></tr>
+<tr><td>K 恒定 = K<sub>24</sub></td><td class="num">1.0973</td><td class="num">−2.03%</td><td>最保守，只按 P<sup>1/3</sup></td></tr>
+<tr><td>K 随 Table 2 自洽</td><td class="num">1.0939</td><td class="num">−2.33%</td><td>复现作者模型</td></tr>
+<tr><td>只改斜率，m=0.25（Blasius）</td><td class="num">1.0908</td><td class="num">−2.61%</td><td>水平仍钉在标定点</td></tr>
+<tr><td>只改斜率，m=0.05（表 2 隐含）</td><td class="num">1.0986</td><td class="num">−1.91%</td><td>同上</td></tr>
+</table>
+
+<p><strong>不做任何重标定，17.9 kW 的预测落在 1.091–1.099，实测 1.12，偏差 −2.0% ~ −2.6%。</strong>这个量级本身是可以接受的。</p>
+
+<h3>6.3 但它证明不了阻力分解</h3>
+
+<p>从 m=0.25 走到 m=0.05，预测只动 <strong>0.0078 kg/s（0.7%）</strong>。原因很直接：<code>ṁ ∝ K<sup>−1/3</sup></code>，而 K 在 24→17.9 kW 之间只变 1.8%，流量只变 0.6%。要区分两种 f 律，需要 0.7% 的流量分辨率；K 型热电偶在 ΔT=108.6 K 上已经给 ±1.4%——<strong>差 2 倍，做不到</strong>。</p>
+
+<p>反过来，要解释「实测 1.12 vs 预测 1.094」的 2.07%，需要下列任一项成立：K 低 6.2%，或净功率高 6.2%，或 H<sub>eff</sub> 从 3.31 变成 3.52 m。三者都在「口径未对齐」的合理范围内。<strong>所以这个点无法证伪阻力分解，它能做的是另外三件事</strong>：</p>
+
+<ul>
+<li><strong>P<sup>1/3</sup> 律</strong>：Li 四点 log-log 斜率实测 0.563，K 恒定时应为 0.333，差 1.69 倍——<strong>数据本身就否掉了 K 恒定</strong>。但它否不掉的是「K 随功率变」。</li>
+<li><strong>阀位一致性</strong>：见 6.4，这是它真正卡住的东西。</li>
+<li>有没有在中途换 regime（层流化、气体夹带）。</li>
+</ul>
+
+<h3>6.4 Li 四点的隐含 K：正好证明「同阀位」是硬约束</h3>
+
+<p>Li Fig.4 三点（ΔT = 68/89/125 K，ṁ = 0.5/0.8/1.1）加 §3.3 的 24 kW 点，用同一套 (H, β, ρ, c<sub>p</sub>) 反解 K：</p>
+
+<table>
+<tr><th class="num">P 标称</th><th class="num">Q = ṁc<sub>p</sub>ΔT</th><th class="num">ṁ</th><th class="num">隐含 K</th><th class="num">相对 24 kW</th></tr>
+<tr><td class="num">5.0 kW</td><td class="num">5.00 kW</td><td class="num">0.50</td><td class="num"><strong>68.38</strong></td><td class="num">+196%</td></tr>
+<tr><td class="num">10.5 kW</td><td class="num">10.46 kW</td><td class="num">0.80</td><td class="num">34.96</td><td class="num">+51.4%</td></tr>
+<tr><td class="num">20.2 kW</td><td class="num">20.21 kW</td><td class="num">1.10</td><td class="num">25.97</td><td class="num">+12.5%</td></tr>
+<tr><td class="num">24.0 kW</td><td class="num">23.90 kW</td><td class="num">1.21</td><td class="num">23.08</td><td class="num">0</td></tr>
+</table>
+
+<p>四点隐含 K 变 2.95 倍。摩擦给不出这个变化：ṁ 变 2.4 倍时，m=0.25 只让 K 变 1.25 倍，m=0.05 只变 1.05 倍。而 Li §3.3 明写 24 kW 点是「最大温差<strong>且阀开度</strong>」下取的，§3.2.1 的扫描只说了「二级油流量保持 1.02 kg/s」，<strong>没有阀位记录</strong>。</p>
+
+<div class="box warn">
+<p><strong>所以这 2.95 倍的 K 变化，最可能是阀位，不是物理。</strong>这恰好反过来支持复核那句「同一阀位」：不记阀位，单侧闭合连「哪一条 K(ṁ) 曲线」都定不下来。这是本轮最硬的一条实验设计要求，而且它不是从文献推出来的，是从 Li 自己的四点数据里逼出来的。</p>
+</div>
+
+<h2>七、可写 / 不可写</h2>
+
+<div class="box ok">
+<p><span class="tag t-ok">可写</span></p>
+<ul>
+<li>3% 判据的双侧带 <code>A ∈ [0.537139607, 0.712346444]</code>，点值距上边界 0.003818604（+0.5389%），距下边界宽 45.0 倍；单调性已核。</li>
+<li>单点秩：一个成对流量 FoM 给一条等值线；<span class="mono"><span class="gk">δ</span></span> 在这一个 FoM 里没有足迹，但在成对逐段压差里有。</li>
+<li>σ<sub>B</sub>/B：最好设计 28%，现实 114%。「从流量 FoM 识别 (A,B)」应放弃。</li>
+<li>H<sub>eff</sub> = 3.312 m（Yue Table 3 反解）与 Xu 表 1 的 3.35 m 互校，差 1.1%。</li>
+<li>Table 2 反解 f = 0.0395–0.0428，比 Blasius 高 17%–61%，指数 0.049（Blasius 0.25）；K<sub>HS</sub> 的斜率来自构件项（m<sub>fit</sub>=0.056），不是摩擦。</li>
+<li>24 kW → 17.9 kW：预测 1.091–1.099，实测 1.12，偏差 −2%；判别力 0.7%，不足以识别 f 律。</li>
+</ul>
+</div>
+
+<div class="box warn">
+<p><span class="tag t-no">不可写</span></p>
+<ul>
+<li>「十倍功率把 B 定到 9.3%」——作废（应为 32%，且该设计在成对台架上不成立）。</li>
+<li>「<span class="mono"><span class="gk">δ</span></span> 不可观测 / 文献永远补不了」——作废，只成立到「这一个 FoM 分不开」。</li>
+<li>「A ≤ A<sub>crit</sub> 就是 3% 判据」——作废，须写双侧。</li>
+<li>「Table 2 可复现 / 可作 L2」——不可，按 L3 处理。</li>
+<li>「24 kW→17.9 kW 验证了阻力分解」——不可。24 kW 是标定点，17.9 kW 只差 26%，K 只变 1.8%，这个区间没有检验力。</li>
+</ul>
+</div>
+
+<h3>下一步（按依赖排序）</h3>
+
+<ol>
+<li><strong>把 Table 2 的 f 口径问清楚</strong>：作者用的是哪套物性（ρ 与 μ 差 44 K）、哪个 f 关联式（指数 0.049 不是 Blasius）。拿不到就只能标 L3，并把「复现作者口径」写在结论里，而不是「验证」。</li>
+<li><strong>成对识别设计</strong>：旋钮是 μ<sub>R</sub>（温度对），不是功率；并要求 σ<sub>D</sub> ≤ 0.5%，即必须独立测流量（标定段/电磁流量计），不能用能量平衡反算——Li 与 Yue 的流量都是后者。</li>
+<li><strong>阀位台账</strong>：所有工况记录阀门开度（并固定）。Li 的四点已经证明缺这一列会让 K 差 2.95 倍。</li>
+<li><strong>GSA 入口</strong>：先用 (A,B) 做声明模型的情景灵敏度；物理概率 GSA 需要 (A,B) 的联合可行域，而单个 CFD 点的等值线不是二维盒。</li>
+</ol>
+
+<p class="small">本轮全部数值由 <code>比例失真_计算/closure_v11.py</code> 一次生成（379 行日志），未手工填写。Zhao 案部分依赖 <code>source_free_bound_v5.py</code>；KYLIN 部分自带物性，不依赖 v5 的 Zhao 参数。参考文献：Yue et al., <em>Nucl. Sci. Tech.</em> 28(3):39 (2017)；Li et al., <em>Prog. Nucl. Energy</em> 81:239 (2015)；Xu, FR26-170；Al-Tameemi &amp; Ricco, ASME JFE (2018)。</p>
+
+</div>
+</body>
+</html>

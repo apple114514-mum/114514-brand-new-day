@@ -1,6 +1,18 @@
 # 自然循环缩比研究：2026-11-03 当前交接
 
-这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读下方第十轮可辨识性复核，再读第九轮[逐构件复核](component-re-v2-review-20261103.md)；此前文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+这份 Markdown 是给 Workbuddy 的**当前下载入口**。先读下方第十一轮单侧闭合复核，再读第十轮可辨识性复核与第九轮[逐构件复核](component-re-v2-review-20261103.md)；此前文件保留演变记录，不应直接引用已撤回说法。以下 GitHub 链接在本文件单独下载后仍可使用；本地仓库执行 `git pull`。
+
+## 第十一轮新增：KYLIN 单侧闭合
+
+| 文件 | 下载链接 | 用法 |
+|---|---|---|
+| **单侧闭合复核** | [PDF](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-review-20261103.pdf) · [Markdown](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-review-20261103.md) | 六行有效高度复算、Yue 表2分级、Li Fig.4 控制体、17.9 kW 斜率符号修正及下一步 |
+| **独立算术** | [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-independent-audit-20261103.py) · [输出](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-independent-audit-20261103.txt) · [v11 原脚本复现 ZIP](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-repro-20261103.zip) | 原 379 行已复现；正确正指数自洽求根 `1.095991/1.090333 kg/s`，差 `0.005658 kg/s` |
+| **工况缺口台账** | [CSV](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-condition-ledger-20261103.csv) | 把 Li 实验、Yue 实验与 Yue 理论行分开；阀位、净热、HS 温升及不确定度缺项明留空 |
+| **原文页图** | [Yue Table 3](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/yue-2017-table3-original-20261103.png) · [Li Fig. 4](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/li-2015-fig4-original-20261103.png) | 表明六功率矩阵为理论结果；Li Fig.4(b) 是冷热腿温差，不能当加热段温升 |
+| **Workbuddy 上传原件** | [HTML 报告](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-upload-report-20261103.html) · [脚本](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-upload-20261103.py) · [日志](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-upload-log-20261103.txt) · [参数溯源表](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/outputs/kylin-v11-upload-provenance-20261103.md) | 供保留演变记录；解释以本轮复核和[证据矩阵](https://github.com/apple114514-mum/114514-brand-new-day/blob/main/paper-workspace/claim-matrix.md)为准 |
+
+**给 Workbuddy 的修订重点：** `H_eff≈3.312 m` 与 Xu 3.35 m 是同一 KYLIN 几何的跨文献一致性检查，不是独立实验验证；Yue Table 2 原始理论值是 L1，反解 `f` 的形式未定。v11 的“`m=.05`”分支实际用了负斜率，修正后的 17.9 kW 两情景差约 `0.0057 kg/s`。Li Fig.4 的冷热腿温差不能作为加热段焓温升，“K 降 2.95 倍最可能因阀位”撤回；固定并记录阀位仍是必要的实验条件。300 K 的温度设计与该设施最低 150°C 运行范围不符，`σ_D=2%` 没有量测来源。下一步先补阀位、净热、热损与误差链，再做 17.9 kW 验证及物理 GSA。
 
 ## 第十轮新增：先看这里
 

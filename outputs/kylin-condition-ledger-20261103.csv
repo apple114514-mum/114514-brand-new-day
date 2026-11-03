@@ -1,0 +1,7 @@
+source_id,pdf_page,source_locator,record_type,heater_power_kW,mass_flow_kg_s,mass_flow_method,HS_inlet_outlet_deltaT_K,hot_cold_leg_deltaT_K,secondary_oil_flow_kg_s,valve_position,net_heat_kW,measurement_uncertainty,use_status
+L15,4,Fig.4 and Sec.3.2.1,experimental plotted approximate,~5,~0.5,heater energy balance,,~68,1.02,not reported,,not reported,descriptive only; Fig.4(b) is hot/cold leg
+L15,4,Fig.4 and Sec.3.2.1,experimental plotted approximate,~10,~0.8,heater energy balance,,~89,1.02,not reported,,not reported,descriptive only; do not set P=mcp*hotcold_deltaT
+L15,4,Fig.4 and Sec.3.2.1,experimental plotted approximate,~20,~1.1,heater energy balance,,~125,1.02,not reported,,not reported,descriptive only; heat loss unquantified
+L15,5,Sec.3.3,experimental reported,24,1.21,heater energy balance,,,~1.0,maximum opening,,not reported,24 kW calibration anchor only
+Y17,6,Sec.5.2,experimental reported,17.9,1.12,heater energy balance,108.6,,same secondary conditions; absolute value not reported here,not reported,,not reported,candidate holdout only after valve/oil/control-volume alignment
+Y17,4,Table 3,theoretical calculation,24,1.215,model calculation,134.4,,not applicable,not specified,not specified,not applicable,not Li experimental temperature

@@ -1,0 +1,15 @@
+Yue Table 3 with Yue Table 2 K and Xu beta: H_eff rows = 3.2875, 3.3179, 3.3072, 3.3226, 3.3270, 3.3093
+mean H_eff=3.311911 m, half range=0.019727 m; Xu Table 1 height=3.35 m
+conditional f_pipe=(0.042782..0.039473), fitted log slope=-0.048651, positive exponent=0.048651
+Yue Table 2 numbers are original reported theoretical results (L1), not L3 calibration
+Li Fig 4: plotted heater power about 5 kW; hot/cold-leg delta T=68 K; m*cp*deltaT=4.997 kW is a different control-volume proxy
+Li Fig 4: plotted heater power about 10 kW; hot/cold-leg delta T=89 K; m*cp*deltaT=10.464 kW is a different control-volume proxy
+Li Fig 4: plotted heater power about 20 kW; hot/cold-leg delta T=125 K; m*cp*deltaT=20.208 kW is a different control-volume proxy
+power=17.9 kW scenario: n=0/0.05/0.25 ->  1.097318/1.095991/1.090333 ; n=.05 vs .25 gap=0.005658 kg/s
+power=12 kW scenario: n=0/0.05/0.25 ->  0.960378/0.957631/0.945918 ; n=.05 vs .25 gap=0.011713 kg/s
+power=8 kW scenario: n=0/0.05/0.25 ->  0.838967/0.835164/0.818938 ; n=.05 vs .25 gap=0.016227 kg/s
+power=5 kW scenario: n=0/0.05/0.25 ->  0.717307/0.712664/0.692846 ; n=.05 vs .25 gap=0.019818 kg/s
+17.9 kW constant-K scenario vs Yue reported point: 1.097318 vs 1.12 kg/s
+exact K factor required=0.940468 (-5.953%), exact net-power or H factor=1.063301 (+6.330%)
+v11 sign check: passed slope=-0.048651 gives 1.098579; correct positive exponent=0.048651 gives 1.096027
+hypothetical T_M=423.15 vs 500 K, T_P=750 K: delta_f=0.076233, sigma_B/B=95.5% if sigma_D=.5 pp and all other inputs fixed
