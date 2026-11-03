@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>逐构件 K_i(Re) 与 δ 包络的重写（2026-11-02 第九轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.hit{background:#fdf0d5}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>逐构件 <span class="mono">K<sub>i</sub></span>(Re) 与 <span class="mono">δ</span> 包络的重写</h1>
+<div class="sub">2026-11-02 · 第九轮 · 对应复核 <code>parameter-closure-v1-review-20261102</code>（<code>main 8041d2b</code>）· 脚本 <code>provenance_closure_v2.py</code>（262 行日志）</div>
+
+<div class="box warn">
+<p><b>一句话结论。</b>复核的五条全部成立，我逐条认账并复算到位。其中一条比复核说的还要严重：
+<code>Re<sub>R</sub> ≥ 0.6418</code> 不只是「<code>w=0</code> 的端点」，在 Zhao 自己的
+<code>w = 0.291472</code> 上，阈值其实是 <b>0.9735</b>；而 <code>Re<sub>R</sub> = 0.3461</code>
+处的包络允许 <code>δ</code> 到 <b>23.64%</b>，3% 带在同一个 <code>w</code> 上只允许
+<b>0.54%</b>——包络比数据所容许的宽 <b>43.9 倍</b>。所以它从来不是判据。
+本轮真正新增的是一张<b>逐构件 <code>K<sub>i</sub></code>(Re) 表</b>，用一条已核的实测关联式
+（<code>K = 427.5 Re<sup>−0.77</sup> + 0.9</code>）把「<code>m ≤ 0.2</code>」直接证伪在
+<code>Re &lt; 2×10<sup>4</sup></code>——而缩比台架恰恰往那边走。</p>
+</div>
+
+<h2>一、复核的五个数：全部复现，并补两个更硬的</h2>
+
+<table>
+<thead><tr><th style="width:34%">量</th><th class="num" style="width:18%">复核报告</th><th class="num" style="width:18%">本脚本</th><th style="width:10%">判定</th></tr></thead>
+<tbody>
+<tr><td><code>K<sub>+</sub> = x<sub>+</sub><sup>3</sup>/M(x<sub>+</sub>)</code></td><td class="num">1.092755604047</td><td class="num">1.092755604047</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><code>f<sub>+</sub></code></td><td class="num">1.305130341205</td><td class="num">1.305130341205</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><code>K<sub>+</sub><sup>−5</sup></code></td><td class="num">0.641777944678</td><td class="num">0.641777944678</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><code>1.03<sup>−5</sup></code></td><td class="num">0.862608784384</td><td class="num">0.862608784384</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><code>(w=.2, Re<sub>R</sub>=.65)</code> 时的 <code>D</code></td><td class="num">+4.2702%</td><td class="num">+4.2702%</td><td><span class="tag t-ok">一致</span></td></tr>
+</tbody>
+</table>
+
+<p><b>记号错认账。</b>得 0.6418 的是 <code>K<sub>+</sub><sup>−m</sup></code>，不是
+<code>x<sub>+</sub><sup>−m</sup></code>。两条差得很远：照正文写的
+<code>1.03<sup>−5</sup> = 0.862609</code> 会得到 <code>Re<sub>R</sub> ≥ 0.8626</code>。
+v1 的脚本用的是 <code>K<sub>+</sub><sup>−5</sup></code>，所以数值没坏，但<b>读者照公式复算必然复现不了</b>——
+这是必须改的表述缺陷，不是无关紧要的笔误。</p>
+
+<h3>补的两个数：把「<code>w=0</code> 端点」换成「Zhao 自己的 <code>w</code>」</h3>
+
+<pre><code>δ_allow(w) = [K<sub>+</sub> − w·f<sub>+</sub>]/(1−w) − 1        Re<sub>R</sub> ≥ [1+δ_allow(w)]<sup>−1/m</sup></code></pre>
+
+<table>
+<thead><tr><th class="num" style="width:14%">固定 <code>w</code></th><th class="num" style="width:20%">允许的 <code>δ</code></th><th class="num" style="width:22%"><code>m=0.15</code> 需 <code>Re<sub>R</sub>≥</code></th><th class="num" style="width:20%"><code>m=0.20</code></th><th class="num" style="width:18%"><code>m=0.30</code></th></tr></thead>
+<tbody>
+<tr><td class="num">0</td><td class="num">+9.2756%</td><td class="num">0.553579</td><td class="num">0.641778</td><td class="num">0.744029</td></tr>
+<tr><td class="num">0.1</td><td class="num">+6.9158%</td><td class="num">0.640304</td><td class="num">0.715797</td><td class="num">0.800190</td></tr>
+<tr><td class="num">0.2</td><td class="num">+3.9662%</td><td class="num">0.771589</td><td class="num">0.823264</td><td class="num">0.878401</td></tr>
+<tr class="hit"><td class="num"><b>0.291472</b></td><td class="num"><b>+0.5389%</b></td><td class="num"><b>0.964801</b></td><td class="num"><b>0.973483</b></td><td class="num"><b>0.982243</b></td></tr>
+<tr><td class="num">0.3</td><td class="num">+0.1738%</td><td class="num">0.988491</td><td class="num">0.991356</td><td class="num">0.994229</td></tr>
+<tr><td class="num">0.4</td><td class="num">−4.8828%</td><td class="num">1.396170</td><td class="num">1.284410</td><td class="num">1.181596</td></tr>
+</tbody>
+</table>
+
+<p>高亮行是 <code>w</code> 的真实值（v8 修正后 <code>0.291472</code>，不是 v1 的 <code>0.370</code>）。
+两处后果：</p>
+
+<ul>
+<li><b>阈值不是 0.6418，是 0.9735。</b>与案例 <code>Re<sub>R</sub> = 0.3461</code> 比，缺口是
+<b>2.81 倍</b>（181%），不是 v1 写的「85%」。v1 那个 85% 是用 <code>w=0</code> 的阈值除出来的。</li>
+<li><b>更根本的：这个不等式本身不该当作保证。</b>包络在 <code>Re<sub>R</sub> = 0.3461</code>
+处允许 <code>δ</code> 到 <b>+23.64%</b>，而 3% 带在 <code>w = 0.291472</code> 上只允许
+<b>+0.539%</b>。比值 <b>43.9</b>。上界比实际容许宽一个半量级，
+它在数学上永真，在工程上永假——两句话说的是同一件事。</li>
+</ul>
+
+<div class="box">
+<p><b>顺带一个自证。</b>Zhao 由 <code>K<sub>R</sub> = 1.088839</code>、<code>w = 0.291472</code>、
+<code>c = 1</code>、<code>f<sub>R</sub> = 1.3038</code> 反解出的实现值 <code>δ ≈ +0.04%</code>，
+比允许的 <code>0.539%</code> 小一个量级；而 3% 带的 <code>w</code> 裕度只有
+<code>0.303987 − 0.291472 = 0.012515</code>（相对 4.1%）。也就是说：<b>这个案例是踩在带边缘通过的，
+且它通过的原因是 <code>δ</code> 恰好接近 0，不是相似性给了它余量。</b></p>
+</div>
+
+<h2>二、v1 被推翻的三处</h2>
+
+<table>
+<thead><tr><th style="width:24%">v1 的写法</th><th style="width:34%">为什么错</th><th>本轮的替代</th></tr></thead>
+<tbody>
+<tr>
+<td>A2：<i>局部损失系数的 Re 指数不超过壁面摩擦的 0.2，所以 f 的标度是局阻 Re 依赖的上包络</i></td>
+<td>把<b>壁面剪切</b>的 0.2 挪给了<b>分离与二次流</b>，两者没有共同标度。§三用一条已核实测关联式直接给出反例：斜接弯头在 <code>Re=500</code> 处局部指数 <b>0.615</b>，三倍于 0.2。</td>
+<td>把 <code>m</code> 从常数改成函数 <code>m<sub>i</sub>(Re)</code>，逐构件给来源与适用区间（§三），并给出违反窗口（§四）。</td>
+</tr>
+<tr>
+<td><code>Re<sub>R</sub> ≥ 0.6418</code> 是「相似性能否保证 3%」的设计要求</td>
+<td>三个独立问题：① 0.6418 是 <code>w=0</code> 端点，真值 0.9735；② 用的是<b>包络</b>不是<b>实际值</b>，两者差 43.9 倍；③ 符号写成了 <code>1.03<sup>−5</sup></code>，照它算得 0.8626。</td>
+<td>取消「保证」这个提法。改为两条：<b>(a)</b> 判定式 <code>δ<sub>env</sub> ≤ δ<sub>allow</sub>(w)</code>（充分、几乎永不成立）；<b>(b)</b> 参数化 <code>(δ, w)</code> 可行域（§六）。</td>
+</tr>
+<tr>
+<td>三个案例共用 Zhao 的 <code>K<sub>+</sub></code>、<code>f<sub>+</sub></code>、<code>w<sub>+</sub>(δ)</code></td>
+<td>K<sub>+</sub> 形式上是案例量，但数值上两案只差 <b>9.0×10<sup>−7</sup></b>（<code>M</code> 都贴近 1）——所以这一项不是错误来源。真正搬错的是 <code>f<sub>+</sub></code>：Zhao 的 <code>c f<sub>+</sub> = 1.305130</code>，KYLIN 的 <code>c f<sub>+</sub> = 1.005668</code>，差 30%。v1 用 1.305 算 KYLIN 得 <code>w<sub>+</sub> = −0.71</code>（负值，判「带空」）；用 KYLIN 自己的 1.006 得 <b>+16.36</b>（整段覆盖）。<b>符号都翻了。</b></td>
+<td>整张表撤回。按案例重算两个（§七），第三个（降高度）明确<b>不重算</b>并说明理由。</td>
+</tr>
+</tbody>
+</table>
+
+<h2>三、逐构件 <span class="mono">K<sub>i</sub></span>(Re)：把 <span class="mono">m</span> 从常数改成函数</h2>
+
+<h3>B1　90° 斜接弯头（圆管、无导流片）——本轮唯一 L1 级的定量证据</h3>
+
+<pre><code>K = 427.5 · Re<sup>−0.77</sup> + 0.9      500 ≤ Re ≤ 60000      拟合误差 ±3%</code></pre>
+
+<p>来源：<b>Al-Tameemi &amp; Ricco</b>, <i>Pressure-loss coefficient of 90° sharp-angled mitre elbows</i>,
+ASME J. Fluids Eng.（已下载全文，式 (4) 直读；本地存档
+<code>文献原文/AlTameemi_Ricco_2018_mitre_elbow_K_vs_Re.pdf</code>）。
+原文摘要原句：「decrease sharply with the Reynolds number up to about <code>Re = 20000</code>
+and, at higher Reynolds numbers, to approach mildly a constant <code>K = 0.9</code>」。</p>
+
+<table>
+<thead><tr><th class="num" style="width:16%">Re</th><th class="num" style="width:16%"><code>K</code></th><th class="num" style="width:24%">局部指数 <code>m = dlnK/dlnRe</code></th><th>判定</th></tr></thead>
+<tbody>
+<tr><td class="num">500</td><td class="num">4.4705</td><td class="num"><b>0.6150</b></td><td>区间内</td></tr>
+<tr><td class="num">1 000</td><td class="num">2.9938</td><td class="num">0.5385</td><td>区间内</td></tr>
+<tr><td class="num">2 000</td><td class="num">2.1278</td><td class="num">0.4443</td><td>区间内</td></tr>
+<tr><td class="num">5 000</td><td class="num">1.5064</td><td class="num">0.3100</td><td>区间内</td></tr>
+<tr><td class="num">10 000</td><td class="num">1.2556</td><td class="num"><b>0.2181</b></td><td>区间内，仍 &gt; 0.2</td></tr>
+<tr><td class="num">20 000</td><td class="num">1.1085</td><td class="num">0.1448</td><td>区间内</td></tr>
+<tr><td class="num">40 000</td><td class="num">1.0223</td><td class="num">0.0921</td><td>区间内</td></tr>
+<tr><td class="num">60 000</td><td class="num">0.9895</td><td class="num">0.0696</td><td>区间内</td></tr>
+<tr><td class="num">100 000</td><td class="num">0.9604</td><td class="num">0.0484</td><td>外推，勿用</td></tr>
+</tbody>
+</table>
+
+<p>这张表把 A2 钉死在很窄的一段：<b><code>m ≤ 0.2</code> 只在 <code>Re ≳ 2×10<sup>4</sup></code> 之后成立</b>。
+在 <code>Re = 500</code> 处局部指数是 0.2 的 <b>三倍</b>。而缩比台架的 <code>Re<sub>M</sub></code>
+永远低于原型——<b>缩小比例恰好把台架推进 A2 不成立的方向</b>。这是方向性风险，不是精度问题。</p>
+
+<h3>B2　圆角弯头：手册的 Re 修正表<b>从 1×10<sup>4</sup> 才起步</b></h3>
+
+<p>来源：ASHRAE Handbook 管件损失系数表 3-6（引自 Idelchik 1986 Diagram 6-5）。
+<b>须标明：该表为矩形风管斜接弯头，此处只作「形状与量级」旁证，不作圆管定量依据。</b></p>
+
+<table>
+<thead><tr><th style="width:26%">Re 区间</th><th class="num" style="width:20%"><code>K<sub>Re</sub></code> 之比</th><th class="num" style="width:22%">该区间平均指数</th><th>备注</th></tr></thead>
+<tbody>
+<tr><td>1×10<sup>4</sup> → 2×10<sup>4</sup></td><td class="num">1.1111</td><td class="num">0.1520</td><td>表的下端</td></tr>
+<tr><td>2×10<sup>4</sup> → 3×10<sup>4</sup></td><td class="num">1.0588</td><td class="num">0.1410</td><td></td></tr>
+<tr><td>3×10<sup>4</sup> → 4×10<sup>4</sup></td><td class="num">1.0439</td><td class="num">0.1492</td><td></td></tr>
+<tr><td>4×10<sup>4</sup> → 6×10<sup>4</sup></td><td class="num">1.0459</td><td class="num">0.1106</td><td></td></tr>
+<tr><td>6×10<sup>4</sup> → 8×10<sup>4</sup></td><td class="num">1.0283</td><td class="num">0.0970</td><td></td></tr>
+<tr><td>8×10<sup>4</sup> → 1×10<sup>5</sup></td><td class="num">1.0192</td><td class="num">0.0854</td><td></td></tr>
+<tr><td>1×10<sup>5</sup> → 2×10<sup>5</sup></td><td class="num">1.0400</td><td class="num">0.0566</td><td>表的上端，趋 1</td></tr>
+<tr><td>&lt; 1×10<sup>4</sup></td><td class="num">—</td><td class="num">—</td><td><b>无表</b></td></tr>
+</tbody>
+</table>
+
+<p>整段平均指数 0.12~0.15，也在 0.2 以内——但同样只是「这段 Re 里恰好如此」。
+要紧的是最后一行：<b>手册自己承认 1×10<sup>4</sup> 以下没有修正表</b>。
+换句话说，「<code>m ≤ 0.2</code>」在 <code>Re &lt; 10<sup>4</sup></code> 上连<b>可引用的数</b>都没有，
+不是「保守地取 0.2」，是<b>无据可取</b>。</p>
+
+<h3>B3　标准 90° 弯头（Crane 2-K 系数复算，2 英寸管）——二手，仅作交叉印证</h3>
+
+<pre><code>Re :   100     1000    2300    1e4     1e5     1e6
+K  :   8.59    1.39    0.94    0.67    0.60    0.59
+逐段指数：0.791 | 0.470 | 0.230 | 0.048
+跨 1e3–1e4 整段平均指数 = 0.317</code></pre>
+
+<p>来源等级：<b>二手汇编</b>（Crane TP-410 的 2-K 系数经第三方复算），原文未核。
+连普通弯头在 10<sup>3</sup>–10<sup>4</sup> 都有 0.32 的整段平均指数——与 B1 的斜接弯头互不矛盾。</p>
+
+<h3>B4　突扩：唯一能写成「恒等于 0」的构件</h3>
+
+<p><code>K = (1 − A<sub>1</sub>/A<sub>2</sub>)<sup>2</sup></code>（Borda–Carnot），湍流下与 Re 无关，
+<code>m ≡ 0</code>。理由是它的损失全部来自不可逆掺混，而掺混尺度由几何决定，不由黏性决定。
+等级 <b>L2</b>（教科书关联式），不是 L1 实测。</p>
+
+<h3>B5　阀门：Re 依赖被<b>开度</b>压过去</h3>
+
+<table>
+<thead><tr><th style="width:20%">开度</th><th class="num" style="width:18%">闸阀 <code>K</code></th><th class="num" style="width:18%">截止阀 <code>K</code></th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>全开 100%</td><td class="num">0.15 ~ 0.30</td><td class="num">10</td><td>基准</td></tr>
+<tr><td>75%</td><td class="num">0.9</td><td class="num">13 ~ 15</td><td></td></tr>
+<tr><td>50%</td><td class="num">4.5 ~ 5.6</td><td class="num">24 ~ 50</td><td>差 20 倍</td></tr>
+<tr><td>25%</td><td class="num">17 ~ 24</td><td class="num">97</td><td>差 60 倍</td></tr>
+</tbody>
+</table>
+
+<p>来源：Crane TP-410 经二手表（Bai &amp; Bai, <i>Subsea Engineering Handbook</i> 表 13-7；
+Crane 原表未核）。<b>这一条比 A2 更硬</b>：开度不是 Re 问题，而是「台架与原型是否同一开度」
+这个工程事实。它落在 <code>δ</code> 里，但量级由开度差决定，<b>任何 Re 指数都盖不住</b>。
+所以「<code>δ</code> 只由 Re 比决定」这个前提本身就不完备。</p>
+
+<h2>四、A2 的数值反例：包络可以被超过</h2>
+
+<p>A2 写成不等式是 <code>K<sub>M</sub>/K<sub>P</sub> ≤ r<sup>−0.2</sup></code>，
+<code>r = Re<sub>M</sub>/Re<sub>P</sub> ≤ 1</code>。用 B1 的实测关联式直接检验
+（同一构件、只是 Re 不同，A1 显然满足）：</p>
+
+<table>
+<thead><tr><th class="num" style="width:16%"><code>Re<sub>P</sub></code> \ <code>Re<sub>M</sub></code></th><th class="num">500</th><th class="num">1×10<sup>3</sup></th><th class="num">3×10<sup>3</sup></th><th class="num">1×10<sup>4</sup></th><th class="num">3×10<sup>4</sup></th></tr></thead>
+<tbody>
+<tr><td class="num">1×10<sup>4</sup></td><td class="num hit">1.96 !</td><td class="num hit">1.50 !</td><td class="num hit">1.13 !</td><td class="num">—</td><td class="num">—</td></tr>
+<tr><td class="num">3×10<sup>4</sup></td><td class="num hit">1.87 !</td><td class="num hit">1.44 !</td><td class="num hit">1.08 !</td><td class="num">0.96</td><td class="num">—</td></tr>
+<tr><td class="num">6×10<sup>4</sup></td><td class="num hit">1.73 !</td><td class="num hit">1.33 !</td><td class="num">1.00</td><td class="num">0.89</td><td class="num">0.93</td></tr>
+<tr><td class="num">1×10<sup>5</sup></td><td class="num hit">1.61 !</td><td class="num hit">1.24 !</td><td class="num">0.93</td><td class="num">0.82</td><td class="num">0.86</td></tr>
+<tr><td class="num">3×10<sup>5</sup></td><td class="num hit">1.34 !</td><td class="num hit">1.03 !</td><td class="num">0.77</td><td class="num">0.69</td><td class="num">0.72</td></tr>
+</tbody>
+</table>
+
+<p class="small">单元格 = 实比 / 包络比。&gt; 1 即 A2 被违反（标 !）。</p>
+
+<div class="box warn">
+<p><b>最坏一格：<code>Re<sub>P</sub> = 6×10<sup>4</sup></code>、<code>Re<sub>M</sub> = 500</code>。</b></p>
+<pre><code>实测  K<sub>M</sub>/K<sub>P</sub> = 4.5180  =>  δ<sub>i</sub> = +351.8%
+包络  r<sup>−0.2</sup>       = 2.6052  =>  δ<sub>i</sub> ≤ +160.5%
+包络低估 191 个百分点，因子 1.73。</code></pre>
+<p>违反的判据是「区间 [<code>Re<sub>M</sub>, Re<sub>P</sub></code>] 上的平均指数 &gt; 0.2」。
+因为 <code>m</code> 随 Re 单调下降，平均指数主要由 <code>Re<sub>M</sub></code> 决定：
+网格里 <code>Re<sub>M</sub> ≤ 3×10<sup>3</sup></code> 基本都违反，
+<code>Re<sub>M</sub> ≥ 1×10<sup>4</sup></code> 尚未出现。
+注意 <code>m</code> 在单点上仍超 0.2（<code>10<sup>4</sup></code> 处 0.218），只是被区间上游的低指数稀释掉了。</p>
+</div>
+
+<p>所以 A2 的正确身份是：<b>一个必须逐案例核对的窗口条件</b>，
+不是一个可以写进论文当物理断言的一般性质。</p>
+
+<h2>五、上包络与混合值是两个数，只报一个没有信息量</h2>
+
+<p>记构件权重 <code>α<sub>i</sub> = k<sub>i,P</sub>/k<sub>P</sub></code>，<code>Σα<sub>i</sub> = 1</code>；
+单个构件 <code>K<sub>i,M</sub>/K<sub>i,P</sub> = r<sup>−m<sub>i</sub></sup></code>。则精确式与上界是：</p>
+
+<pre><code>k<sub>M</sub>/k<sub>P</sub> = Σ α<sub>i</sub> · r<sup>−m<sub>i</sub></sup>      =>  δ<sub>mix</sub> = 上式 − 1     （精确，需 α）
+k<sub>M</sub>/k<sub>P</sub> ≤ r<sup>−m<sub>max</sub></sup>      =>  δ<sub>env</sub> = 上式 − 1     （只需 m<sub>max</sub>）
+
+两构件退化时，间隙有闭式：
+δ<sub>env</sub> − δ<sub>mix</sub> = (1−α) · [ r<sup>−m<sub>max</sub></sup> − r<sup>−m<sub>rest</sub></sup> ]</code></pre>
+
+<table>
+<thead><tr><th class="num" style="width:16%"><code>α<sub>max</sub></code></th><th class="num" style="width:16%"><code>δ<sub>mix</sub></code></th><th class="num" style="width:16%"><code>δ<sub>env</sub></code></th><th class="num" style="width:14%">间隙</th><th class="num" style="width:12%"><code>env/mix</code></th></tr></thead>
+<tbody>
+<tr><td class="num">0.10</td><td class="num">+7.2676%</td><td class="num">+23.6402%</td><td class="num">16.37 pp</td><td class="num">3.25</td></tr>
+<tr><td class="num">0.20</td><td class="num">+9.0867%</td><td class="num">+23.6402%</td><td class="num">14.55 pp</td><td class="num">2.60</td></tr>
+<tr><td class="num">0.30</td><td class="num">+10.9059%</td><td class="num">+23.6402%</td><td class="num">12.73 pp</td><td class="num">2.17</td></tr>
+<tr><td class="num">0.50</td><td class="num">+14.5443%</td><td class="num">+23.6402%</td><td class="num">9.10 pp</td><td class="num">1.63</td></tr>
+<tr><td class="num">0.80</td><td class="num">+20.0018%</td><td class="num">+23.6402%</td><td class="num">3.64 pp</td><td class="num">1.18</td></tr>
+<tr><td class="num">1.00</td><td class="num">+23.6402%</td><td class="num">+23.6402%</td><td class="num">0.00 pp</td><td class="num">1.00</td></tr>
+</tbody>
+</table>
+
+<p class="small"><code>α<sub>max</sub></code> = 最不利构件（<code>m = m<sub>max</sub></code>）占原型总损失
+<code>k<sub>P</sub></code> 的份额。取 <code>r = 0.3461</code>、<code>m<sub>max</sub> = 0.2</code>、
+<code>m<sub>rest</sub> = 0.05</code>。</p>
+
+<p>同一个「<code>Re<sub>R</sub> = 0.3461</code>」，报出来的 <code>δ</code> 可以在
+<b>+5.4% 到 +23.6%</b> 之间移动 4.4 倍，全看最不利构件占多少损失份额。于是：</p>
+
+<ul>
+<li>只给 <code>δ<sub>env</sub></code> 的论文结论，<b>读者无法复核</b>——<code>α</code> 未声明，这个数对任何装置都成立，因此不含该装置的信息；</li>
+<li>只给 <code>δ<sub>mix</sub></code> 的结论，<b>依赖图纸</b>——<code>α</code> 就是逐段阻力，正是拿不到的那一样东西；</li>
+<li>可写的形式是<b>两个都给</b>，并明写「<code>α</code> 未知时 <code>δ</code> 落在
+<code>[δ<sub>mix</sub>, δ<sub>env</sub>]</code>」。</li>
+</ul>
+
+<div class="box">
+<p><b>这也解释了 v1 那句「<code>δ</code> 已经不需要留白了」错在哪。</b>
+留白的不是 <code>δ</code> 的数，是 <code>α</code> 的数；<code>δ</code> 只是 <code>α</code> 的函数。
+把未知量从 <code>δ</code> 搬到 <code>m<sub>max</sub></code> 并没有消灭未知量——
+它只是让未知量换了个名字，并且顺手把「未知」包装成了「有界」。</p>
+</div>
+
+<h2>六、把 Re 联立进去：自洽解与它暴露的问题</h2>
+
+<p>复核第 2 条要求「设计阶段把 Re 与未知流量联立」。模型内的关系可以显式写出：</p>
+
+<pre><code>Re = 4 ṁ / (π D μ)   =>   Re<sub>R</sub> = (ṁ<sub>M</sub>/ṁ<sub>P</sub>) / (d · μ<sub>R</sub>) = 1 / (r<sub>m</sub> · d · μ<sub>R</sub>)
+r<sub>m</sub> = x · R<sub>id</sub>        =>   Re<sub>R</sub>(x) = 1 / (x · R<sub>id</sub> · d · μ<sub>R</sub>(T(x)))</code></pre>
+
+<p><b>注意符号。</b><code>x</code> 增大 ⇒ 流量增大 ⇒ <code>Re<sub>R</sub></code> 减小 ⇒
+<code>δ<sub>env</sub></code> 增大 ⇒ <code>G</code> 增大 ⇒ <code>x</code> 再增大。
+这是<b>正反馈</b>，不是收敛型耦合。自洽方程因此是：</p>
+
+<pre><code>x<sup>3</sup> · ρ<sub>R</sub> = G(x, w, δ<sub>env</sub>(x)) · c<sub>p,R</sub> ,   δ<sub>env</sub>(x) = Re<sub>R</sub>(x)<sup>−m</sup> − 1</code></pre>
+
+<table>
+<thead><tr><th class="num" style="width:14%"><code>x</code></th><th class="num" style="width:18%"><code>Re<sub>R</sub>(x)</code></th><th class="num" style="width:18%"><code>δ<sub>env</sub>(x)</code></th><th class="num" style="width:20%">3% 允许的 <code>δ</code></th><th class="num" style="width:14%">差多少倍</th></tr></thead>
+<tbody>
+<tr><td class="num">1.0000</td><td class="num">0.353553</td><td class="num">+23.1144%</td><td class="num">+0.5389%</td><td class="num">42.9</td></tr>
+<tr><td class="num">1.0288</td><td class="num">0.345001</td><td class="num">+23.7189%</td><td class="num">+0.5389%</td><td class="num">44.0</td></tr>
+<tr><td class="num">1.0500</td><td class="num">0.339004</td><td class="num">+24.1535%</td><td class="num">+0.5389%</td><td class="num">44.8</td></tr>
+<tr><td class="num">1.1000</td><td class="num">0.325770</td><td class="num">+25.1463%</td><td class="num">+0.5389%</td><td class="num">46.7</td></tr>
+<tr><td class="num">1.2000</td><td class="num">0.302591</td><td class="num">+27.0073%</td><td class="num">+0.5389%</td><td class="num">50.1</td></tr>
+</tbody>
+</table>
+
+<table>
+<thead><tr><th class="num" style="width:14%"><code>w</code></th><th class="num" style="width:18%">自洽解 <code>x*</code></th><th class="num" style="width:18%"><code>D = x*−1</code></th><th style="width:18%">在 3% 内?</th><th class="num" style="width:18%"><code>Re<sub>R</sub>(x*)</code></th></tr></thead>
+<tbody>
+<tr><td class="num">0.0000</td><td class="num">1.076276</td><td class="num">+7.6276%</td><td><span class="tag t-no">不在</span></td><td class="num">0.331897</td></tr>
+<tr><td class="num">0.2000</td><td class="num">1.080587</td><td class="num">+8.0587%</td><td><span class="tag t-no">不在</span></td><td class="num">0.330763</td></tr>
+<tr><td class="num">0.2915</td><td class="num">1.082557</td><td class="num">+8.2557%</td><td><span class="tag t-no">不在</span></td><td class="num">0.330249</td></tr>
+<tr><td class="num">0.4000</td><td class="num">1.084893</td><td class="num">+8.4893%</td><td><span class="tag t-no">不在</span></td><td class="num">0.329640</td></tr>
+</tbody>
+</table>
+
+<p>自洽解随 <code>w</code> 落在 <b>+7.6% ~ +8.5%</b>，全部不在 3% 内。
+原因不是数值，是把两件不同性质的东西放进了同一个方程：</p>
+
+<ul>
+<li><code>δ<sub>env</sub></code> 是<b>上界</b>——对任何 <code>α</code> 都成立，因此必然宽松；</li>
+<li>3% 带要的是<b>实际值</b>——由 <code>α</code> 决定。</li>
+</ul>
+
+<p>把上界当实际值回代，得到的是一个「最坏情形自洽解」，它当然不在 3% 内。
+这不是模型坏了，是<b>用法越界</b>。正确的用法只有两种：</p>
+
+<ol style="margin-left:22px">
+<li><b>判定式</b>：<code>δ<sub>env</sub>(Re<sub>R</sub>) ≤ δ<sub>allow</sub>(w)</code> —— 充分条件，但对 Zhao 这种
+<code>Re<sub>R</sub> = 0.346</code> 的台架，它<b>永远不成立</b>（差 43.9 倍）；</li>
+<li><b>参数化</b>：把 <code>δ</code> 当自变量扫，报 <code>(δ, w)</code> 可行域，
+不宣称任何单个案例「保证 ≤ 3%」。</li>
+</ol>
+
+<p>论文里能写的，是第 2 条；不能写的，是把第 1 条当成「通过/不通过」的判据——
+因为它在 <code>w = 0</code> 端点通过、在真实 <code>w</code> 上不通过，
+而「<code>w</code> 取多少」本身还要由同一组未知量决定。</p>
+
+<h2>七、按案例重算：两个能算，一个不能</h2>
+
+<table>
+<thead><tr><th style="width:30%">案例</th><th class="num" style="width:18%"><code>K<sub>+</sub></code>（本案例）</th><th class="num" style="width:14%"><code>c f<sub>+</sub></code></th><th class="num" style="width:16%"><code>w<sub>+</sub>(δ=0)</code></th><th>判定</th></tr></thead>
+<tbody>
+<tr><td>Zhao 2020 成对 CFD</td><td class="num">1.092755604</td><td class="num">1.305130</td><td class="num">0.303987</td><td><code>[0, 0.3040]</code></td></tr>
+<tr><td>KYLIN-II 全相似 <code>l<sub>R</sub>=.5</code></td><td class="num">1.092754700</td><td class="num">1.005668</td><td class="num">16.363596</td><td><b>整段覆盖</b></td></tr>
+<tr><td>KYLIN-II 降高度</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="tag t-no">不重算</span></td></tr>
+</tbody>
+</table>
+
+<p>两行的 <code>K<sub>+</sub></code> 几乎相同（差 <code>9×10<sup>−7</sup></code>），
+<code>c</code> 却差很多：Zhao 的 <code>c = 1</code>（表 3 八行全 2:1 的均匀缩放签名），
+KYLIN 的 <code>c = 0.5/0.616 = 0.8117</code>。
+<span class="small">（后者的前提是「总摩擦长度按 <code>l<sub>R</sub></code> 缩放」——Xu 表 2 不给水平段/竖直段分配，
+这个前提本身仍是自由假设；但它不影响「两案 <code>c</code> 不同」这个方向性结论。）</span>
+结论很直接：</p>
+
+<ul>
+<li><b>Zhao 的 3% 带对 <code>w</code> 有硬上限 0.304</b>，实测 <code>w = 0.2915</code> 只留 4.1% 裕度；</li>
+<li><b>KYLIN 全相似的 3% 带对 <code>w</code> 没有限制</b>（<code>w<sub>+</sub> = 16.4 &gt; 1</code>），
+因为它的 <code>c f<sub>+</sub></code> 只比 1 大 0.57%，<code>G</code> 对 <code>w</code> 几乎不敏感。
+两个案例的带形状<b>本来就不同</b>——这正是不能共用一组 <code>K<sub>+</sub>, f<sub>+</sub></code> 的原因。</li>
+</ul>
+
+<p><b>第三个案例（KYLIN 降高度）明确不重算</b>，理由不是懒：</p>
+
+<ul>
+<li>该案 <code>d<sub>R</sub> = 1</code>、<code>l<sub>R</sub> = 0.5</code>，但 Xu 表 2 只给
+<code>l<sub>R</sub>, d<sub>R</sub>, m<sub>R</sub>, ΔT<sub>R</sub>, q<sub>R</sub></code>，
+<b>不给水平段/竖直段分配</b>，<code>c = λ/d</code> 因此不是唯一确定量（v8 已记此自由假设）；</li>
+<li>该案<b>无成对工况</b>，<code>c<sub>0</sub></code> 算不出来（v7 已撤回「恰好 <code>c=0.5</code> 落在失效区」）；</li>
+<li>无成对工况 ⇒ <code>K<sub>t</sub></code> 里的 <code>M(x)</code> 可以用声明模型算，
+但那个 <code>M</code> 没有观测背书。</li>
+</ul>
+
+<p>可写的只有一句：「KYLIN 降高度的 <code>−12.15%</code> 由 <code>m<sub>R</sub></code> 与
+<code>l<sub>R</sub></code> 两个独立比值造成」，<b>不写「由 <code>δ</code> 造成」，
+也不写「<code>w<sub>+</sub></code> 为负 / 带非空」</b>。</p>
+
+<h2>八、可写 / 不可写</h2>
+
+<div class="box ok">
+<p><b>可以写</b></p>
+<ol style="margin-left:22px">
+<li><b>条件命题</b>（前提全部明写、不含物理断言）：若各构件同一参考速度、权重归一、
+<code>K<sub>i</sub></code> 随 Re 单调不增、且该 Re 窗口内
+<code>K<sub>i,M</sub>/K<sub>i,P</sub> ≤ r<sup>−m<sub>max</sub></sup></code>，
+则 <code>0 ≤ δ ≤ r<sup>−m<sub>max</sub></sup> − 1</code>。</li>
+<li><b><code>m<sub>max</sub></code> 是声明输入，不是物理常数。</b>逐构件表给出取值与来源等级：
+斜接弯头 0.62@Re=500 … 0.07@Re=6×10<sup>4</sup>（<b>L1，已核 PDF</b>）；
+圆角弯头 0.12~0.15（L2，矩形风管表，仅旁证）；
+普通弯头 0.32@10<sup>3</sup>–10<sup>4</sup>（二手汇编）；突扩 0（L2）；
+阀门由开度主导，全开 0.15 / 半开 4.5，差 20 倍（二手 Crane）。</li>
+<li><b>包络与混合值必须同时给</b>：<code>δ ∈ [δ<sub>mix</sub>, δ<sub>env</sub>]</code>，
+间隙 <code>= (1−α)[r<sup>−m<sub>max</sub></sup> − r<sup>−m<sub>rest</sub></sup>]</code>。</li>
+<li><b>「Re 包络不构成 3% 保证」有定量形式</b>：<code>Re<sub>R</sub>=0.3461</code> 允许
+<code>δ</code> 到 23.6%，而 <code>w=0.2915</code> 只允许 0.54%，宽 43.9 倍。</li>
+<li><b>反例</b>：A2 在 <code>Re<sub>M</sub> ≤ 3×10<sup>3</sup></code>（斜接弯头）被违反，
+最坏格超包络 1.73 倍（<code>Re<sub>P</sub>=6×10<sup>4</sup>, Re<sub>M</sub>=500</code>）。</li>
+</ol>
+</div>
+
+<div class="box warn">
+<p><b>不能写</b></p>
+<ol style="margin-left:22px">
+<li>「<code>δ</code> 的物理参数域<b>已经建立</b>」——域没有建立，只有一个以 <code>m<sub>max</sub></code> 为参数的族。</li>
+<li>「<code>Re<sub>R</sub> ≥ 0.6418</code> 保证 3%」——那是 <code>w=0</code> 端点，且用的是包络而非实际值。</li>
+<li>「A2 是分离损失的一般性质」——被 B1 的实测关联式否定。</li>
+<li>「三个案例的 3% 带分别为 …」——<code>K<sub>+</sub></code> 形式上是案例量，但真正的错在 <code>f<sub>+</sub></code>；v1 那张表作废。</li>
+<li>「<code>US = 1.9~3.2</code> W/K 是 L2」——<code>h<sub>out</sub></code>、导热率、保温厚度、环境温度全是自取值，<b>L4 情景</b>。</li>
+<li>「某个 <code>δ</code> 值」——没有 <code>α</code> 就没有 <code>δ</code> 的数，能给的只有区间端点。</li>
+</ol>
+</div>
+
+<h2>九、下一步：三条，按能不能拿到分</h2>
+
+<table>
+<thead><tr><th style="width:26%">动作</th><th style="width:14%">能否自办</th><th>具体入口</th></tr></thead>
+<tbody>
+<tr>
+<td><b>① 补齐逐构件 <code>m<sub>i</sub></code></b>（把 B1–B5 扩成完整清单）</td>
+<td><span class="tag t-ok">能</span></td>
+<td>按台架实际部件清单逐件查：弯头（圆角/斜接、r/D）、三通、渐扩/渐缩、阀门（<b>制造商全开 K 与开度曲线</b>）、孔板、堆芯栅格。每一件记录 <i>K、适用 Re、来源等级</i>。B2 已显示 <code>Re&lt;10<sup>4</sup></code> 无表可查，这一段的数只能来自 CFD 或实测——<b>这本身就是一条可写的方法学缺口</b>。</td>
+</tr>
+<tr>
+<td><b>② 拿到 <code>α<sub>i</sub></code>（逐段阻力）</b></td>
+<td><span class="tag t-no">不能</span></td>
+<td>只有两条路：成对压差数据（<code>Δp</code> 逐段），或两侧图纸 + 开度记录。文献检索到此为止——本轮已验证「单侧资料只能定 <code>w</code>，不能定成对 <code>δ</code>」。</td>
+</tr>
+<tr>
+<td><b>③ 把「测量不确定度」并进同一张表</b></td>
+<td><span class="tag t-mid">部分</span></td>
+<td>v8 的输入分辨率表（<code>d</code> 须准到 0.73%、面积比 1.46%）与本轮的 <code>δ</code> 区间，
+可以在 <code>(δ, α, 输入公差)</code> 三维上合成一个联合盒。合成规则（GUM）尚未动。</td>
+</tr>
+</tbody>
+</table>
+
+<div class="box">
+<p><b>一句话收尾。</b>v1 把「<code>δ</code> 未知」换成了「<code>Re<sub>R</sub></code> 必须多大」，
+方向是对的，但换来的不是判据——是<b>一个把未知量从 <code>δ</code> 搬到 <code>m<sub>max</sub></code> 的等价改写</b>。
+本轮把 <code>m<sub>max</sub></code> 挖开，发现它在缩比台架所在的 Re 段上反而更大（0.2 → 0.6），
+于是这个改写不但没消灭未知量，还<b>把方向搞反了</b>。
+真正的关口仍然是 <code>α</code>（逐段阻力），而它的入口是成对压差或图纸，不是文献检索。</p>
+</div>
+
+<p class="small" style="margin-top:40px">本轮脚本：<code>比例失真_计算/provenance_closure_v2.py</code>（262 行日志
+<code>provenance_closure_v2_log.txt</code>，全部数值一次生成，无手工填写）。
+引用来源的核验状态已逐条标注：<b>Al-Tameemi &amp; Ricco 2018</b> 已下载全文并直读式 (4)；
+ASHRAE/Idelchik <code>K<sub>Re</sub></code> 表为<b>矩形风管</b>，仅作旁证；
+Crane 2-K 与阀门开度表为<b>二手汇编</b>，原文未核。</p>
+
+</div>
+</body>
+</html>

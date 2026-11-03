@@ -1,0 +1,6 @@
+source,status,mass_kg_s,Re_tube_1000,Re_HS_1000,K_HS,K_EV,K_pipe,K_total,dp_Pa,pipe_friction_K,pipe_friction_fraction_of_total,f_implied_11m_26mm,f_smooth_Blasius
+Yue2017_PDFp4_Table2,theoretical,0.25,5.56,1.9,2.9,2.5,19.1,24.5,261.9,18.1,0.73877551,0.042781818,0.036641039
+Yue2017_PDFp4_Table2,theoretical,0.5,11.1,3.81,2.8,2.5,18.9,24.2,1034.8,17.9,0.739669421,0.042309091,0.030825188
+Yue2017_PDFp4_Table2,theoretical,0.75,16.7,5.71,2.8,2.5,18.5,23.8,2289.9,17.5,0.735294118,0.041363636,0.027832829
+Yue2017_PDFp4_Table2,theoretical,1.0,22.3,7.62,2.7,2.5,18.1,23.3,3985.4,17.1,0.733905579,0.040418182,0.025891682
+Yue2017_PDFp4_Table2,theoretical,1.25,27.8,9.52,2.6,2.5,17.7,22.8,6093.6,16.7,0.73245614,0.039472727,0.024503339
