@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>先验路线的输入域与判据裕度（2026-11-06 第十四轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13.5px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13.5px}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>先验路线的输入域与判据裕度</h1>
+<div class="sub">2026-11-06 · 第十四轮 · 7 节 / 9 表 · 脚本 <code>prior_domain_v14.py</code>（188 行日志，<code>%%</code> 残留 0 处）<br>
+依赖：<code>source_free_bound_v5.py</code>（Zhao 案模型）· v8 的 1 pp 预算表 · v10 的规范自由度<br>
+前提变更：<strong>本文不做实验，走先验（a priori）不确定度分析</strong></div>
+
+<div class="box warn">
+<strong>一句话结论。</strong>前十三轮里有一大半工作在追「实验验证」，方向错位——本文没有实验真值，也不需要。
+转到先验路线后，卡了一个多月的六个量（阀位、净热、独立流量、误差链、<span class="gk">f</span> 关联式、物性参考温度）
+<strong>在先验框架下根本不需要</strong>；输入域改由公差、关联式验证域、仪表规格、物性版本、口径离散五类构成，每一类都可核。
+本轮给出两个新结果：<strong>3% 余量折成输入允许偏差只有 1 pp 预算的 1/8.12</strong>（<code>r_m</code> 只能偏 0.12%）；
+<strong>表 5 的印刷位数已经吃掉允许量的 77.5%</strong>。
+</div>
+
+<h2>一、重定位：先验与后验是两种问题，不是两种精度</h2>
+
+<p>先验分析的定义很窄：不确定度来源只能来自<strong>声明</strong>——公差、关联式验证域、仪表规格、物性版本、口径离散。
+输出是「所声明模型内、所声明域上的偏差集合」，而不是「模型对不对」。后者要真值，本文没有，也不需要。</p>
+
+<p>这条前提一旦定死，前面几轮的三个方向要改。</p>
+
+<table>
+<tr><th style="width:22%">后果</th><th>具体内容</th><th style="width:14%">性质</th></tr>
+<tr><td>L3 退出输入域</td><td>v11 用 Yue Table 3 反解 <code>H_eff = 3.3119 m</code>，那是 L3（对实测反解），且依赖原文自称 conservatively assumed 的 <code>L_pipe≈11 m</code>。先验下有效高度只能来自几何声明。</td><td><span class="tag t-no">减法</span></td></tr>
+<tr><td>KYLIN 两条线出局</td><td>「24 kW 预测 17.9 kW」与「同篇五功率趋势」做的都是「看准不准」= 后验验证。它们不是失败，是<strong>问题选错</strong>。</td><td><span class="tag t-no">减法</span></td></tr>
+<tr><td>输入域换来源</td><td>从「等实验数据」改为「查公差与手册」。这条最要紧：前十三轮卡住的六个量，在先验下不存在。</td><td><span class="tag t-ok">加法</span></td></tr>
+</table>
+
+<p>第二条要留一个副产品。v13 证明：24→17.9 kW 时 <span class="gk">K</span> 只变 1.8%、流量只变 0.6%，判别力 0.7%，
+而 K 型热电偶在 <span class="gk">Δ</span>T = 108.6 K 上给 ±1.4%。<strong>这类验证在文献数据上本来就做不成</strong>——
+这句话反过来支持「先验是唯一可行路线」，写进正文比藏起来有用。</p>
+
+<h3>1.1 五类输入域来源</h3>
+
+<table>
+<tr><th style="width:20%">来源</th><th>本文可用的量</th><th style="width:20%">是否需要实验</th></tr>
+<tr><td>① 几何公差</td><td>棒径、栅距、管径的加工公差 → 净流通面积比</td><td>否</td></tr>
+<tr><td>② 关联式验证域</td><td>阻力式的 Re 适用范围、弯头 <span class="gk">K</span> 的适用域</td><td>否</td></tr>
+<tr><td>③ 仪表规格</td><td>热电偶 ±1.4%、功率 ±0.5%（查样本，不查论文）</td><td>否</td></tr>
+<tr><td>④ 物性版本</td><td>X26 式 (15)–(18) 与 Zhao 表 4 两套公式的离散</td><td>否</td></tr>
+<tr><td>⑤ 口径离散</td><td><span class="gk">Q</span><sub>R</sub> 的 <code>4<span class="gk">√</span>2</code> 与 <code>10/1.77</code>（都在原文里）</td><td>否</td></tr>
+</table>
+
+<div class="box ok">
+<strong>五类里没有一类需要新做实验。</strong>这是本轮最重要的一句。之前把一个「必须先有数据才能写」的判断当成了外部约束，
+其实那是自己加的。
+</div>
+
+<h2>二、3% 余量的精确形式</h2>
+
+<p>赵案声明口径点值 <code>D<sub>0</sub> = +2.876835%</code>，到 +3% 的余量是 <strong>0.123165 pp</strong>。这 0.123 pp 要由所有输入共同分担。
+一阶关系是</p>
+
+<pre><code>dD = Y · e_i · dln(x_i),   Y = 1 + D<sub>0</sub> = 1.028768352,   e_i = ln 弹性</code></pre>
+
+<p>令每个输入<em>单独</em>吃掉全部余量，得它允许的相对偏差：</p>
+
+<table>
+<tr><th style="width:14%">输入</th><th class="num" style="width:14%">ln 弹性 e<sub>i</sub></th><th class="num" style="width:16%">tol@3%（%）</th><th class="num" style="width:16%">tol@1pp（%）</th><th class="num">倍数</th></tr>
+<tr><td><code>r_m</code></td><td class="num">+1.0000</td><td class="num">0.1197</td><td class="num">0.9720</td><td class="num">8.1192</td></tr>
+<tr><td><code>d</code></td><td class="num">+1.3333</td><td class="num">0.0898</td><td class="num">0.7290</td><td class="num">8.1192</td></tr>
+<tr><td><code>A_R</code></td><td class="num">+0.6667</td><td class="num">0.1796</td><td class="num">1.4581</td><td class="num">8.1192</td></tr>
+<tr><td><code>H_R</code></td><td class="num">−0.3333</td><td class="num">0.3592</td><td class="num">2.9161</td><td class="num">8.1192</td></tr>
+<tr><td><code>Q_R</code></td><td class="num">−0.3333</td><td class="num">0.3592</td><td class="num">2.9161</td><td class="num">8.1192</td></tr>
+</table>
+
+<p>倍数一列恒为 <strong>8.1192</strong>，因为两列都是同一个线性式，只差右端项（0.123165 pp 对 1 pp）。含义很直接：</p>
+
+<div class="box">
+<strong>同一个输入，用来支撑「1 pp」能偏 0.97%，用来支撑「满足 3%」只能偏 0.12%。</strong>
+v8 那张表报的是「要 1 pp 需多准」，本轮报的是「要踩住 3% 需多准」——后者才是判据。
+</div>
+
+<p>这不是新公式，是把 v8 的预算按实际余量重新标定。但它改变了一件事的份量：
+原来「面积比要准到 1.46%」听起来很宽松，现在「<code>r_m</code> 要准到 0.12%」就不是了。</p>
+
+<h2>三、表 5 的印刷位数已经吃掉 77.5%</h2>
+
+<p>表 5 给 <code>m_P = 540</code>（无小数）、<code>m_M = 92.79</code>（两位）。按半个末位估计读数不确定度：</p>
+
+<table>
+<tr><th style="width:30%">量</th><th class="num" style="width:26%">绝对</th><th class="num" style="width:22%">相对</th><th>说明</th></tr>
+<tr><td><code>m_P</code></td><td class="num">±0.5</td><td class="num">0.0926%</td><td>整数，末位即个单位</td></tr>
+<tr><td><code>m_M</code></td><td class="num">±0.005</td><td class="num">0.0054%</td><td>两位小数，本身不是瓶颈</td></tr>
+<tr><td><code>r_m</code> 合成</td><td class="num">—</td><td class="num"><strong>0.0927%</strong></td><td>两项平方和开根</td></tr>
+</table>
+
+<p>而 <code>r_m</code> 在 3% 判据下的允许偏差只有 <strong>0.1197%</strong>。比值 <strong>77.5%</strong>。</p>
+
+<div class="box warn">
+<strong>赵案「满足 3%」这句话的成立，几乎完全由表 5 那两个数字印了几位小数决定。</strong>
+<code>m_P</code> 若印成 <code>540.0</code>，允许量里立刻腾出八成；若印成 <code>541</code>，直接跨过 3%。
+这是纯先验结论，不需要任何实验。
+</div>
+
+<p>反向算一遍：只放 <code>r_m</code> 的印刷精度、其它按声明值固定，<code>D_m</code> 落在
+<code>[+2.781418%, +2.972253%]</code>，跨距 <strong>0.191 pp</strong>，上端距 3% 只剩 <strong>0.0277 pp</strong>。</p>
+
+<h2>四、口径离散：比精度更狠，且修不好</h2>
+
+<p>v8 已核过三个 <span class="gk">Q</span><sub>R</sub> 口径。本轮不重算，原因下面说。</p>
+
+<table>
+<tr><th style="width:30%"><span class="gk">Q</span><sub>R</sub> 口径</th><th class="num" style="width:20%">数值</th><th class="num" style="width:18%">D<sub>m</sub></th><th style="width:16%">是否 ≤ 3%</th><th>出处</th></tr>
+<tr><td>4<span class="gk">√</span>2（理想）</td><td class="num">5.656854249</td><td class="num">+2.876835%</td><td><span class="tag t-ok">是</span></td><td>表 3 的 H 与 D 推出</td></tr>
+<tr><td>表 3 印数 <code>10/1.77</code></td><td class="num">5.649717514</td><td class="num">+2.920135%</td><td><span class="tag t-ok">是</span></td><td>表 3 直读</td></tr>
+<tr><td>表 5 反算</td><td class="num">—</td><td class="num"><strong>+3.612800%</strong></td><td><span class="tag t-no">否</span></td><td>由表 5 的 <code>m</code> 与 <span class="gk">Δ</span>T 反推</td></tr>
+</table>
+
+<p>三个口径跨 <strong>0.736 pp</strong>，其中表 5 反算口径<strong>已经跨过 3%</strong>。
+注意性质：这不是误差条，是「哪个 <span class="gk">Q</span> 才是对的」的口径选择问题。</p>
+
+<p>为什么本轮不重算：换 <span class="gk">Q</span><sub>R</sub> 会连带改变 <span class="gk">T</span><sub>P</sub> 与物性，进而改变损失比
+<span class="gk">w</span>。<strong>固定 <span class="gk">w</span> 去换 <span class="gk">Q</span><sub>R</sub> 会得到假的零跨距</strong>——
+我第一版正是这么错的：算出 +2.875157%、跨距 −0.0017 pp，差了两个数量级。这条记在这里，因为它是本轮唯一一次重犯旧错。</p>
+
+<div class="box warn">
+判据有两重脆弱性：<strong>(i) 印刷位数</strong>——<code>r_m</code> 的 0.0927% 已占允许量 77.5%；
+<strong>(ii) 口径离散</strong>——三个 <span class="gk">Q</span><sub>R</sub> 口径跨 0.736 pp，直接跨过 3%。
+(i) 是精度问题，换更好的仪表能修；(ii) 是定义问题，<strong>更好的仪表修不好</strong>。
+</div>
+
+<h2>五、两张图的弹性：说「谁主导」必须先标图名</h2>
+
+<p>这里有两张不同的图，问法不同，答案的符号都可能相反。</p>
+
+<pre><code>Map I  （闭式，四个比值，不需求根）
+       D_m = r_m · d^(4/3) / (H_R · Q_R)^(1/3) − 1
+
+Map II （求根，含损失比 w 与阻力指数 n）
+       F(x; w, d, n) = 0  ⇒  D_m = x − 1</code></pre>
+
+<p>基准点上两者<strong>重合</strong>（都 +2.876835%）。这是 <span class="gk">Q</span><sub>R</sub><sup>2</sup> = 32 的巧合
+（4<span class="gk">√</span>2 的平方正好 32，于是 R<sub>id</sub> 恰等于 <span class="gk">Q</span><sub>R</sub>），<strong>不是恒等式</strong>。扰动一开就分开。</p>
+
+<table>
+<tr><th style="width:14%">参数</th><th class="num" style="width:14%">Map I</th><th class="num" style="width:14%">Map II</th><th>两者关系</th></tr>
+<tr><td><code>r_m</code></td><td class="num">+1.0288</td><td class="num">+1.0288</td><td>同。Map II 里解析为 <code>Y·1</code>，已归一化</td></tr>
+<tr><td><code>d</code></td><td class="num">+1.3717</td><td class="num"><strong>−0.1269</strong></td><td><strong>符号相反</strong>，量级差 10.8 倍</td></tr>
+<tr><td><code>lam</code></td><td class="num">—</td><td class="num">+0.1228</td><td>Map I 里不出现（只进阻力项）</td></tr>
+<tr><td><code>H_R</code></td><td class="num">−0.3429</td><td class="num">+0.0087</td><td><strong>符号相反，量级差 39 倍</strong></td></tr>
+<tr><td><code>Q_R</code></td><td class="num">−0.3429</td><td class="num">+0.0133</td><td><strong>符号相反，量级差 26 倍</strong></td></tr>
+<tr><td><code>A_R</code></td><td class="num">−0.6858</td><td class="num">0.0000</td><td>I 为松懈版（<code>A_R</code> 独立于 <code>d</code>）；II 恒为零</td></tr>
+<tr><td><code>n</code></td><td class="num">—</td><td class="num">+0.0327</td><td>Map I 里不出现</td></tr>
+</table>
+
+<p>Map I 一列与 v8 的 1 pp 预算逐位吻合（1.0288 / 1.3717 / 0.3429 / 0.6858），说明弹性口径没有漂。</p>
+
+<h3>5.1 三条解读，缺一条就会说错话</h3>
+
+<p><strong>(a) <code>d</code> 的符号确实相反。</strong>Map I 里 <code>d</code> 是长度比，放大它等于放大理想比、偏差变大；
+Map II 里 <code>d</code> 进阻力项 <span class="gk">w</span>(<span class="gk">λ</span>/<code>d</code>)<span class="gk">f</span>，<code>d</code> 大则局阻小、流量更易上去、偏差被压。
+所以正文任何「<code>d</code> 是主导参数」的句子，必须写清是哪张图。</p>
+
+<p><strong>(b) <code>H_R</code> 与 <code>Q_R</code> 在 Map II 里几乎消失。</strong>Map I 给 −0.3429，Map II 只剩 +0.0087 / +0.0133。
+这不是数值噪声——三个步长 1e-4 / 1e-3 / 1e-2 给到同一位数。
+原因是 Map II 的 <code>D = x−1</code> 已经用 R<sub>id</sub> 归一化，改 <code>H_R</code> 只改基准、不改比值；
+而 Map I 里 <code>H_R</code> 是<strong>设计参数</strong>，改它就是改相似性。
+<strong>「有效高度主导」这句话只在 Map I 上成立，搬到 Map II 会差 39 倍。</strong></p>
+
+<p><strong>(c) <code>A_R</code> 在 Map II 恒不可见。</strong>它只通过 R<sub>id</sub> 进模型，与 <code>H_R</code> 同样被归一化掉。
+这解释了 v8「<code>A_R</code> 是最不确定的一项」与 Map II 上「看不出危害」为什么不矛盾：
+<strong>不是它无害，是这张图看不见它。</strong></p>
+
+<h2>六、情景灵敏度与 GSA 的边界</h2>
+
+<p>不能把这套东西叫 GSA。GSA 要求输入<strong>联合分布</strong>，本文只有声明域（区间）；
+而且 <code>(A, B)</code> 有 49.8 pp 的规范自由度（v10），直接对它抽样等于把一个人为坐标当成物理输入。
+正确做法是对<strong>物理量</strong>（<code>r_m, d, A_R, H_R, Q_R, n</code>、物性版本）抽样，让 <code>(A, B)</code> 内生。</p>
+
+<table>
+<tr><th style="width:32%">输出</th><th style="width:10%">强度</th><th style="width:28%">需要什么</th><th>本文能否给</th></tr>
+<tr><td>单因子区间</td><td><span class="tag t-ok">强</span></td><td>声明域</td><td>能</td></tr>
+<tr><td>情景包络（全组合角点）</td><td><span class="tag t-mid">中</span></td><td>声明域 + 独立性假设</td><td>能</td></tr>
+<tr><td>概率分布 / 方差分解</td><td><span class="tag t-no">弱</span></td><td>联合分布</td><td><strong>不能</strong>（无来源）</td></tr>
+</table>
+
+<p>措辞于是跟着定：</p>
+<ul>
+<li>「所声明域上<strong>观察到</strong>的最大绝对偏差」——可以说。导师 10-10 那句「角点最坏改成观察到」在这里落地。</li>
+<li>「<strong>保证</strong>不超过」——不能说。包络不是上界证书。</li>
+<li>「贡献率 / 谁主导」——只能在单因子口径下说，且标图名。</li>
+</ul>
+
+<h2>七、可写 / 不可写</h2>
+
+<h3>7.1 可写（先验框架内成立）</h3>
+<table>
+<tr><th style="width:8%">#</th><th>结论</th><th style="width:14%">依据</th></tr>
+<tr><td>1</td><td>判据裕度的精确形式：0.123165 pp 余量 ⇒ <code>r_m</code> 只能偏 0.12%</td><td>§二</td></tr>
+<tr><td>2</td><td>表 5 印刷精度已占允许量的 77.5%，判据成立与否由位数决定</td><td>§三</td></tr>
+<tr><td>3</td><td>三个 <span class="gk">Q</span><sub>R</sub> 口径跨 0.736 pp，其中一个跨过 3%；须并排报</td><td>§四</td></tr>
+<tr><td>4</td><td>两张图弹性符号相反（<code>d</code>），「主导参数」必须绑定图名</td><td>§五</td></tr>
+<tr><td>5</td><td><code>H_R</code>/<code>Q_R</code> 弹性在两张图上差 26–39 倍，「高度主导」只贴 Map I</td><td>§五 (b)</td></tr>
+<tr><td>6</td><td><code>A_R</code> 在 Map II 不可见，正文须单列，不能用它「看不出危害」当结论</td><td>§五 (c)</td></tr>
+<tr><td>7</td><td>五类输入域来源均不需实验；六个卡点在先验下不存在</td><td>§一</td></tr>
+</table>
+
+<h3>7.2 不可写</h3>
+<table>
+<tr><th style="width:8%">#</th><th>句子</th><th style="width:34%">理由</th></tr>
+<tr><td>1</td><td>「模型得到验证」</td><td>先验框架内没有验证这个概念；要验证得有真值</td></tr>
+<tr><td>2</td><td>「<code>H_eff</code> 两篇文献互校」</td><td>三条链条同源（Xu 自述同几何 + Yue 自家表 + 同一套物性），且 L3 不进输入域</td></tr>
+<tr><td>3</td><td>「<code>d</code>（或高度）是主导参数」</td><td>不标图名则不成立；两张图符号可能相反</td></tr>
+<tr><td>4</td><td>「包络保证偏差不超过 3%」</td><td>包络是观察到的极值，不是上界证书</td></tr>
+</table>
+
+<div class="box ok">
+<strong>下一步不是再算。</strong>先验路线的四根支柱已经齐了：判据的脆弱性（§二–四）、两张图的分工（§五）、
+情景与 GSA 的边界（§六）、可写清单（§七）。剩下的工作形态是<strong>成文</strong>——
+把 §7.1 的七条扩成正文，把 §7.2 的四条写进局限。这一步不需要新的数。
+</div>
+
+<p class="small">脚本：<code>比例失真_计算/prior_domain_v14.py</code>，日志 188 行、<code>%%</code> 残留 0 处。
+本轮修正记录：① <code>[C]</code> 比值多乘了 100（0.8% → 77.5%）；② <code>[D]</code> 换 <span class="gk">Q</span><sub>R</sub> 用纯几何式（已改回引用 v8）；
+③ <code>map1</code> 用 R<sub>id</sub> 形式导致 <code>d</code> 被 <code>A_R</code> 覆盖（已改回显式 <code>d</code> 闭式）。</p>
+
+</div>
+</body>
+</html>
