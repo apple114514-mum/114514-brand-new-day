@@ -9,6 +9,7 @@
 - 参数原始表：[outputs/parameter-provenance-20261102.md](../outputs/parameter-provenance-20261102.md)
 - 当前物理域：[v15 全文证据审查](../outputs/physical-domain-v15-review-20261108.md)、[输入 CSV](../outputs/physical-domain-v15-ledger-20261108.csv)、[16 份原文哈希清单](../outputs/physical-domain-v15-sources-20261108.json)
 - 阻力设计基线：[v16 KYLIN 逐构件计算与阀门反解](../outputs/component-resistance-design-v16-20261108.md)
+- 当前方法定位：[导师批注与先验条件界](../outputs/prior-distortion-method-position-20261108.md)
 
 ## source
 
@@ -57,6 +58,8 @@
 `C-61–C-64` 更正“整体阻力无法设置”的过强结论：Yue Table 2 给 KYLIN 单侧理论 K_total(m) 基准；Yue 式(3)和 NEA 第15章给新装置逐构件求和公式。v16 在明确假设下反解单点阀门参考 K≈6.339；其值属于可设计动作，非现有实物测量或 δ 的认证盒。[v16 报告](../outputs/component-resistance-design-v16-20261108.md)
 
 `C-65` 将五个理论流量点用于两条摩擦闭合的条件设计比较；低 Re 外域点停用，高点阀门目标 2.228/6.339 可由 NEA 突缩+突扩初设式映射为不同窄段直径。仅为来源明确的设计起点，不是薄孔板或实体阀门的认证。[v16 曲线 CSV](../outputs/component-resistance-design-v16-curve-20261108.csv)
+
+`TX-011` 方法定位改判：导师三批注未要求实验验证为先决条件；当前文章可在声明设计规格和适用域上，完成摄动、Morris 情景筛选、非线性条件界及设计规则。外部实测仅增强可信度，不能把缺席写成数学路线阻断。[方法定位](../outputs/prior-distortion-method-position-20261108.md)
 
 ## constraints
 
