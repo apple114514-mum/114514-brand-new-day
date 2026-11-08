@@ -97,6 +97,8 @@
 | C-85 | 程诚等 2023 的另一套水回路用电动调节阀在单相下配平阻力，三尺度开度为 100%/19%/13%；NEA 的 HELIOS LBE 回路含闸阀、孔板及阀门差压测点 | 跨设施方法先例 / 强 | C23-P2–4/§1.1/§1.3/图3下方；H15-P929–930/§15.2.2；[来源重查](../outputs/kylin-valve-source-and-design-20261108.md) | 已核 | 程诚开度不可换算为 KYLIN 开度；HELIOS 构件值不可移植到 KYLIN |
 | C-86 | 声明设计若**按 K_target=22.8 配平**，参考动压所需 ζ_v≈6.475、参考内径 16.016 mm，对应公制工作流量系数 Kv≈4.03 m³/h | 缩放配平对照及单位换算 / 条件 | [v18 条件设计](../outputs/design-v18-upload-report-20261108.html)；[来源重查 §2](../outputs/kylin-valve-source-and-design-20261108.md) | 已核算术 | 由相似目标反解，不是纯先验主线的独立输入；未指定阀型、厂家或实际开度 |
 | C-87 | 不预设缩放准则的先验主线须先独立确定阀型、节流几何、开度允许域和 `ζ_v(Re)` 的适用依据，再正向求 FoM；以 K_target 反解阀门的 v16–v19 属对照方案 | 方法定位 / 强 | [导师方法定位](../outputs/prior-distortion-method-position-20261108.md)、[v16 反解](../outputs/component-resistance-design-v16-20261108.md)、[阀门原文审计](../outputs/kylin-valve-source-and-design-20261108.md) | 已区分 | FoM 的参考目标仍须先声明；方法新颖性需与既有先验缩放研究进一步比较 |
+| C-88 | NEA 2015 表 15.3.3 第 3 条给有限厚度孔板整体形阻式，适用 `Re_D>10³`；独立示范 `D=16,d=10,t=2 mm` 正算 `ζ=5.593959`，声明流量温区内 `Re_D≥2711` | 原始关联式与条件设计 / 强 | H15-P934/Table 15.3.3；[原始页](../outputs/fluid-component-nea-evidence-20261108.pdf)；[复算](../outputs/fluid-component-prior-domain-20261108.py) | 已核条件模型 | 不是从 K_target 反解；关联式适用 Re 不是实物关联式误差的严格上界；孔径 ±0.02 mm 是提出的图纸规格 |
+| C-89 | NEA 表 15.3.2 Churchill 圆管摩擦式标注 all ranges；本例独立 2 m、16 mm 光滑直管在 Re2711–24296 上有过渡内部峰，数值候选 K≈3.077–5.396 | 原始关联式与数值诊断 / 条件 | H15-P932/Table 15.3.2；[复算](../outputs/fluid-component-prior-domain-20261108.py) | 已核扫描 | 5.396 不是区间证书；实物粗糙度、入口发展段和布置需单独约束；不将圆管式套至 KYLIN 环隙 |
 
 ## 缺口清单
 

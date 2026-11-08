@@ -1,0 +1,12 @@
+Independent geometry: main 16 mm; orifice 10 mm x 2 mm; straight pipe 2 m
+NEA orifice #3 K: 5.593958660
+NEA orifice #2 K (only Re_D>10000): 5.722930707
+Orifice hole +/-0.02 mm declared tolerance: 5.661184428 5.527527211
+Circular-pipe Churchill low-Re limit, Re=100: 0.6400000 vs 64/Re=0.6400000
+Annulus 34/14 mm laminar f*Re: 94.790261
+Re_main range: 2711 24296
+Re_hole range: 4337 38873
+Re_annulus range: 904 8099
+K_pipe at listed points: 3.077237 5.272613
+K_pipe scan candidates (not certified): (3.0772367725595604, 24295.703496604776) (5.395566513031412, 3115.547646869721)
+Rows: 12 CSV: fluid-component-prior-domain-points-20261108.csv
