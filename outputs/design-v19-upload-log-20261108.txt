@@ -1,0 +1,281 @@
+==============================================================================
+[A] the three v18 review corrections, recomputed
+==============================================================================
+A1  the review's first correction: after trimming, K_EV is NOT strictly
+    inert when the valve has a Re slope. With K_v,d solved at the design
+    point and K_v(m)=K_v,d z^(-m_v), z=Re/Re_d,
+      K_EV + K_v(m) = K_EV + (K_tgt - K_rest,d - K_EV) z^(-m_v)
+      dK_M(m)/dK_EV = 1 - z^(-m_v)        <-- zero only at z=1 or m_v=0
+    at m_P=0.50: z = 0.4000, z^(-0.10) = 1.0960 -> 1-z^(-m_v) = -0.0960
+    closure   m_v   K_EV=1.25   K_EV=2.50   K_EV=3.75     span
+    A        0.00     -1.7993     -1.7993     -1.7993  +0.0000
+    A        0.10     -2.8046     -2.6433     -2.4814  +0.3232
+    B        0.00     +1.5875     +1.5875     +1.5875  +0.0000
+    B        0.10     +1.0856     +1.2583     +1.4315  +0.3459
+    -> A 0.3232 pp, B 0.3459 pp: matches the review digit for digit.
+    So v18's 'K_EV has exactly zero effect' is wrong as written; the
+    correct sentence is: static errors cancel AT the design point, and
+    off-design they cancel only if the compensating valve and the
+    compensated component share the same K(Re) shape.
+
+A2  the review's second correction: the B-closure box contains valves
+    that would have to REMOVE resistance.
+    closure    K_v,d min   K_v,d max  negative
+    A            +4.1876     +8.7543      0/64
+    B            -0.3191     +5.0522     16/64
+    -> A 0/64, B 16/64; range [-0.3191, +5.0522]. Matches the review.
+
+A3  the review's third correction: the GSA output was a single point
+    (|D| at 0.50 kg/s), and 'PHI owns 94% of the variance' is a property
+    of the SELF-CHOSEN +-5% and of that point only. With PHI +-1% the
+    ranking inverts (see [E]); and a feasible corner reaches 3.368%,
+    so 3.287% from random sampling is a sample maximum, not a bound:
+      corner (K_EV=1.25, PHI=0.99, L=12 m, d=-0.5%, band=1.3, m_v=0.1)
+      D(0.50) = -3.3680%   valve K there = +6.6876 (feasible)
+    -> the review's counterexample reproduces exactly.
+
+==============================================================================
+[B] why: one identity behind all three corrections
+==============================================================================
+B1  subtract the design-point balance. Since the trim pins K_M(m_d)=K_tgt,
+    K_M(m) - K_tgt = DP + DH + DV with
+      DP = (L/d) [f(Re_m) - f(Re_d)]        pipe, both sides of the trim
+      DH = band [h(Re_HS,m) - h(Re_HS,d)]   heating annulus
+      DV = K_v,d [z^(-m_v) - 1]             valve
+    For every m < m_d: f larger, h larger, z<1 -> all three terms > 0.
+    So K_M(m) > K_tgt on the WHOLE declared span, and the sign of D is
+    decided by which side of the ratio rises faster:
+      D < 0  <=>  K_M rises faster than K_P   (A: 11.8% vs 6.1%)
+      D > 0  <=>  K_P rises faster than K_M   (B: 6.1% vs 1.3%)
+    First order, D = [ln K_P - ln K_M]/3: distortion is not 'the model is
+    off', it is 'the two sides grow at different rates'. The valve is a
+    constant, so it can move the level but never the growth rate.
+
+B2  which coordinate is worst? differentiate K_M - K_tgt:
+      d/dL      = [f(Re_m)-f(Re_d)]/d            > 0 for m<m_d
+      d/dd      = (n_p-1)(L/d^2)[f_m-f_d] scaled  < 0 for m<m_d
+      d/dband   = [h_m-h_d]                       > 0
+      d/dK_EV   = 1 - z^(-m_v)                    < 0 for m<m_d
+      d/dm_v    = -K_v,d z^(-m_v) ln z            > 0
+    and dD/dlnK_M = -(1+D)/3. Hence the worst corners are OPPOSITE:
+      A (D<0): K_EV min, L max, d min, band max, m_v max, PHI min
+      B (D>0): K_EV max, L min, d max, band min, m_v min, PHI max
+    Note the A corner wants K_EV=1.25 while B wants 3.75: the same box
+    coordinate is worst in opposite directions for the two closures.
+
+B3  flow monotonicity is NOT assumed. Use
+      (3+s_M) d ln x/d ln m = s_P - s_M,  s = dlnK/dlnm
+    s_P per table segment (log-log interpolation, declared, prototype): -0.0178, -0.0411, -0.0738, -0.0972
+    s_M = [-n_p P + s_hs H + m_v V]/K_M with P=(L/d)f, H=band*h, V=K_v(z^-m_v)
+    cl     m_P   Re_M      s_M      s_P  s_P-s_M  dD/dlnm
+    A     0.50   4843  -0.1356  -0.0411  +0.0945   +3.151
+    A     0.75   7265  -0.1196  -0.0738  +0.0458   +1.528
+    A     1.00   9687  -0.1148  -0.0972  +0.0176   +0.586
+    A     1.25  12108  -0.1110  -0.0972  +0.0138   +0.460
+    B     0.50   4843  -0.0190  -0.0411  -0.0221   -0.737
+    B     0.75   7265  -0.0081  -0.0738  -0.0657   -2.190
+    B     1.00   9687  -0.0079  -0.0972  -0.0893   -2.978
+    B     1.25  12108  -0.0325  -0.0972  -0.0647   -2.156
+    A: s_P - s_M > 0 at every segment boundary -> D increasing in m.
+    B: s_P - s_M < 0 at every segment boundary -> D decreasing in m.
+    So the sup of |D| sits on m_P=0.50 in both closures. One exception,
+    worth stating because it is structural: for A with a valve slope the
+    numerator gains +m_v V, and near m_P=1.25 the flip condition is
+      m_v > (n_p P + H + s_P K)/V = (2.59+0.18+-2.22)/6.47 = +0.085
+    The threshold 0.085 sits at the very top of the declared [0,0.10], so
+    only m_v near 0.10 can carve an interior extremum, and only within a
+    short distance of the design point. Its size is measured in [D]: at
+    most 0.007 pp, inside the Lipschitz margin.
+
+==============================================================================
+[C] the feasible valve domain is not a box - it is a half-space
+==============================================================================
+C1  the constraint is ONE inequality:
+      K_v,d = K_tgt - 1 - (L/d) f(Re_d) - band*h(Re_d) - K_EV  >=  0
+    i.e. K_rest,d := 1 + (L/d)f(Re_d) + band*h(Re_d) + K_EV <= 21.8
+    It does not involve PHI or m_v at all (they only act off-design),
+    so the infeasible corners come in blocks of 4.
+    B infeasible sign blocks (K_EV, L, d, band): [(1, 1, -1, -1), (1, 1, -1, 1), (1, 1, 1, -1), (1, 1, 1, 1)]
+    -> exactly K_EV=3.75 AND L=6.0 m, for all four (d,band) combinations.
+
+C2  solve the constraint for the pipe length: the design L_max.
+    closure    K_EV   L_max (m)   vs 5.50  headroom
+    A          1.25      9.5377    +73.41%    +58.96%
+    A          2.50      8.8765    +61.39%    +47.94%
+    A          3.75      8.2152    +49.37%    +36.92%
+    B          1.25      6.8256    +24.10%    +13.76%
+    B          2.50      6.3524    +15.50%     +5.87%
+    B          3.75      5.8791     +6.89%     -2.01%
+    volume of the infeasible part of the 6-D box: 0.3% of it, yet 25% of
+    the CORNERS. Since extrema live on corners, a sliver that a sampler
+    would report as 0.3% contaminates exactly the analysis that matters.
+    -> A can afford 8.9 m of pipe at nominal K_EV; B only 6.35 m, and the
+       declared +9.09% corner is 6.00 m. B has 5.8% of headroom, A 62%.
+       THIS is why B's box leaks: the declared box was never checked for
+       joint feasibility, only coordinate by coordinate.
+
+C3  what happens to the corner envelope when the box is intersected with
+    the half-space (PHI +-5%, the declared heat range):
+    closure   full box sup  feasible sup  changed
+    A               4.768%        4.768%  +0.000%
+    B               3.313%        3.313%  +0.000%
+    -> for B the infeasible block is NOT the worst block, so the sup is
+       unchanged: feasibility bites on the VARIANCE ATTRIBUTION and on
+       the design spec, not on the envelope. That distinction matters:
+       a wrong box gives a wrong 'who owns it', not a wrong 'how big'.
+
+==============================================================================
+[D] sup|D| over the whole curve, at the extremes (not one point)
+==============================================================================
+Both heat declarations, corner extrema, feasibility enforced, whole-curve
+sup|D| with a Lipschitz margin from the 601-point scan:
+    case      closure      sup|D|   at m   margin   at 0.50
+    PHI+-5%   A            4.768%  0.500   0.011%    4.768%
+    PHI+-5%   B            3.313%  0.500   0.004%    3.313%
+    PHI+-1%   A            3.368%  0.500   0.011%    3.368%
+    PHI+-1%   B            1.977%  0.500   0.004%    1.977%
+    -> A crosses 3% even with PHI declared to +-1% (3.368% at a feasible
+       corner); B stays at 3.31% / 1.98%. The asymmetry is the closure: A
+       carries the steepest Re law (n=0.25), so it has the largest slope
+       mismatch to start from. 'Declare PHI to 1% and you are safe' is
+       FALSE for A. This corner carries NO viscosity error (mu nominal);
+       add the 100 K temperature offset of [F] on top and A sits at
+       -3.48% before any resistance tolerance is counted.
+
+==============================================================================
+[E] GSA on the constrained domain, output = worst over the curve
+==============================================================================
+E  declared heat range PHI +-5%; domain = box intersected with K_v,d>=0;
+   output = max over 9 flow points of |D| (not the single 0.50 point)
+    closure input             ST   +-95%  rejected
+    A       PHI            0.930   0.007      0.0
+    A       valve_slope    0.061   0.001
+    A       L_M            0.025   0.001
+    A       K_EV           0.003   0.000
+    A       KHS_band       0.003   0.000
+    A       d_M            0.000   0.000
+    B       PHI            0.987   0.013      0.3
+    B       valve_slope    0.016   0.001
+    B       KHS_band       0.005   0.000
+    B       K_EV           0.005   0.000
+    B       L_M            0.003   0.000
+    B       d_M            0.000   0.000
+
+E  declared heat range PHI +-1%; domain = box intersected with K_v,d>=0;
+   output = max over 9 flow points of |D| (not the single 0.50 point)
+    closure input             ST   +-95%  rejected
+    A       valve_slope    0.469   0.008      0.0
+    A       PHI            0.307   0.004
+    A       L_M            0.190   0.004
+    A       K_EV           0.022   0.000
+    A       KHS_band       0.018   0.000
+    A       d_M            0.000   0.000
+    B       PHI            0.701   0.007      0.3
+    B       valve_slope    0.194   0.005
+    B       K_EV           0.059   0.001
+    B       KHS_band       0.046   0.001
+    B       L_M            0.034   0.001
+    B       d_M            0.000   0.000
+
+reading: with PHI +-5%, PHI leads in both closures (v18's claim, but it
+was the +-5% choice, not physics). With PHI +-1%, A's leader becomes the
+VALVE SLOPE, exactly as the review predicted. B keeps PHI on top at both
+widths. So there is no closure-independent ranking to write down: the
+ranking is a property of the declared widths. The one sentence that does
+survive: the literature K values rank THIRD OR LOWER either way, i.e.
+the resistance table is not where the uncertainty lives.
+
+==============================================================================
+[F] the 100 K scenario, made self-consistent (viscosity included)
+==============================================================================
+  NEA 2015, 473 vs 573 K:  beta 0.98763  rho 1.01252  cp 1.01368  mu 1.32080
+  -> PHI = 0.962248; the mu held fixed in v18 is NEA at 504.6 K, not 573 K
+  case                                 A: D(0.50)   B: D(0.50)
+  nominal 573 K                           -1.799%      +1.587%
+  PHI only (v18, mu frozen)               -3.110%      +0.285%
+  self-consistent (mu x 1.321)            -3.481%      +0.239%
+  mu channel alone: -0.3710 pp (A), -0.0459 pp (B)
+  PHI channel alone: -1.3107 pp (A), -1.3030 pp (B)
+
+  I EXPECTED mu to cancel and it does not - the exact reason is worth
+  one sentence in the paper. With f = C Re^(-n),
+      f(Re_m)/f(Re_d) = z^(-n),   z = m/m_d,   which is mu-free.
+  If the whole K_M scaled with f, a uniform viscosity shift would
+  vanish. But the trim PINS K_M(m_d)=22.8, so what enters D is the
+  INCREMENT, not the ratio:
+      DP = (L/d)[f_m - f_d] = (L/d) f_d (z^(-n) - 1)  ~  f_d  ~  mu^n
+  A 100 K colder model has mu 1.3208x, hence f_d 1.0720x, hence DP 1.0720x.
+  So the viscosity channel is about a quarter of the heat channel, not
+  zero: v18's sentence needs the mu term added, and the review's
+  objection stands. What is true is narrower: mu shifts the operating
+  POINT (the Re at which you run), not the similarity argument, so it
+  must be declared with the temperature, not with the fluid.
+
+F2  PHI's own 3% budget is ASYMMETRIC once the solve is coupled:
+    A: |D(0.50)| <= 3%  <=>  PHI in [0.9654, 1.1465]  (-3.5% / +14.6%)
+    B: |D(0.50)| <= 3%  <=>  PHI in [0.8713, 1.0420]  (-12.9% / +4.2%)
+    A has only -3.5% of downward room left because its baseline already
+    spends 1.8 of the 3 pp; B has +4.2% upward. The symmetric '-8.73% /
+    +9.27%' of v18 was the frozen-K special case (0.97^3, 1.03^3).
+
+==============================================================================
+[G] the conditional envelope, assembled (v19)
+==============================================================================
+Stage I  (un-trimmed, A closure) - unchanged and now PROVED:
+  x^3 K_M(x m0) = C x^3 + B L d^(-0.75) x^2.75 is strictly increasing in
+  x>0 (all coefficients positive), so the root is unique; it is
+  increasing in K_EV, K_HS, L and decreasing in d, so the extremes over
+  the 4-D box sit on corners. D in [-3.267%, +3.730%].
+  Caveat: this is a proof for THAT box and THAT closure only. It does
+  not transfer to stage III, to closure B, or to the flow axis.
+
+Stage III (trimmed), whole curve, feasibility enforced:
+  PHI+-5%   A: sup|D| = 4.768%  (+-0.011% grid margin), valve K at that corner +6.688
+  PHI+-5%   B: sup|D| = 3.313%  (+-0.004% grid margin), valve K at that corner +2.552
+  PHI+-1%   A: sup|D| = 3.368%  (+-0.011% grid margin), valve K at that corner +6.688
+  PHI+-1%   B: sup|D| = 1.977%  (+-0.004% grid margin), valve K at that corner +2.552
+
+  -> the stage-III envelope is now a CORNER value, not a sample maximum,
+     and the corner is feasible by construction. It is still conditional
+     on: log-log interpolation between Yue's five rows; the transitional
+     heating closure; a uniform K_v(Re) exponent; and the assumption that
+     m_v<=0.10. Each of these is a declaration, and [E] shows the
+     declaration widths decide the ranking.
+
+==============================================================================
+[H] writable / not writable after this round
+==============================================================================
+WRITABLE 'Stage-I A-closure: on the declared 4-D box the distortion is
+          -3.27% to +3.73%, and this is a corner extremum, proved by
+          monotonicity of x^3 K_M(x), not sampled.'
+WRITABLE 'A valve can only add resistance: K_v,d>=0 is a design
+          constraint that caps the model pipe length at 8.9 m (A) and
+          6.35 m (B) at K_EV=2.5. B's declared +9.1% corner is 6.00 m,
+          i.e. it costs 95% of that headroom; A's costs 16%.'
+WRITABLE 'Off design a static resistance error cancels only if the
+          compensating valve shares the K(Re) shape of the compensated
+          component. At m_v=0.10 the K_EV +-50% band moves D by
+          0.32 pp (A) / 0.35 pp (B).'
+WRITABLE 'Worst distortion over the whole 2.5:1 curve, at feasible
+          corners: A 4.77% (PHI+-5%) and 3.37% (PHI+-1%);
+          B 3.31% and 1.98%. A exceeds 3% at both widths.'
+WRITABLE 'GSA ranking depends on the declared widths, not on the
+          closure: at PHI+-5% heat leads (0.93/0.99), at PHI+-1% the
+          valve slope leads in A (0.47 vs 0.31). Literature K values
+          rank third or lower at every width tested.'
+WRITABLE 'The 100 K temperature offset costs 1.31 pp through PHI and
+          0.37 pp through mu - the trim pins the level, so what
+          enters D is the friction INCREMENT, not the friction ratio.'
+NOT 'K_EV has exactly zero effect after trimming' - only at m=m_d.
+NOT 'PHI owns 94% of the variance' - that is PHI+-5% at one point.
+NOT 'the envelope shrinks once the box is made feasible' - for B it
+     does not: the infeasible block is not the worst block.
+NOT 'PHI+-1% puts A inside 3%' - a feasible corner gives 3.368%.
+NOT 'a uniform viscosity shift cancels by z-similarity' - it does
+     not, because the trim fixes K_M at the design point; it is 28%
+     of the heat channel.
+NOT 'the curve is certified' - the Lipschitz margin bounds the flow
+     scan, not the interpolation and the closure declarations.
+
+[csv] C:\Users\yufuz\WorkBuddy\2026-09-23-22-00-55\比例失真_计算\design_v19_points.csv
+

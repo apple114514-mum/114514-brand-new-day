@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>阀门可行域、整条曲线上确界与极值位置（2026-11-08 第十九轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13px}
+td.v{text-align:left;font-family:"Cascadia Mono","Consolas",monospace;font-size:12.5px;line-height:1.65}
+td.v b{font-family:"Songti SC","SimSun",serif}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+td.v .gk,td.num .gk,code .gk,th .gk,pre .gk{font-family:"Cambria Math","Cambria",
+    "Times New Roman","Segoe UI Symbol",serif!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>阀门可行域、整条曲线的上确界，与极值位置的两条证明</h1>
+<div class="sub">2026-11-08 · 第十九轮 · 9 节 / 15 表 · 脚本 <code>design_v19.py</code>（662 行，日志 274 行，<code>%%</code> 残留 0 处）<br>
+接续复核 <code>457a769</code>；复核三条更正逐条复算通过，其中一条把 v18 的一句话直接推翻，还有一条把 v18 的「热量口径」结论改了性质</div>
+
+<div class="box">
+<p><b>一句话结论。</b>把阀门可行域（<code>K_v,d ≥ 0</code>）加进去，它不是盒子而是一个半空间：对整个盒子的<strong>体积</strong>只切掉 0.3%，却切掉 <strong>25% 的角点</strong>——而极值就住在角上。加上它之后，B 支的包络<strong>一点没变</strong>（3.31%），变的只是「谁占方差」和一条可写进图纸的设计约束。把输出从单点换成整条曲线，A 支的上确界是 <strong>4.77%（Φ±5%）/ 3.37%（Φ±1%）</strong>，都在可行性内，都不低于 v18 的采样值。</p>
+</div>
+
+<h2>一、三条更正：复核全对，两条是我的算错</h2>
+
+<h3>1.1 配平后 <code>K_EV</code> 的影响不是零，是 0.32 pp</h3>
+
+<p>v18 的写法是「配平使 <code>K_M(1.25)=22.8</code>，任何不随流量变的误差都被阀门吸收，所以 <code>K_EV</code> 的 ±50% 对 <code>D</code> 严格为零」。这个推理只在阀门<strong>没有 Re 斜率</strong>时成立。把 <code>K_v(m)=K_v,d · z^(−m_v)</code>（<code>z=Re/Re_d</code>）代进去：</p>
+
+<pre><code>K_EV + K_v(m) = K_EV + (K_tgt − K_rest,d − K_EV)·z^(−m_v)
+dK_M(m)/dK_EV = 1 − z^(−m_v)        &lt;- 只在 z=1 或 m_v=0 时为零
+在 m_P=0.50：z=0.4000，z^(−0.10)=1.0960  -&gt;  导数 = −0.0960</code></pre>
+
+<table>
+<tr><th>闭合</th><th class="num">m_v</th><th class="num">K_EV=1.25</th><th class="num">K_EV=2.50</th><th class="num">K_EV=3.75</th><th class="num">跨度</th></tr>
+<tr><td>A</td><td class="num">0.00</td><td class="num">−1.7993%</td><td class="num">−1.7993%</td><td class="num">−1.7993%</td><td class="num">0.0000</td></tr>
+<tr><td>A</td><td class="num">0.10</td><td class="num">−2.8046%</td><td class="num">−2.6433%</td><td class="num">−2.4814%</td><td class="num"><b>0.3232</b></td></tr>
+<tr><td>B</td><td class="num">0.00</td><td class="num">+1.5875%</td><td class="num">+1.5875%</td><td class="num">+1.5875%</td><td class="num">0.0000</td></tr>
+<tr><td>B</td><td class="num">0.10</td><td class="num">+1.0856%</td><td class="num">+1.2583%</td><td class="num">+1.4315%</td><td class="num"><b>0.3459</b></td></tr>
+</table>
+
+<p>与复核的 0.3232 / 0.3459 pp 逐位一致。所以 v18 那句必须改成：<strong>静态阻力误差在设计点被配平吸收；离开设计点能否吸收，取决于补偿阀门与被补偿构件的 <code>K(Re)</code> 形状是否相同。</strong>这条不是数值细节，它说明「配平 = 消除不确定度」这个说法本身有适用条件。</p>
+
+<h3>1.2 B 支的盒子里有 16 个角点要求阀门<strong>减阻</strong></h3>
+
+<table>
+<tr><th>闭合</th><th class="num">K_v,d 最小</th><th class="num">K_v,d 最大</th><th class="num">负阻力角点</th></tr>
+<tr><td>A</td><td class="num">+4.1876</td><td class="num">+8.7543</td><td class="num">0 / 64</td></tr>
+<tr><td>B</td><td class="num"><b>−0.3191</b></td><td class="num">+5.0522</td><td class="num"><b>16 / 64</b></td></tr>
+</table>
+
+<p>与复核完全一致。而且能把它们一枚一枚点出来——不可行集恰好是 <code>K_EV=3.75</code> <b>且</b> <code>L=6.0 m</code>，与 <code>d</code>、<code>band</code> 无关，所以按 4 个一组出现（<code>Φ</code> 与 <code>m_v</code> 不进配平，各乘 4）。这是第三节的入口。</p>
+
+<h3>1.3 「Φ 占 94%」是自选宽度 + 单点输出的性质；3.287% 不是上界</h3>
+
+<p>复核给的反例我复算到同一位：</p>
+
+<pre><code>角点 (K_EV=1.25, &Phi;=0.99, L=12 m, d=−0.5%, band=1.3, m_v=0.1)
+D(0.50) = −3.3680%      该角点的阀门 K = +6.6876（可行，不违反 K_v,d ≥ 0）</code></pre>
+
+<p>三点同时成立：①随机采样给的 3.287% 是样本极大值；②同一盒子存在可达 3.368% 的可行角点；③所以「把 Φ 声明到 ±1% 就安全」这句话，对 A 支是错的。</p>
+
+<h2>二、为什么会这样：一条恒等式，一张符号表</h2>
+
+<p>三条更正看起来是三件事，其实是同一个式子的三个投影。把设计点的平衡减掉（配平保证 <code>K_M(m_d)=K_tgt</code>）：</p>
+
+<pre><code>K_M(m) − K_tgt = &Delta;P + &Delta;H + &Delta;V
+  &Delta;P = (L/d)[f(Re_m) − f(Re_d)]            管段
+  &Delta;H = band·[h(Re_HS,m) − h(Re_HS,d)]      加热环隙
+  &Delta;V = K_v,d·[z^(−m_v) − 1]                阀门
+m &lt; m_d 时：f 更大、h 更大、z&lt;1  -&gt;  三项全为正</code></pre>
+
+<p>所以 <code>K_M(m) &gt; K_tgt</code> 在<strong>整个声明区间</strong>成立，<code>D</code> 的正负只取决于「哪一侧涨得快」：</p>
+
+<table>
+<tr><th>闭合</th><th class="num">K_M(0.50)/K_tgt − 1</th><th class="num">K_P(0.50)/K_P(1.25) − 1</th><th>结论</th></tr>
+<tr><td>A 光滑管</td><td class="num">+11.8%</td><td class="num">+6.1%</td><td>K_M 涨得快 -&gt; D &lt; 0</td></tr>
+<tr><td>B 表值反算</td><td class="num">+1.3%</td><td class="num">+6.1%</td><td>K_P 涨得快 -&gt; D &gt; 0</td></tr>
+</table>
+
+<p>一阶就是 <code>D ≈ [ln K_P − ln K_M]/3</code>。这句话值得进正文：<strong>比例失真不是「模型算错了」，而是「两侧阻力随流量的增长律不同」。</strong>阀门是个常数，它能把水平线上下平移，永远改不了斜率——所以失真符号只能由<em>摩擦律</em>选，不能由<em>配平</em>选。</p>
+
+<p>对这个式子逐坐标求导，就得到「哪个角最坏」：</p>
+
+<table>
+<tr><th>坐标</th><th class="v">∂(K_M − K_tgt)/∂θ（m &lt; m_d）</th><th>符号</th><th>最坏端</th></tr>
+<tr><td>L</td><td class="v">[f(Re_m) − f(Re_d)]/d</td><td>&gt; 0</td><td>A 取上、B 取下</td></tr>
+<tr><td>d</td><td class="v">(n_p−1)·(L/d²)·[f_m − f_d]</td><td>&lt; 0</td><td>A 取下、B 取上</td></tr>
+<tr><td>band</td><td class="v">[h_m − h_d]</td><td>&gt; 0</td><td>A 取上、B 取下</td></tr>
+<tr><td>K_EV</td><td class="v">1 − z^(−m_v)</td><td>&lt; 0</td><td>A 取下、B 取上</td></tr>
+<tr><td>m_v</td><td class="v">−K_v,d·z^(−m_v)·ln z</td><td>&gt; 0</td><td>A 取上、B 取下</td></tr>
+</table>
+
+<p>注意 <code>K_EV</code> 这一行：<strong>A 支最坏要 1.25，B 支最坏要 3.75</strong>——同一个盒坐标对两个闭合的最坏方向相反。这正是为什么「把盒子收窄」这种一刀切做法没有意义：你没有收窄同一个东西。</p>
+
+<h2>三、阀门可行域不是盒子，是一个半空间</h2>
+
+<p>约束只有一条不等式（<code>Φ</code>、<code>m_v</code> 完全不出现，它们只作用于非设计点）：</p>
+
+<pre><code>K_v,d = K_tgt − 1 − (L/d)·f(Re_d) − band·h(Re_d) − K_EV  ≥  0
+&lt;=&gt;  1 + (L/d)f(Re_d) + band·h(Re_d) + K_EV  ≤  21.8</code></pre>
+
+<p>把它解成「管长上限」，就得到一个可以直接写进图纸的数：</p>
+
+<table>
+<tr><th>闭合</th><th class="num">K_EV</th><th class="num">L_max (m)</th><th class="num">相对名义 5.50 m</th><th class="num">相对声明上限 6.00 m</th></tr>
+<tr><td>A</td><td class="num">1.25</td><td class="num">9.5377</td><td class="num">+73.4%</td><td class="num">+59.0%</td></tr>
+<tr><td>A</td><td class="num">2.50</td><td class="num">8.8765</td><td class="num">+61.4%</td><td class="num">+47.9%</td></tr>
+<tr><td>A</td><td class="num">3.75</td><td class="num">8.2152</td><td class="num">+49.4%</td><td class="num">+36.9%</td></tr>
+<tr><td>B</td><td class="num">1.25</td><td class="num">6.8256</td><td class="num">+24.1%</td><td class="num">+13.8%</td></tr>
+<tr><td>B</td><td class="num">2.50</td><td class="num"><b>6.3524</b></td><td class="num">+15.5%</td><td class="num"><b>+5.9%</b></td></tr>
+<tr><td>B</td><td class="num">3.75</td><td class="num"><b>5.8791</b></td><td class="num">+6.9%</td><td class="num"><b>−2.0%（不可行）</b></td></tr>
+</table>
+
+<div class="box warn">
+<p><b>这条比数值本身值钱。</b>B 支在名义 <code>K_EV=2.5</code> 时管长上限只有 6.35 m，而声明区间已经写到 6.00 m——<strong>用掉了 95% 的余量</strong>。A 支是 16%。所以 B 支的「负阀门角点」不是数值瑕疵，是<strong>设计裕度本来就不够</strong>：声明盒是逐坐标声明的，从来没有做过联合可行性检查。</p>
+</div>
+
+<p>而它对包络的影响是<strong>零</strong>：</p>
+
+<table>
+<tr><th>闭合</th><th class="num">全盒 sup|D|</th><th class="num">可行域 sup|D|</th><th class="num">差</th></tr>
+<tr><td>A（Φ±5%）</td><td class="num">4.768%</td><td class="num">4.768%</td><td class="num">0.000</td></tr>
+<tr><td>B（Φ±5%）</td><td class="num">3.313%</td><td class="num">3.313%</td><td class="num">0.000</td></tr>
+</table>
+
+<p>原因是不可行块<em>不是</em>最坏块：B 的最坏角要 <code>K_EV</code> 取下端，而不可行块在上端。所以可行域收窄<strong>改了归因和规格，不改上界</strong>。这个区分要写清楚，否则容易得出「加了约束所以上界变小了」这种假结论。</p>
+
+<p>还有一条观察值得记：不可行部分只占 6 维盒体积的 <strong>0.3%</strong>，却占角点的 <strong>25%</strong>。v18 用随机采样做 GSA，看到的是 0.3%，因此完全没报警；而角点枚举（复核做的）一眼就看出来了。<strong>极值住在角上，抽样的体积测度对这件事是盲的。</strong></p>
+
+<h2>四、整条曲线的上确界，以及极值位置的定号</h2>
+
+<h3>4.1 单调性不是假设，是 <code>s_P − s_M</code> 的定号</h3>
+
+<pre><code>(3 + s_M)·d ln x/d ln m = s_P − s_M ,   s = d lnK/d ln m
+-&gt;  D 对 m 单调 &lt;=&gt; s_P − s_M 不变号（只要 3+s_M &gt; 0）</code></pre>
+
+<table>
+<tr><th>闭合</th><th class="num">m_P</th><th class="num">Re_M</th><th class="num">s_M</th><th class="num">s_P</th><th class="num">s_P − s_M</th><th class="num">dD/dlnm</th></tr>
+<tr><td>A</td><td class="num">0.50</td><td class="num">4843</td><td class="num">−0.1356</td><td class="num">−0.0411</td><td class="num">+0.0945</td><td class="num">+3.15 pp</td></tr>
+<tr><td>A</td><td class="num">0.75</td><td class="num">7265</td><td class="num">−0.1196</td><td class="num">−0.0738</td><td class="num">+0.0458</td><td class="num">+1.53 pp</td></tr>
+<tr><td>A</td><td class="num">1.00</td><td class="num">9687</td><td class="num">−0.1148</td><td class="num">−0.0972</td><td class="num">+0.0176</td><td class="num">+0.59 pp</td></tr>
+<tr><td>A</td><td class="num">1.25</td><td class="num">12108</td><td class="num">−0.1110</td><td class="num">−0.0972</td><td class="num">+0.0138</td><td class="num">+0.46 pp</td></tr>
+<tr><td>B</td><td class="num">0.50</td><td class="num">4843</td><td class="num">−0.0190</td><td class="num">−0.0411</td><td class="num">−0.0221</td><td class="num">−0.74 pp</td></tr>
+<tr><td>B</td><td class="num">0.75</td><td class="num">7265</td><td class="num">−0.0081</td><td class="num">−0.0738</td><td class="num">−0.0657</td><td class="num">−2.19 pp</td></tr>
+<tr><td>B</td><td class="num">1.00</td><td class="num">9687</td><td class="num">−0.0079</td><td class="num">−0.0972</td><td class="num">−0.0893</td><td class="num">−2.98 pp</td></tr>
+<tr><td>B</td><td class="num">1.25</td><td class="num">12108</td><td class="num">−0.0325</td><td class="num">−0.0972</td><td class="num">−0.0647</td><td class="num">−2.16 pp</td></tr>
+</table>
+
+<p>A 支全段 <code>s_P − s_M &gt; 0</code>，B 支全段 <code>&lt; 0</code>，四个分段边界都同号——所以上确界落在 <code>m_P=0.50</code>，不是「五点里最大的那个」。表里 <code>s_P</code> 按 Yue 五行对数-对数插值取分段常数（这是声明），<code>s_M</code> 由 <code>[−n_p·P + s_hs·H + m_v·V]/K_M</code> 数值求导。</p>
+
+<h3>4.2 唯一的例外，及其大小</h3>
+
+<p>A 支的分子里带 <code>+m_v·V</code>，所以在接近设计点处可以让 <code>s_M</code> 抬到 <code>s_P</code> 之上。翻转条件解出来是：</p>
+
+<pre><code>m_v &gt; (n_p·P + H + s_P·K)/V = (2.59 + 0.18 − 2.22)/6.47 = 0.085</code></pre>
+
+<p>声明区间是 <code>[0, 0.10]</code>，所以只有 <code>m_v</code> 贴着上缘时才可能在设计点附近长出一个小内部极值。它的量级我逐个角点测了：<strong>|D| 的极值仍全部落在 0.50，超出量 ≤ 0.007 pp</strong>（B 支 4 个角点，那里是 Φ≠1 让设计点不再归零造成的基线，不是振荡）。</p>
+
+<h3>4.3 上确界（两次热量声明，可行角点，含网格余量）</h3>
+
+<table>
+<tr><th>热量声明</th><th>闭合</th><th class="num">sup|D|</th><th class="num">极值位置</th><th class="num">Lipschitz 余量</th><th class="num">该角点阀门 K</th></tr>
+<tr><td>Φ±5%（声明）</td><td>A</td><td class="num"><b>4.768%</b></td><td class="num">0.500</td><td class="num">±0.011%</td><td class="num">+6.688</td></tr>
+<tr><td>Φ±5%（声明）</td><td>B</td><td class="num">3.313%</td><td class="num">0.500</td><td class="num">±0.004%</td><td class="num">+2.552</td></tr>
+<tr><td>Φ±1%（有计量）</td><td>A</td><td class="num"><b>3.368%</b></td><td class="num">0.500</td><td class="num">±0.011%</td><td class="num">+6.688</td></tr>
+<tr><td>Φ±1%（有计量）</td><td>B</td><td class="num">1.977%</td><td class="num">0.500</td><td class="num">±0.004%</td><td class="num">+2.552</td></tr>
+</table>
+
+<p>余量来自 601 点扫描的 <code>max|dD/dm|·h</code>，所以这是<strong>扫描意义上的证书</strong>，不是解析证明——但它比「随机采样最大值」强一档，因为反例可以构造，余量不能。</p>
+
+<h2>五、GSA：换输出、换域、换宽度，排序就换了</h2>
+
+<p>输出改成「整条曲线上 <code>|D|</code> 的最大值」（9 个流量点），域改成「盒子 ∩ <code>K_v,d≥0</code>」，样本 8×4096 对，Jansen 总效应，附 95% 置信区间：</p>
+
+<table>
+<tr><th>Φ 宽度</th><th>闭合</th><th>输入</th><th class="num">ST</th><th class="num">±95%</th></tr>
+<tr><td>±5%</td><td>A</td><td>热量 Φ</td><td class="num"><b>0.930</b></td><td class="num">0.007</td></tr>
+<tr><td>±5%</td><td>A</td><td>阀门斜率</td><td class="num">0.061</td><td class="num">0.001</td></tr>
+<tr><td>±5%</td><td>B</td><td>热量 Φ</td><td class="num"><b>0.987</b></td><td class="num">0.013</td></tr>
+<tr><td>±5%</td><td>B</td><td>阀门斜率</td><td class="num">0.016</td><td class="num">0.001</td></tr>
+<tr><td>±1%</td><td>A</td><td>阀门斜率</td><td class="num"><b>0.469</b></td><td class="num">0.008</td></tr>
+<tr><td>±1%</td><td>A</td><td>热量 Φ</td><td class="num">0.307</td><td class="num">0.004</td></tr>
+<tr><td>±1%</td><td>B</td><td>热量 Φ</td><td class="num"><b>0.701</b></td><td class="num">0.007</td></tr>
+<tr><td>±1%</td><td>B</td><td>阀门斜率</td><td class="num">0.194</td><td class="num">0.005</td></tr>
+</table>
+
+<p>完整排序（Φ±1%，A）：阀门斜率 0.469 -&gt; Φ 0.307 -&gt; 长度 0.190 -&gt; <code>K_EV</code> 0.022 -&gt; 加热段摩擦带 0.018 -&gt; 直径 0.000。（Φ±1%，B）：Φ 0.701 -&gt; 阀门斜率 0.194 -&gt; <code>K_EV</code> 0.059 -&gt; 摩擦带 0.046 -&gt; 长度 0.034 -&gt; 直径 0.000。</p>
+
+<div class="box">
+<p><b>结论要换个说法。</b>v18 写「Φ 占 94%」，复核指出那只是 ±5% 加单点。现在可以写得更硬：<strong>排序不是闭合的性质，是声明宽度的性质。</strong>宽度 ±5% 时热量领先（0.93 / 0.99），宽度 ±1% 时 A 支的首位变成阀门斜率，B 支仍在热量。所以「谁主导」这句话如果不带盒宽，是不可复现的。</p>
+<p>唯一穿过所有宽度与闭合的结论是：<strong>文献阻力值（<code>K_HS</code>、<code>K_EV</code>、<code>K_pipe</code>）在两种宽度下都排第三或更低。</strong>这一句可以写，而且它正是「不需要再做实验」的正面理由——短板不在那三张表上。</p>
+</div>
+
+<h2>六、100 K 自洽：我以为 μ 会抵消，它不抵消</h2>
+
+<p>复核指出 v18 把 <code>μ=2.2019e-3</code> 冻住，而那个值对应 NEA 的 504.6 K，不是 573 K。我先按「幂律下 <code>f(Re_m)/f(Re_d)=z^(−n)</code> 与 μ 无关，所以 μ 会抵消」推了一遍——这是错的，跑出来才发现：</p>
+
+<table>
+<tr><th>算例</th><th class="num">A: D(0.50)</th><th class="num">B: D(0.50)</th></tr>
+<tr><td>名义 573 K</td><td class="num">−1.799%</td><td class="num">+1.587%</td></tr>
+<tr><td>只改 Φ（v18，μ 冻结）</td><td class="num">−3.110%</td><td class="num">+0.285%</td></tr>
+<tr><td>自洽（μ ×1.3208）</td><td class="num"><b>−3.481%</b></td><td class="num">+0.239%</td></tr>
+<tr><td>其中 Φ 通道</td><td class="num">−1.311 pp</td><td class="num">−1.303 pp</td></tr>
+<tr><td>其中 μ 通道</td><td class="num"><b>−0.371 pp</b></td><td class="num">−0.046 pp</td></tr>
+</table>
+
+<p>原因是配平把水平钉死了，进 <code>D</code> 的是<strong>增量</strong>而不是比值：</p>
+
+<pre><code>&Delta;P = (L/d)[f_m − f_d] = (L/d)·f_d·(z^(−n) − 1)  <span class="gk">~</span>  f_d  <span class="gk">~</span>  μ^n</code></pre>
+
+<p><code>f_d</code> 随 μ 的 0.25 次方走。μ 大 1.3208 倍，<code>f_d</code> 大 1.0720 倍，<code>ΔP</code> 就大 1.0720 倍——所以 μ 通道是热量通道的 <strong>28%</strong>，不是零。v18 那句「100 K 只值 1.27 pp」要补成「1.31 pp 走 Φ，0.37 pp 走 μ」。这也是为什么 A 支在 100 K 偏差下已经到 <strong>−3.48%</strong>：<em>还没算任何阻力公差</em>。</p>
+
+<p>顺带把 Φ 的余量重算成不对称的（联立后）：</p>
+
+<table>
+<tr><th>闭合</th><th>基线 D(0.50)</th><th class="num">Φ 允许区间</th><th class="num">向下余量</th><th class="num">向上余量</th></tr>
+<tr><td>A</td><td class="num">−1.80%</td><td class="num">[0.9654, 1.1465]</td><td class="num"><b>−3.5%</b></td><td class="num">+14.6%</td></tr>
+<tr><td>B</td><td class="num">+1.59%</td><td class="num">[0.8713, 1.0420]</td><td class="num">−12.9%</td><td class="num"><b>+4.2%</b></td></tr>
+</table>
+
+<p>A 支的向下余量只有 3.5%，因为 −1.80% 的基线已经吃掉 3 pp 里的 1.8。这比 v18 的对称 ±9.27% 有用得多：<strong>它告诉你「热量还能差多少」，而不是「热量差多少会独立吃满 3%」。</strong></p>
+
+<h2>七、重新装配的条件包络</h2>
+
+<table>
+<tr><th>层级</th><th class="num">A</th><th class="num">B</th><th>状态</th></tr>
+<tr><td>阶段Ⅰ（未配平）· 16 角点</td><td class="num">−3.267% … +3.730%</td><td class="num">—</td><td><span class="tag t-ok">已证明</span>角点极值</td></tr>
+<tr><td>阶段Ⅲ 曲线失真（其余名义）</td><td class="num">1.80%</td><td class="num">1.59%</td><td><span class="tag t-ok">已定号</span>单调</td></tr>
+<tr><td>阶段Ⅲ ＋Φ±1% ＋全部盒坐标</td><td class="num">3.368%</td><td class="num">1.977%</td><td><span class="tag t-ok">角点</span>可行</td></tr>
+<tr><td>阶段Ⅲ ＋Φ±5% ＋全部盒坐标</td><td class="num">4.768%</td><td class="num">3.313%</td><td><span class="tag t-mid">声明</span>宽度自选</td></tr>
+<tr><td>100 K 温度偏差（单独一项）</td><td class="num">−3.481%</td><td class="num">+0.239%</td><td><span class="tag t-mid">情景</span>Φ+μ 两通道</td></tr>
+</table>
+
+<p>阶段Ⅰ 的证明补完整（复核给的骨架，我核过每一步）：A 支把解方程写成</p>
+
+<pre><code>x^3·K_M(x·m0) = C·x^3 + B·L·d^(−0.75)·x^(2.75) = 常数</code></pre>
+
+<p>右端在 <code>x&gt;0</code> 严格增（两项系数皆正，指数皆正），故解唯一；且该式分别对 <code>K_EV</code>、<code>K_HS</code>、<code>L</code> 严格增、对 <code>d</code> 严格减，故四维盒的极值必在角点。<strong>这个证明只对那一组盒与 A 闭合成立</strong>，不迁移到阶段Ⅲ、不迁移到 B 闭合、不迁移到流量轴——这一句必须写出来，否则又是「先有结论再凑支撑」。</p>
+
+<h2>八、撤回与修订</h2>
+
+<table>
+<tr><th>对象</th><th>原说法</th><th>本轮</th><th>性质</th></tr>
+<tr><td>C1</td><td>配平后静态误差严格抵消，<code>K_EV</code> 影响为零</td><td>仅在设计点成立；<code>m_v=0.10</code> 时值 0.32 pp</td><td><span class="tag t-no">撤回</span></td></tr>
+<tr><td>C2</td><td>「Φ 占运行态方差 94%」</td><td>只在 Φ±5% + 单点输出下成立；±1% 时 A 支首位是阀门斜率</td><td><span class="tag t-no">收窄</span></td></tr>
+<tr><td>C3</td><td>3.287% 是 Φ±1% 下的最大值</td><td>可行角点 3.368%，采样值不是上界</td><td><span class="tag t-no">撤回</span></td></tr>
+<tr><td>C4</td><td>600 点扫描「证明」连续单调</td><td>改为 <code>s_P−s_M</code> 定号 + Lipschitz 余量；例外点定量 0.007 pp</td><td><span class="tag t-mid">升级</span></td></tr>
+<tr><td>C5</td><td>μ 在幂律下抵消，100 K 只需改 Φ</td><td>不抵消：配平钉住水平，进 D 的是增量 <span class="gk">~</span> μ^n，值 −0.37 pp</td><td><span class="tag t-no">撤回</span>（我自己推错）</td></tr>
+<tr><td>C6</td><td>Φ 独立吃满 3% 需 ±9.27%</td><td>联立后不对称：A [−3.5%, +14.6%]、B [−12.9%, +4.2%]</td><td><span class="tag t-mid">修订</span></td></tr>
+<tr><td>C7</td><td>B 支盒可直接做 GSA</td><td>16/64 角点负阀门；改为半空间条件抽样，并单列 <code>L_max</code></td><td><span class="tag t-no">撤回</span></td></tr>
+</table>
+
+<h2>九、可写 / 不可写，以及下一步</h2>
+
+<table>
+<tr><th>可写</th></tr>
+<tr><td>阶段Ⅰ A 闭合：在所声明四维盒上失真是 <b>−3.27% 至 +3.73%</b>，且这是<strong>角点极值</strong>，由 <code>x³K_M(x)</code> 的单调性证明，不是采样。</td></tr>
+<tr><td>阀门只能增阻，<code>K_v,d≥0</code> 是设计约束：它把模型管长上限定在 <b>8.9 m（A）/ 6.35 m（B）</b>（<code>K_EV=2.5</code>）。B 支声明的 +9.1% 角点（6.00 m）用掉了 95% 余量。</td></tr>
+<tr><td>离设计点，静态阻力误差只在「补偿阀门与被补偿构件 <code>K(Re)</code> 形状相同」时抵消；<code>m_v=0.10</code> 时 <code>K_EV</code>±50% 使 <code>D</code> 移动 <b>0.32 pp（A）/ 0.35 pp（B）</b>。</td></tr>
+<tr><td>整条 2.5:1 曲线上的最坏失真（可行角点）：<b>A 4.77%（Φ±5%）/ 3.37%（Φ±1%）；B 3.31% / 1.98%</b>。A 在两种宽度下都超 3%。</td></tr>
+<tr><td>GSA 排序取决于<strong>声明宽度</strong>而非闭合；文献 <code>K</code> 值在所有宽度下都排第三或更低。</td></tr>
+<tr><td>100 K 温度偏差：<b>1.31 pp 走 Φ，0.37 pp 走 μ</b>；配平钉住水平，进 <code>D</code> 的是摩擦增量而非摩擦比。</td></tr>
+</table>
+
+<table>
+<tr><th>不可写</th></tr>
+<tr><td>「配平后 <code>K_EV</code> 影响严格为零」——只在 <code>m=m_d</code> 成立。</td></tr>
+<tr><td>「Φ 占方差 94%」——那是 Φ±5% 加单点输出的性质。</td></tr>
+<tr><td>「加了可行域约束所以包络变小」——B 支上界一点没变；变的是归因与规格。</td></tr>
+<tr><td>「Φ 声明到 ±1% 就把 A 支放进 3%」——可行角点 3.368%。</td></tr>
+<tr><td>「μ 按 z 相似律抵消」——配平固定了 <code>K_M</code>，抵消不成立。</td></tr>
+<tr><td>「曲线已认证」——Lipschitz 余量只覆盖流量扫描，不覆盖五行插值与闭合声明。</td></tr>
+</table>
+
+<div class="box ok">
+<p><b>下一步只剩一件真正能动结论的事</b>，而且它不是文献：把 <strong><code>Φ</code> 的口径写死</strong>——加热功率怎么测、<code>ΔT</code> 取哪两点、热损记在谁身上、模型运行温度是否与原型一致。理由很直接：A 支在名义参数下已经 −1.80%，向下只剩 1.2 pp；<strong>一个 100 K 的温度偏差单独就能吃穿它</strong>。这条比再核十篇 <code>K</code> 值有用。</p>
+<p>第二件是把 <code>L_max(K_EV)</code> 和「阀门 <code>K_v</code>(开度, Re) 包络」写进图纸要求清单——这两条一旦成为规格，报告的输入域一节就从「声明」变成「设计约束」，可以直接定稿。</p>
+</div>
+
+<p class="small">文件：<code>比例失真_计算/design_v19.py</code>（662 行，<code>[A]</code>–<code>[H]</code> 八段）、<code>design_v19_log.txt</code>（274 行）、<code>design_v19_points.csv</code>（7×5，含两条极值列）、溯源表 §17。所有结论可在 <code>python design_v19.py</code> 一次复现。</p>
+
+</div>
+</body>
+</html>
