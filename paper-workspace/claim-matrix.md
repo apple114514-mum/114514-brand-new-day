@@ -99,6 +99,9 @@
 | C-87 | 不预设缩放准则的先验主线须先独立确定阀型、节流几何、开度允许域和 `ζ_v(Re)` 的适用依据，再正向求 FoM；以 K_target 反解阀门的 v16–v19 属对照方案 | 方法定位 / 强 | [导师方法定位](../outputs/prior-distortion-method-position-20261108.md)、[v16 反解](../outputs/component-resistance-design-v16-20261108.md)、[阀门原文审计](../outputs/kylin-valve-source-and-design-20261108.md) | 已区分 | FoM 的参考目标仍须先声明；方法新颖性需与既有先验缩放研究进一步比较 |
 | C-88 | NEA 2015 表 15.3.3 第 3 条给有限厚度孔板整体形阻式，适用 `Re_D>10³`；独立示范 `D=16,d=10,t=2 mm` 正算 `ζ=5.593959`，声明流量温区内 `Re_D≥2711` | 原始关联式与条件设计 / 强 | H15-P934/Table 15.3.3；[原始页](../outputs/fluid-component-nea-evidence-20261108.pdf)；[复算](../outputs/fluid-component-prior-domain-20261108.py) | 已核条件模型 | 不是从 K_target 反解；关联式适用 Re 不是实物关联式误差的严格上界；孔径 ±0.02 mm 是提出的图纸规格 |
 | C-89 | NEA 表 15.3.2 Churchill 圆管摩擦式标注 all ranges；本例独立 2 m、16 mm 光滑直管在 Re2711–24296 上有过渡内部峰，数值候选 K≈3.077–5.396 | 原始关联式与数值诊断 / 条件 | H15-P932/Table 15.3.2；[复算](../outputs/fluid-component-prior-domain-20261108.py) | 已核扫描 | 5.396 不是区间证书；实物粗糙度、入口发展段和布置需单独约束；不将圆管式套至 KYLIN 环隙 |
+| C-90 | 独立设计候选采用 16 mm 同径圆管闭环、四个锐角斜接弯头、10×2 mm 孔板，无正常流路内联阀；等温名义 `Re≈8643,K_total≈43.070`，由已选几何及原式正算 | 来源明确的设计声明与条件算术 / 中 | H15-P932/P934；AR-P3/§2.2、P5/式(4)；[设计输入](../outputs/lbe-forward-design-input-spec-20261108.md) §1–3 | 条件候选 | 不是 KYLIN 实物几何，未由缩放目标反解；水/空气弯头式移植 LBE 与构件干扰未给硬误差界 |
+| C-91 | 已声明保温/热桥验收规格给环境热损条件上限约 1.510 kW，而 `0.1–0.2 kW` 没有此设计依据；热量与浮升须沿程联立 | 径向导热算式与声明规格 / 条件 | [设计输入](../outputs/lbe-forward-design-input-spec-20261108.md) §2/§4；[复算脚本](../outputs/lbe-forward-design-input-audit-20261108.py) | 已核算术 | `k_ins≤0.05`、热桥 `UA≤0.5`、冷却 `UA≥150` 尚是采购/运行条件，不是实物上界 |
+| C-92 | 全开 Y 型阀 `K=0.1–0.5`、层/湍两式包住环隙转捩、以及仅由阻力比给一般 FoM 均无现有材料支持；本版以无内联阀与外加热圆管避开前两项 | 适用前提与方案选择 / 强 | [设计输入](../outputs/lbe-forward-design-input-spec-20261108.md) §5；[先前构件核对](../outputs/fluid-component-prior-domain-review-20261108.md) §5 | 条件方案 | 辅助支路仍需 `K_aux` 验收，原型 KYLIN 环隙并未因此消失 |
 
 ## 缺口清单
 

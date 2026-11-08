@@ -1,0 +1,11 @@
+MODEL DESIGN INPUT AUDIT; conditional correlation model, not full-loop FoM
+source pages: NEA 2015 PDF 131/932/934; Al-Tameemi/Ricco PDF 5 Eq.(4)
+nominal m=0.2 kg/s, T=573.15 K: Re, Kpipe, K4elbow, Korifice, Kaux, Ktotal
+8643.447004 32.284926 5.191282 5.593959 0.000000 43.070166
+scenario-grid rows: 576
+Re min/max: 3262.387364583507 24371.865576531447
+grid K min/max, not certified extrema: 34.35374275428496 56.79870846208494
+insulation U' upper W/(m K): 0.17574312024704186
+distributed+bridge ambient heat-loss upper W: 1509.5683006646302
+3 kW electrical input minus this bound, W: 1490.4316993353698
+CSV: lbe-forward-design-input-grid-20261108.csv
