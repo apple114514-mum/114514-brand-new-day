@@ -95,7 +95,8 @@
 | C-83 | v19 以 μ=2.2019e−3 Pa·s 标“573 K”再乘 573→473 K 的 NEA 黏度比，基准混用；该 μ 对应 NEA 约 504.6 K，−3.481% 不是同版本温度自洽结果 | 物性口径审计 / 强 | H15-P131/Table 2.19.3；[v19 独立脚本](../outputs/design-v19-independent-audit-20261108.py) | 已核 | 若只改模型 μ 至 NEA 573/473 K 且保留原型 K_P，A 0.50 点约 −1.580%/−3.239%；仍非两侧完整温度自洽预报 |
 | C-84 | KYLIN-II TH 冷段实物有阀，Li 的 24 kW 点提到阀门开度但未给数值；Yue 理论式(6)/Table 2 未单列该阀阻，CFD 又以直管替代 | 原文事实与口径 / 强 | Y17-P2/装置说明、P3/式(6)、P4/Table 2/§4.1、P6/§5.2；L15-P5/§3.3；[来源重查](../outputs/kylin-valve-source-and-design-20261108.md) | 已核 | Li 的原句不能断定阀门也达最大开度；“文中未刊阀门曲线”不能写成“实物没有阀”；22.8 仅作理论参考点 |
 | C-85 | 程诚等 2023 的另一套水回路用电动调节阀在单相下配平阻力，三尺度开度为 100%/19%/13%；NEA 的 HELIOS LBE 回路含闸阀、孔板及阀门差压测点 | 跨设施方法先例 / 强 | C23-P2–4/§1.1/§1.3/图3下方；H15-P929–930/§15.2.2；[来源重查](../outputs/kylin-valve-source-and-design-20261108.md) | 已核 | 程诚开度不可换算为 KYLIN 开度；HELIOS 构件值不可移植到 KYLIN |
-| C-86 | 本研究声明设计点若需参考动压损失 ζ_v≈6.475、参考内径 16.016 mm，按常见公制阀门 Kv 定义换算所需 Kv≈4.03 m³/h | 设计值及单位换算 / 条件 | [v18 条件设计](../outputs/design-v18-upload-report-20261108.html)；[来源重查 §2](../outputs/kylin-valve-source-and-design-20261108.md) | 已核算术 | 未指定阀型和厂家，不等于采购选型或实际开度；完整曲线须按器件规格/适用 Re 建域 |
+| C-86 | 声明设计若**按 K_target=22.8 配平**，参考动压所需 ζ_v≈6.475、参考内径 16.016 mm，对应公制工作流量系数 Kv≈4.03 m³/h | 缩放配平对照及单位换算 / 条件 | [v18 条件设计](../outputs/design-v18-upload-report-20261108.html)；[来源重查 §2](../outputs/kylin-valve-source-and-design-20261108.md) | 已核算术 | 由相似目标反解，不是纯先验主线的独立输入；未指定阀型、厂家或实际开度 |
+| C-87 | 不预设缩放准则的先验主线须先独立确定阀型、节流几何、开度允许域和 `ζ_v(Re)` 的适用依据，再正向求 FoM；以 K_target 反解阀门的 v16–v19 属对照方案 | 方法定位 / 强 | [导师方法定位](../outputs/prior-distortion-method-position-20261108.md)、[v16 反解](../outputs/component-resistance-design-v16-20261108.md)、[阀门原文审计](../outputs/kylin-valve-source-and-design-20261108.md) | 已区分 | FoM 的参考目标仍须先声明；方法新颖性需与既有先验缩放研究进一步比较 |
 
 ## 缺口清单
 
