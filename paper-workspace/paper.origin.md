@@ -5,11 +5,12 @@
 - 创建：2026-11-02
 - 题目（暂定）：铅铋自然循环缩比失真的设计阶段条件界
 - 目标期刊：未定
-- 最近事务：TX-009
+- 最近事务：TX-012
 - 参数原始表：[outputs/parameter-provenance-20261102.md](../outputs/parameter-provenance-20261102.md)
 - 当前物理域：[v15 全文证据审查](../outputs/physical-domain-v15-review-20261108.md)、[输入 CSV](../outputs/physical-domain-v15-ledger-20261108.csv)、[16 份原文哈希清单](../outputs/physical-domain-v15-sources-20261108.json)
 - 阻力设计基线：[v16 KYLIN 逐构件计算与阀门反解](../outputs/component-resistance-design-v16-20261108.md)
 - 当前方法定位：[导师批注与先验条件界](../outputs/prior-distortion-method-position-20261108.md)
+- 当前设计复核：[v17 独立审计与联立前向修正](../outputs/design-v17-independent-review-20261108.md)
 
 ## source
 
@@ -79,10 +80,12 @@
 
 ## metrics
 
-- 当前 C-01–C-65 共 65 条；逐条状态和原文坐标见矩阵。新增 KYLIN 理论阻力设计基线及条件节流尺寸；成对实物局阻、逐点阀位、独立热量与误差链仍缺。
+- 当前 C-01–C-70 共 70 条；逐条状态和原文坐标见矩阵。v17 节流设计点通过复算，曲线输出改为内生 Re 联立的条件点值；连续域阻力闭合与物理输入域仍待指定。
 - 目标期刊格式门禁：未启动；当前不判投稿合格。
 
 ## transactions
+
+`TX-012 | 2026-11-08 | v17 条件初设审计 | U17-S 的阀门解复算；五行内生流量根替代冻结 Re；更正三阶段盒、摄动导数、加热段 Re 适用域和 K_HS 残差归因；C-66–C-70 更新 | type=forward-model-audit`
 
 `TX-001 | 2026-11-02 | 原文取象 | Z20/X26/I21 页表核读，建立参数表与 claim-matrix；Li/Yue 全文缺席标空 | type=source-audit`
 

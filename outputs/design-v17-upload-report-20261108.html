@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>固定缩比设计与前向计算（2026-11-08 第十七轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13px}
+td.v{text-align:left;font-family:"Cascadia Mono","Consolas",monospace;font-size:12.5px;line-height:1.65}
+td.v b{font-family:"Songti SC","SimSun",serif}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+a{color:var(--acc2);text-decoration:none;border-bottom:1px dotted var(--acc2);word-break:break-all}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>固定缩比设计与前向计算：阀门配平水平，斜率决定失真</h1>
+<div class="sub">2026-11-08 · 第十七轮 · 9 节 / 7 表 · 脚本 <code>design_v17.py</code>（158 行日志，<code>%%</code> 残留 0 处）<br>
+接续 <code>component-resistance-design-v16</code>（提交 <code>7103d91</code>）与 <code>prior-distortion-method-position</code>（<code>9543cef</code>）<br>
+本轮把「声明 → 前向 → 摄动 → 情景 → 求界」这条链第一次跑在<strong>一台具体的台架</strong>上，而不是赵 2020 的成对算例上</div>
+
+<div class="box warn">
+<strong>一句话结论。</strong>你给的三个数复算全对（<code>K_ref</code> 6.34 / 2.23、孔径 9.41 / 11.15 mm、<code>Re</code> 12095），
+但设计目标 <code>K<sub>M</sub> = 22.8</code> <strong>不是选出来的，是被 <code>u<sub>R</sub> = <span class="gk">√</span>L<sub>R</sub></code> 逼出来的</strong>：
+<code>u<sub>R</sub><sup>2</sup> = H<sub>R</sub>/K<sub>R</sub></code>，所以 <code>K<sub>R</sub> = 1</code> 恒成立，阀门只能照抄原型 <code>K</code>。
+真正的结论在后面：<strong>阀门只配平「水平」，失真全部来自 <code>K(m)</code> 的「斜率」</strong>。
+两种摩擦闭合给出<strong>符号相反</strong>的失真（<span class="gk">−</span>1.94% 与 +1.32%），
+而 3% 判据等价于 <strong>9.6% 的 K 预算</strong>；未配平的设计态角点已达 <strong>5.70%</strong>，
+所以「配平」不是优化步骤，是判据成立的前提。
+</div>
+
+<h2>一、先认三处错，其中一处是我上一轮的</h2>
+
+<p><strong>1. 「阻力没法设置」说错了。</strong>你指出的对。上一轮我把「理论表与实物阀位/粗糙度无对应」写成了「阻力无法设定」，
+这是把<em>辨识问题</em>当成了<em>设计问题</em>。阻力完全可以按纯流体逐构件设计，未知的只是<em>建成后</em>阀位与表面状态落在哪。
+正确表述是：<strong>可设计，不可反推</strong>。</p>
+
+<p><strong>2. 「杨若楠阻力表」是我记串了。</strong>我库里杨若楠 2020 的 Table 2 是<strong>物性表</strong>（引用 X26 式(15)–(18)），
+从来不是阻力表。阻力表的署名确实是 Yue 等 2017 Table 2，你核得对。这条混用是我造成的，已从溯源表口径里删掉。</p>
+
+<p><strong>3. 我自己的环隙 <code>Re</code> 公式错了。</strong>第一次跑这个脚本时我用 <code>Re = 4q<sub>m</sub>/(<span class="gk">π</span>D<sub>h</sub><span class="gk">μ</span>)</code>，
+得 22588，与 Yue 的 9520 差 2.37 倍。错因是那个式子只对<strong>满圆截面</strong>成立；环形通道要用湿周：
+
+<pre><code>Re_HS = 4 q_m /( P_wetted * mu ),  P_wetted = pi*(d_o + d_i) = pi*0.076
+      = 5 / (0.2388 * 2.2019e-3) = 9511     <- Yue 表 2 给 9520</code></pre>
+
+<p>差 0.1%，这才是 Yue 那个 9520 的来路。这条错误值得记下来：<strong>环形通道的 <code>Re</code> 用 <code>D<sub>h</sub></code> 代入圆管式会系统性偏大 2.4 倍</strong>，
+而它的后果是 <code>f<sub>HS</sub></code> 被低估 30%（0.0439 应为 0.0339）——正好是 K_HS 重建那一段的差别。</p>
+
+<h2>二、固定的缩比设计</h2>
+
+<p>按 Xu FR26 标准 CFD 方案锁死，不再有自由参数：</p>
+
+<table>
+<tr><th style="width:20%">量</th><th style="width:26%">原型（KYLIN-II 理论回路）</th><th style="width:26%">模型（新台架）</th>
+<th style="width:14%">比值</th><th style="width:14%">来源</th></tr>
+<tr><td>主管内径 <code>d</code></td><td class="v">26.0 mm</td><td class="v">16.016 mm</td><td class="mono">0.616</td>
+<td>Yue Table 1；Xu FR26</td></tr>
+<tr><td>主管长度 <code>L</code></td><td class="v">11.0 m（作者保守假定）</td><td class="v">5.50 m</td><td class="mono">0.500</td>
+<td>Yue §3.2；<span class="tag t-mid">L2</span></td></tr>
+<tr><td>质量流量 <code>q<sub>m</sub></code></td><td class="v">1.25 kg/s</td><td class="v">0.3354 kg/s</td><td class="mono">0.2683</td>
+<td>由 <code>A<sub>R</sub><span class="gk">√</span>L<sub>R</sub></code> 导出</td></tr>
+<tr><td>有效高度 <code>H</code></td><td class="v">3.3119 m</td><td class="v">1.6560 m</td><td class="mono">0.500</td>
+<td><span class="tag t-mid">L1c</span> Yue Table 3 反解</td></tr>
+<tr><td>流通面积 <code>A</code></td><td class="v">531.0 mm<sup>2</sup></td><td class="v">201.5 mm<sup>2</sup></td><td class="mono">0.3795</td>
+<td>几何</td></tr>
+<tr><td>总阻力 <code>K</code></td><td class="v">22.80</td><td class="v">22.80（配平）</td><td class="mono">1.000</td>
+<td>Yue Table 2 / 见 §三</td></tr>
+<tr><td>加热段</td><td class="v">环隙 54/22 mm，L=1.8 m</td><td class="v">同径比缩放</td><td class="mono">—</td>
+<td>Yue Table 1</td></tr>
+</table>
+
+<div class="box">
+<strong>必须声明的一件事：这台模型是几何畸变的。</strong>
+<code>d<sub>R</sub> = 0.616</code> 而 <code>L<sub>R</sub> = 0.5</code>，所以
+<code>A<sub>R</sub> = 0.3795 <span class="gk">≠</span> L<sub>R</sub><sup>2</sup> = 0.25</code>。
+模型「偏胖」。这不是缺陷，但它意味着<strong>「理想比」不能再由几何自动给出，只能显式声明</strong>——
+恰好是本文第 4 条贡献（口径分账）在这台台架上的具体形态。
+若强行取等比，<code>d<sub>R</sub></code> 应为 0.5，管径 13 mm，<code>Re</code> 降到 7800，Blasius 与突缩式都还在域内，
+但 <code>L/D</code> 不变而流通面积再小 35%，压降与泵功都会跳一档。两种都能做，必须选一种并写明。
+</div>
+
+<h2>三、<code>K<sub>R</sub> = 1</code> 不是设计选择，是相似律的推论</h2>
+
+<pre><code>稳态自然循环:  u^3 = 2 g β H Q /(K ρ c_p A)
+两边取比:      u_R^2 = H_R / K_R
+要求 u_R 与 sqrt(L_R) 相符 (Xu FR26 标准方案):
+               K_R = H_R / L_R = 0.5/0.5 = 1</code></pre>
+
+<p>所以「阀门把总 K 配到 22.8」这件事<strong>没有第二个答案</strong>。你在 v16 里取 <code>K<sub>P,target</sub> = 22.8</code> 是对的，
+但把它写成「选定的设计目标」会被审稿人问一句「为什么是这个数」。正确写法是：<strong>由 <code>u<sub>R</sub> = <span class="gk">√</span>L<sub>R</sub></code> 推出 <code>K<sub>R</sub> = 1</code>，故模型总阻力必须等于原型。</strong></p>
+
+<p>顺带把模型的三个一致性也核了：<code>q<sub>m</sub>/A<sub>R</sub> = 0.707065</code> 对 <code><span class="gk">√</span>L<sub>R</sub> = 0.707107</code>，差 <strong>0.006%</strong>。
+Xu 那套 <code>L<sub>R</sub>=0.5 / d<sub>R</sub>=0.616 / q<sub>m,R</sub>=0.268</code> 是自洽的。</p>
+
+<h2>四、阀门反解与节流件尺寸：复算通过，鲁棒性清楚了</h2>
+
+<table>
+<tr><th style="width:24%">量</th><th class="num" style="width:19%">闭合 A（光滑管 Blasius）</th>
+<th class="num" style="width:19%">闭合 B（原型等效粗糙度）</th><th style="width:38%">说明</th></tr>
+<tr><td>模型管 <code>Re</code></td><td class="num">12108</td><td class="num">12108</td>
+<td>你表里 12095，差 0.1%（<code>q<sub>m,R</sub></code> 取 0.268 vs 0.2683）</td></tr>
+<tr><td><code>f</code></td><td class="num">0.030162</td><td class="num">0.042106</td>
+<td>B 由 Yue 五点 <code>f</code> 在 <code>Re</code> 上对数插值</td></tr>
+<tr><td><code>K<sub>pipe</sub></code></td><td class="num">11.358</td><td class="num">15.460</td>
+<td><code>1 + f·L/D</code>，<code>L/D = 343.4</code>（原型 423.1，缩 0.812）</td></tr>
+<tr><td><strong>所需阀门 <code>K</code></strong></td><td class="num"><strong>6.342</strong></td><td class="num"><strong>2.241</strong></td>
+<td>你给 6.339 / 2.228，差 &lt;0.6%</td></tr>
+<tr><td>节流件 <code><span class="gk">β</span> = A<sub>thr</sub>/A<sub>pipe</sub></code></td>
+<td class="num">0.3453 / 0.3512 / 0.3380 / 0.3455</td><td class="num">0.4838 / 0.4965 / 0.4703 / 0.4839</td>
+<td>对应表 15.3.6 的四条突缩式</td></tr>
+<tr><td>窄段内径</td><td class="num">9.41 / 9.49 / 9.31 / 9.41 mm</td><td class="num">11.14 / 11.29 / 10.98 / 11.14 mm</td>
+<td>你给的 9.41 / 11.15 落在中间</td></tr>
+<tr><td>内径离散</td><td class="num">0.181 mm（1.9%）</td><td class="num">0.302 mm（2.7%）</td>
+<td><strong>手册内四式只差 2%</strong></td></tr>
+</table>
+
+<p>我特地把 NEA 第 935 页（印刷页，PDF 第 936 页）重新渲染出来逐字核过表 15.3.5 / 15.3.6——四式是
+<code>0.5(1<span class="gk">−</span><span class="gk">β</span>)</code>、<code>0.5(1<span class="gk">−</span><span class="gk">β</span>)<sup>3/4</sup></code>、
+<code>0.5<span class="gk">−</span>0.7<span class="gk">β</span>+0.2<span class="gk">β</span><sup>2</sup></code>、
+Vennard 含缩脉 <code>(1/<span class="gk">β</span><sub>c</sub><span class="gk">−</span>1)<sup>2</sup></code>，
+突扩是 Borda-Carnot <code>(1<span class="gk">−</span><span class="gk">β</span>)<sup>2</sup></code>，Re 门槛 3.3e3 / 1e4。
+第 4 式算出来 0.3286、第 1 式 0.3274，两者几乎相同（因为含缩脉的解与取 0.5 的近似在同一量级）——
+<strong>所以你那个 <code>[(1<span class="gk">−</span><span class="gk">β</span>)<sup>2</sup>+0.5(1<span class="gk">−</span><span class="gk">β</span>)]/<span class="gk">β</span><sup>2</sup></code> 是稳的，不必担心「把相邻两突变冒充孔板」那层顾虑在数值上的后果。</strong></p>
+
+<div class="box ok">
+<strong>这一节真正有用的信息是相对量级，不是绝对值。</strong>
+配方公式换来换去，孔径只动 <strong>0.18 mm</strong>；换摩擦闭合，孔径动 <strong>1.74 mm（18.5%）</strong>。
+所以设计文档里要写死的不是「用第几条突缩式」，而是<strong>管材的表面状态</strong>。
+把 9.41 或 11.15 写成「节流件尺寸」是错的，应写成「在 <em>某表面状态</em> 下为 9.41，另一种下为 11.14」。
+</div>
+
+<h2>五、允许输入域（这就是先验盒的底）</h2>
+
+<table>
+<tr><th style="width:13%">符号</th><th style="width:15%">名义值</th><th style="width:15%">声明区间</th>
+<th style="width:11%">定级</th><th style="width:46%">依据 / 备注</th></tr>
+<tr><td class="mono">H<sub>P</sub></td><td class="v">3.3119 m</td><td class="v">3.28–3.35</td><td><span class="tag t-mid">L1c</span></td>
+<td>Yue Table 3 反解；Xu 给 3.35，两读差 1.1%，区间取两者跨度</td></tr>
+<tr><td class="mono">d<sub>P</sub></td><td class="v">26.0 mm</td><td class="v">25.9–26.1</td><td><span class="tag t-ok">L1</span></td>
+<td>Yue Table 1；公差按常规管材</td></tr>
+<tr><td class="mono">L<sub>P</sub></td><td class="v">11.0 m</td><td class="v">10.0–12.0</td><td><span class="tag t-mid">L2</span></td>
+<td>作者自述「conservative assumption」，非实测</td></tr>
+<tr><td class="mono">K<sub>EV</sub></td><td class="v">2.5</td><td class="v">1.25–3.75</td><td><span class="tag t-no">L2</span></td>
+<td>原文「据其他回路经验」，是估计；±50% 为保守取法</td></tr>
+<tr><td class="mono">K<sub>HS</sub></td><td class="v">2.6</td><td class="v">2.48–2.72</td><td><span class="tag t-mid">L1c</span></td>
+<td>表值；逐构件重建差 0.118（4.5%），区间按此取 ±2<span class="gk">σ</span> 量级</td></tr>
+<tr><td>管壁状态</td><td class="v">闭合 A 或 B</td><td class="v">类别变量</td><td><span class="tag t-no">L2</span></td>
+<td><strong>不是公差，是设计规格</strong>；必须写成「要求 <span class="gk">ε</span>/d 落在某区间」</td></tr>
+<tr><td class="mono">T<sub>op</sub></td><td class="v">573 K</td><td class="v">未声明</td><td><span class="tag t-no">缺口</span></td>
+<td>NEA 2015 / 2007 两版都没给适用温区（第十五轮已记）</td></tr>
+<tr><td class="mono">q<sub>m,P</sub></td><td class="v">0.25–1.25 kg/s</td><td class="v">区间</td><td><span class="tag t-ok">L1</span></td>
+<td>Yue Table 2 五点；模型侧受层流下界截到 0.50–1.25</td></tr>
+</table>
+
+<p>这张表本身就是「先验路线」的对象：<strong>八行里只有两行是真正不可约的</strong>（管壁状态是类别量、<code>T<sub>op</sub></code> 没有已发表域），
+其余六行都是图纸公差或重复性声明。<code>K<sub>EV</sub></code> 那一行最宽（±50%），但它在 §七 里会被证明几乎不影响结论——因为阀门会把它吃掉。</p>
+
+<h2>六、前向计算：<code>D = (K<sub>M</sub>/K<sub>P</sub>)<sup><span class="gk">−</span>1/3</sup> <span class="gk">−</span> 1</code></h2>
+
+<p>两侧都用同一组守恒方程正算，不做任何反解。口径 <code><span class="gk">ε</span><sub>Q</sub></code> 两侧同取 0，所以这个 <code>D</code> 是<strong>纯损失比项</strong>。
+拿赵案验一下：<code>(1.088839)<sup><span class="gk">−</span>1/3</sup><span class="gk">−</span>1 = <span class="gk">−</span>2.79%</code>，
+正好是第十五轮记的「<code><span class="gk">ε</span><sub>Q</sub>=0</code> 反事实」那一支，而不是 <code>+2.88%</code>。
+<strong>两个数不能混用</strong>，差 5.7 pp 就是口径账。</p>
+
+<table>
+<tr><th class="num" style="width:9%">q<sub>m,P</sub><br>kg/s</th><th class="num" style="width:10%">Re<sub>M</sub></th>
+<th class="num" style="width:9%">K<sub>P</sub></th><th class="num" style="width:11%">K<sub>M</sub>（A）</th>
+<th class="num" style="width:11%">D（A）</th><th class="num" style="width:11%">K<sub>M</sub>（B）</th>
+<th class="num" style="width:11%">D（B）</th><th style="width:28%">备注</th></tr>
+<tr><td class="num">1.25</td><td class="num">12108</td><td class="num">22.80</td><td class="num">22.80</td><td class="num">0.00%</td>
+<td class="num">22.80</td><td class="num">0.00%</td><td>设计点，配平后恒为 0（自洽校验）</td></tr>
+<tr><td class="num">1.00</td><td class="num">9687</td><td class="num">23.30</td><td class="num">23.49</td><td class="num"><span class="gk">−</span>0.28%</td>
+<td class="num">23.00</td><td class="num">+0.43%</td><td></td></tr>
+<tr><td class="num">0.75</td><td class="num">7265</td><td class="num">23.80</td><td class="num">24.41</td><td class="num"><span class="gk">−</span>0.84%</td>
+<td class="num">23.17</td><td class="num">+0.90%</td><td></td></tr>
+<tr><td class="num">0.50</td><td class="num">4843</td><td class="num">24.20</td><td class="num">25.67</td><td class="num"><strong><span class="gk">−</span>1.94%</strong></td>
+<td class="num">23.27</td><td class="num"><strong>+1.32%</strong></td><td>B 在 Yue 最低 Re 之下外推 13%</td></tr>
+<tr><td class="num">0.25</td><td class="num">2422</td><td class="num">24.50</td><td class="num">28.23</td><td class="num"><span class="gk">−</span>4.61%</td>
+<td class="num">23.53</td><td class="num">+1.36%</td><td><strong>模型层流，Blasius 失效，出域</strong></td></tr>
+</table>
+
+<p>看最后一行：<strong>5:1 的功率范围在这台台架上覆盖不了</strong>，0.25 kg/s 时模型 <code>Re</code> 只有 2422。
+所以声明域必须截到 <strong>4:1（0.50–1.25 kg/s）</strong>，这不是保守，是物理边界。</p>
+
+<h3>6.1 失真的全部机制在一行里</h3>
+
+<table>
+<tr><th style="width:34%">对象</th><th class="num" style="width:16%">dlnK/dlnq<sub>m</sub></th><th style="width:50%">说明</th></tr>
+<tr><td>原型 <code>K<sub>P</sub></code>（Yue 五点）</td><td class="num"><span class="gk">−</span>0.04468</td>
+<td>表观斜率很平，因为 <code>K<sub>HS</sub>+K<sub>EV</sub></code> 5.1 是常数项在稀释</td></tr>
+<tr><td>模型 A（光滑管）</td><td class="num"><span class="gk">−</span>0.13275</td><td>差 <span class="gk">−</span>8.81%</td></tr>
+<tr><td>模型 B（等效粗糙）</td><td class="num"><span class="gk">−</span>0.01957</td><td>差 +2.51%</td></tr>
+</table>
+
+<div class="box warn">
+<strong>核心结论。</strong>阀门是一个<em>常数</em>，它只能把曲线<strong>上下平移</strong>，改不了<strong>斜率</strong>。
+所以在设计点配平之后，<code>D(q<sub>m</sub>)</code> 的全部来源就是
+<code>K<sub>M</sub></code> 与 <code>K<sub>P</sub></code> 斜率之差，而这个差<strong>只由摩擦指数的差决定</strong>。
+原型表观指数是 0.045（被常数项稀释过的），光滑管是 0.25，等效粗糙管是 0.05。
+<strong>想把 <code>D</code> 做到恒零，需要模型摩擦指数正好等于 0.045</strong>；而两条实测式给的是 0.13–0.30（朱锋杰 0.30、Zhang 0.13）。
+⇒ <strong>在一台几何正常的台架上，<code>D</code> 的符号是选出来的，不是测出来的。</strong>
+这条与第十六轮「<code>n</code> 与 <code><span class="gk">δ</span></code> 秩亏」是同一件事的两面：换摩擦律等于换一个 <code><span class="gk">δ</span></code>，也等于换一个失真符号。
+</div>
+
+<h2>七、摄动：设计点只有一条 <span class="gk">−</span>1/3 律</h2>
+
+<p><code>D = (K<sub>M</sub>/K<sub>P</sub>)<sup><span class="gk">−</span>1/3</sup><span class="gk">−</span>1</code> 是<strong>恒等式</strong>，不是线性化，
+所以 <code>dD/dlnK<sub>M</sub> = <span class="gk">−</span>1/3</code> 精确成立：</p>
+
+<table>
+<tr><th style="width:26%">输入</th><th class="num" style="width:14%">声明扰动</th><th class="num" style="width:14%"><span class="gk">Δ</span>K</th>
+<th class="num" style="width:16%"><span class="gk">Δ</span>D（设计点）</th><th style="width:30%">进入方式</th></tr>
+<tr><td><code>d<sub>M</sub></code> 内径</td><td class="num">+0.5%</td><td class="num">+0.052</td><td class="num"><span class="gk">−</span>0.08%</td>
+<td>经 <code>f·L/D</code>，与 <code>L</code> 同通道</td></tr>
+<tr><td><code>L<sub>M</sub></code> 管长</td><td class="num">+10%</td><td class="num">+1.036</td><td class="num"><span class="gk">−</span>1.51%</td>
+<td>同上</td></tr>
+<tr><td><code>K<sub>HS</sub></code></td><td class="num">+20%</td><td class="num">+0.520</td><td class="num"><span class="gk">−</span>0.76%</td><td>直接加</td></tr>
+<tr><td><code>K<sub>EV</sub></code></td><td class="num">+50%</td><td class="num">+1.250</td><td class="num"><span class="gk">−</span>1.83%</td><td>直接加</td></tr>
+</table>
+
+<p>这张表要说两件事。<strong>第一，<code>d<sub>M</sub></code> 与 <code>L<sub>M</sub></code> 在设计点不可分辨</strong>——两者都以 <code>f·L/D</code> 的形式进入，
+灵敏度比值恒为 1，又一个秩亏。<strong>第二，判据可以反过来用：</strong></p>
+
+<pre><code>|D| <= 3%   <=>   K_M/K_P in [0.9151, 1.0957]
+           <=>   K 的单侧预算 +9.57% (D<0) / -8.49% (D>0)
+
+设计规格: 总 K 的相对误差预算 9.6%  —— 可以直接写进采购与装配要求</code></pre>
+
+<h2>八、声明盒必须按阶段拆，否则数字会骗人</h2>
+
+<table>
+<tr><th style="width:22%">阶段</th><th style="width:34%">盒里还剩什么</th><th class="num" style="width:16%">角点 |D|</th>
+<th style="width:28%">含义</th></tr>
+<tr><td>Ⅰ 设计（阀未配平）</td><td><code>K<sub>EV</sub></code>±50% + <code>K<sub>HS</sub></code>±20% + <code>L</code>±20% + <code>d</code>±0.5%</td>
+<td class="num"><strong>5.70%</strong></td><td>已超 3% 判据</td></tr>
+<tr><td>Ⅱ 调试（阀配平后）</td><td>只剩阀位读数与重复性（±0.2 的 K）</td><td class="num">0.29%</td>
+<td>配平把水平误差全部吸收</td></tr>
+<tr><td>Ⅲ 运行（阀位固定）</td><td>只剩曲线失真（§六）</td><td class="num">1.94%（A）/ 1.32%（B）</td>
+<td>这才是「台架失真」，且符号不可控</td></tr>
+</table>
+
+<div class="box">
+<strong>这张表是本轮最有实践价值的一页。</strong>
+把三个阶段混成一个盒，会得出「新台架不确定度 5.7%」这种既不真也不假的数。
+正确的写法是分行报：<strong>设计态 5.70%（这是采购规格）；配平后 0.29%（这是仪表能力）；运行态 1.94%（这是模型失真，符号由管壁状态决定）。</strong>
+同时它给出一条流程性结论：<strong>「配平」是判据成立的前提，不是优化步骤</strong>——不配平就谈不上 3%。
+</div>
+
+<h2>九、<code>K<sub>HS</sub> = 2.6</code> 的逐构件重建：差 4.5%，不是差 17%</h2>
+
+<p>用湿周公式把 <code>Re<sub>HS</sub></code> 修回 9511 之后，四项加起来：</p>
+
+<pre><code>T 形入口          1.290
+流通面积变化       0.640
+环隙摩擦         0.1907   (f=0.04388, L/Dh=56.25, x(A_pipe/A_HS)^2=0.0773)
+出口突缩         0.3610   (0.5*(1−β), β=A_pipe/A_HS=0.2780)
+                ------
+合计              2.4817      表值 2.600      残差 0.118 (4.5%)
+
+旁证: 文档写的「面积变化 0.64」对 Borda-Carnot 突扩 0.5213，差 0.119
+      —— 与残差同量级，指向同一处系数微调</code></pre>
+
+<p>所以 <code>K<sub>HS</sub></code> <strong>能被逐构件复现到 5%</strong>，这比我上一轮预期的好。
+但它仍然<strong>不能</strong>被称为「构件之和」：两个 0.12 量级的偏差正好是 Yue §5.2 自认的「阻力系数经优化」的痕迹。
+写法应是：<strong>表值 2.6，逐构件重建 2.48，差 4.5%，属原文系数微调。</strong></p>
+
+<h2>十、可写 / 不可写</h2>
+
+<p><span class="tag t-ok">可写</span><strong>「由 <code>u<sub>R</sub> = <span class="gk">√</span>L<sub>R</sub></code> 得 <code>K<sub>R</sub> = 1</code>，故缩比台架须以节流件复现原型总阻力；
+在 26 <span class="gk">→</span> 16.016 mm、11 <span class="gk">→</span> 5.5 m 的这组尺寸下，所需节流参考 K 为 6.34（光滑管）或 2.24（等效粗糙），
+对应窄段 9.41 或 11.14 mm，手册四条突缩式只带来 0.18 mm 的差异。」</strong></p>
+
+<p><span class="tag t-ok">可写</span><strong>「在 4:1 功率范围内，配平后的残余曲线失真为 1.94%（光滑管，负向）或 1.32%（等效粗糙，正向）；
+设计点为零，符号由管壁状态决定。」</strong></p>
+
+<p><span class="tag t-ok">可写</span><strong>「3% 判据等价于总 K 的 9.6% 相对误差预算；未配平的设计态角点达 5.70%，故配平是判据成立的前提。」</strong></p>
+
+<p><span class="tag t-no">不可写</span>「新台架不确定度 1.9%」——它是一个<em>声明设计</em>在<em>假设管壁状态</em>下的失真，不是测量不确定度。</p>
+<p><span class="tag t-no">不可写</span>「<code>K<sub>HS</sub> = 2.6</code> 是构件之和」——它比自己的和只高 4.5%，但高就是高。</p>
+<p><span class="tag t-no">不可写</span>「9.41 mm 是节流件尺寸」——它是「某表面状态下」的条件值，另一种状态是 11.14。</p>
+<p><span class="tag t-no">不可写</span>「Blasius 闭合是保守的一支」——它把 <code>D</code> 推向负侧 1.94%，B 推向正侧 1.32%，<strong>两支互不包络</strong>。</p>
+
+<div class="box warn">
+<strong>下一步只剩两件（都不需要新文献）。</strong><br>
+① <strong>把「声明」写成一张可交底的图纸清单</strong>：每段 <code>A / D<sub>h</sub> / L / </code>弯头数、阀件 <code>K<sub>v</sub>(</code>开度<code>, Re)</code> 样本、管材 <code><span class="gk">ε</span></code> 等级。
+这一张表填完，§五 的八行就从「声明」变成「规格」，论文的输入域一节也就定稿了。<br>
+② <strong>把 §六 的 <code>D(q<sub>m</sub>)</code> 换成「曲线对曲线」的判据</strong>：本文此前一直用单点 <code>D</code>，
+而这台台架第一次让「<code>D</code> 是功率的函数」成为必须回答的问题。程诚 2023 说「降高度曲线一对一不失真」，
+但那是<em>同一 FoM 下</em>的结论；这里 FoM 是流量比，结论是<strong>曲线确实会歪，且歪的方向由摩擦指数决定</strong>。这一条可以直接成一节。
+</div>
+
+<p class="small">脚本 <code>比例失真_计算/design_v17.py</code>（158 行）· 日志 <code>design_v17_log.txt</code> ·
+证据页 <code>文献原文/_v17png/</code>（NEA 2015 印刷页 935 / PDF 936 渲染）· 溯源表见 <code>docs/参数溯源表_2026-11-02.md</code> §15</p>
+
+</div>
+</body>
+</html>

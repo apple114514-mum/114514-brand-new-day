@@ -1,0 +1,158 @@
+==============================================================================
+[A] RECOMPUTE the v16 component design (independent run)
+==============================================================================
+prototype implied f at 1.25 kg/s : 0.039473  (from K_pipe=17.700)
+Blasius f at the same Re        : 0.024503   ratio 1.6109
+  -> v16 finding reproduced: the table value is not an excess over a
+     Blasius baseline. It is what LBE measured friction gives, so Blasius
+     must never be used as the yardstick for an LBE loop.
+
+model pipe Re at the design pt  : 12108.5  (27800 x 0.268/0.616 = 12095;
+                                   0.1% apart, from rounding m_R to 0.268)
+closure A  f=0.030162  K_pipe=11.3579  K_valve=6.3421
+closure B  f=0.042106  K_pipe=15.4595  K_valve=2.2405
+  -> both reproduce the v16 numbers 6.339 / 2.228 to 0.5%.
+
+==============================================================================
+[B] throat sizing and its sensitivity to the 4 contraction formulas of
+    Table 15.3.6 (checked on the rendered page, printed p935)
+==============================================================================
+A smooth Blasius: target K_ref = 6.342
+  beta  = 0.3453, 0.3512, 0.3380, 0.3455
+  d_thr = 9.41, 9.49, 9.31, 9.41 mm
+  formula-to-formula spread = 0.181 mm (+1.9%)
+B Yue implied f: target K_ref = 2.241
+  beta  = 0.4838, 0.4965, 0.4703, 0.4839
+  d_thr = 11.14, 11.29, 10.98, 11.14 mm
+  formula-to-formula spread = 0.302 mm (+2.7%)
+
+  -> the four handbook formulas move the throat by <0.2 mm (2%), while the
+     f closure moves it by 1.74 mm (18.5%). The formula choice is a minor
+     term; the ROUGHNESS assumption is the design driver.
+
+==============================================================================
+[C] why K_R = 1 is a requirement of the similarity law, not a free target
+==============================================================================
+declared: L_R=0.5, d_R=0.616 -> A_R=0.379456, but L_R^2=0.2500
+          the model is geometrically DISTORTED (fat), and this has to be
+          declared, not hidden: it is exactly the case that makes the
+          'ideal ratio' a declaration rather than a formula.
+u_R = m_R/A_R = 0.707065  vs  sqrt(L_R) = 0.707107  (-0.006%)
+steady NC: u^3 = 2 g beta H Q /(K rho cp A)  =>  u_R^2 = H_R/K_R
+u_R = sqrt(L_R)  <=>  K_R = H_R/L_R = 1
+=> the valve must reproduce the PROTOTYPE K at the design point; 22.8 is
+   therefore a consequence, not a chosen target.
+
+==============================================================================
+[D] forward computation of the FoM on both sides
+==============================================================================
+D = u_M/u_M^ideal - 1 = (K_M/K_P)^(-1/3) - 1
+  u_M^ideal = model velocity if K_M were exactly K_P at the same Q_M.
+  eps_Q = 0 on both sides by construction, so this D is the pure loss-
+  ratio term. For Zhao it equals (1.088839)^(-1/3)-1 = the -2.79% branch,
+  NOT the +2.88% figure, which carries the eps_Q accounting. Do not mix.
+
+   m_P     Re_M     K_P   K_M(A)       D_A   K_M(B)       D_B
+  0.25     2422   24.50   28.231    -4.61%   23.530    +1.36%  <-- laminar, Blasius invalid
+  0.50     4843   24.20   25.666    -1.94%   23.265    +1.32%
+  0.75     7265   23.80   24.411    -0.84%   23.169    +0.90%
+  1.00     9687   23.30   23.494    -0.28%   23.002    +0.43%
+  1.25    12108   22.80   22.800    +0.00%   22.800    +0.00%
+
+usable range 0.50-1.25 kg/s (Re_M 4.8e3-1.2e4, inside Blasius 4e3-1e5):
+  |D|max = 1.94% (closure A) / 1.32% (closure B), as magnitudes
+  signs: A negative everywhere off-design, B positive everywhere.
+  0.25 row excluded: model Re 2422 is laminar, so a 5:1 power range
+  cannot be covered at this scale. The invalid point would read -4.6%.
+  closure B at 0.50 kg/s (Re 4843) is a 13% extrapolation below Yue's
+  lowest Re 5560 - flagged, and it is the row that sets dmax_B.
+
+log-log slope dlnK/dlnm : K_P -0.04468  K_M(A) -0.13275  K_M(B) -0.01957
+  mismatch A: -8.81%   B: +2.51%   (opposite signs)
+  -> level is absorbed by the valve; ONLY the slope survives. That is the
+     whole mechanism, and it explains why the two closures disagree in
+     sign rather than in magnitude.
+
+==============================================================================
+[E] perturbation at the design point
+==============================================================================
+D = (K_M/K_P)^(-1/3) - 1  =>  dD/dlnK_M = -1/3  (exact, not a linearisation)
+check K_M +1%: D = -0.3311%;  K_M -1%: D = +0.3356%
+3% criterion <=> K_M/K_P in [1.0957, 0.9151]
+  one-sided K budget: +9.57% (towards D<0) and -8.49% (towards D>0). Quote 9.6% as the design budget.
+
+at the design point every geometric input collapses onto the same number,
+because all of them act through K only:
+input                   declared   deltaK   deltaD
+d_M  inner diameter        +0.5%   +0.052   -0.08%
+L_M  pipe length          +10.0%   +1.036   -1.51%
+K_HS                      +20.0%   +0.520   -0.76%
+K_EV                      +50.0%   +1.250   -1.83%
+  note d_M and L_M enter through the same combination f*L/D: they are NOT
+  separable at the design point. Another instance of the rank deficiency.
+
+==============================================================================
+[F] the declared box must be split by STAGE, otherwise the number lies
+==============================================================================
+stage I  design, valve NOT yet trimmed, worst corner:
+         sum|dK| = 3.899 = +17.10% of K  ->  |D| = +5.70%
+         exceeds the 3% criterion: the un-trimmed state is not a facility
+         uncertainty, it is a procurement spec.
+stage II commissioning, valve trimmed, repeatability only:
+         +-0.20 in K (+0.88%)  ->  |D| <= +0.29%
+stage III operation, valve FIXED: only the curve distortion survives
+         |D| <= +1.94% over 0.5-1.25 kg/s
+
+==============================================================================
+[G] per-component reconstruction of K_HS = 2.6
+==============================================================================
+Re_HS = 4m/(P_wetted mu) = 9511  <-- matches Yue's 9520
+  (4m/(pi*Dh*mu) gives 22588, wrong: that formula only holds for a
+   full circular section. This is why the annulus Re has to use P_wetted.)
+f_HS = 0.04388 (Zhu annulus, but d2/d1=1.30 there vs 2.45 here)
+items: T-junction 1.29 + area change 0.64 + annulus friction 0.1907
+       + exit contraction 0.3610 = 2.4817
+table 2.600  ->  residual 0.1183 (+4.5% of K_HS)
+also: documented 'area change 0.64' vs Borda-Carnot expansion 0.5213
+      differ by 0.119 - the same order as the residual.
+  -> the two 0.12-scale gaps are the signature of the 'optimised
+     resistance coefficients' admitted in Yue section 5.2. The table is
+     reproducible to 5%, not to 0.5%: do not call it a component sum.
+
+==============================================================================
+[I] DECLARED INPUT DOMAIN (the object the paper's a-priori box is built on)
+==============================================================================
+symbol       nominal        declared       grade
+H_P          3.3119 m       3.28-3.35      L1c vs Xu L1: 1.1% apart, band=span
+d_P          26.0 mm        25.9-26.1      L1, Yue Table 1
+L_P          11.0 m         10.0-12.0      L2, author's conservative assumption
+K_EV         2.5            1.25-3.75      L2, 'experience of other loops' (estimate)
+K_HS         2.6            2.48-2.72      L1c, table value, 5% reconstruction gap
+tube finish  closure A/B    categorical    L2, must be a design spec
+T_op         573 K          no published range GAP: neither NEA edition states one
+m_P          0.25-1.25 kg/s range          L1, Yue Table 2 span
+
+  the only genuinely irreducible entries are 'tube finish' (categorical)
+  and 'T_op' (no published validity range). Everything else is a tolerance
+  on a drawing or a reproducibility statement.
+
+==============================================================================
+[H] writable / not writable
+==============================================================================
+WRITABLE  'K_R=1 at the design point follows from u_R=sqrt(L_R); the
+           throttling is sized to satisfy it, K_ref=6.34 for a
+           smooth tube and 2.24 for prototype-equivalent roughness.'
+WRITABLE  'Over 0.5-1.25 kg/s the residual curve distortion is <=
+           1.94% (smooth) or 1.32% (rough), OPPOSITE
+           signs; the design point itself is 0 by construction.'
+WRITABLE  'The 3% criterion is equivalent to a 9.6% budget on K.'
+WRITABLE  'The un-trimmed design-stage corner exceeds 3%, so trimming is
+           a precondition of the criterion, not a refinement.'
+NOT       'the new facility has 1.9% uncertainty' - it is a declared
+           design-stage distortion on a hypothetical tube finish.
+NOT       'K_HS=2.6 is a component sum' - it is 5% above its own sum.
+NOT       '9.41 / 11.14 mm is the throat size' - it is conditional on the
+           closure; the four contraction formulas add only 0.2 mm.
+NOT       'the Blasius closure is the conservative one' - it is the one
+           that drives D negative; neither closure bounds the other.
+
