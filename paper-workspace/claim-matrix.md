@@ -66,6 +66,13 @@
 | C-59 | 只比较数套中心物性公式所得的极小 FoM 差，不能证明手册 ±7% cp、±0.8% ρ 拟合误差在两温度间抵消 | 逻辑判定 / 强 | H15-P131/Table 2.19.3；[v15 反例](../outputs/physical-domain-v15-recheck-20261108.py) | 已核 | 若另声明完全共同乘性误差可抵消，但原文未给该相关结构；4.79% 为反例而非实物预报 |
 | C-60 | 16 份新原文补齐物性有效域和按构件建域的证据，仍缺同一成对设计的两侧净流道/阀位/局阻/热边界，不能给实物 δ 联合盒 | 跨文献综合 / 条件 | [v15 全文审查](../outputs/physical-domain-v15-review-20261108.md)、[输入台账](../outputs/physical-domain-v15-ledger-20261108.csv) | 已核 | 可交付条件方法与参数化界；不得把情景排序写成物理保证 |
 
+| C-61 | Yue 2017 Table 2 已给 KYLIN-II 单侧理论 K_total(m)；m=1.25 kg/s 点 K_HS=2.6、K_EV=2.5、K_pipe=17.7，总计 22.8 | 原文理论值 / 强 | Y17-P4/Table 2、§3.3；[v16 逐构件设计](../outputs/component-resistance-design-v16-20261108.md) | 已核 | 理论表不是实物不同阀位的已测 K；§5.2 称阻力经优化，CFD 还把阀换成直管 |
+| C-62 | Yue 式(3)和 NEA 式(15.1)把各段 fL/D 与形阻换算到统一参考动压，面积因子为 (A_ref/A_i)²；可据此设计新台架阻力 | 方程结构 / 强 | Y17-P3/式(3)、§3.2；H15-P931–936/第15章；[v16 复算](../outputs/component-resistance-design-v16-20261108.py) | 已核 | 必须仍提供新台架各段内径/净面积、长度、粗糙度、阀门状态和适用 Re |
+| C-63 | 使用 Yue 单侧 K_total=22.8 与 Xu FR26 比值，若模型圆管按光滑 Blasius、另三项 K 暂保持，可反解所需阀门参考 K≈6.339 | 显式情景 / 可复算 | Y17-P4/Table 2；X26-P4/Table 2；[v16 示范](../outputs/component-resistance-design-v16-20261108.md) | 设计示范 | 光滑管、K_HS/EV 不变、流道统一缩放均为假设；Re_HS 模型约 4142，不能宣称所有构件关联式已验证 |
+| C-64 | Yue 参考文献[21] Cho 等 2011 是 HELIOS 构件 K 的引用链；赵 2020 参考文献[5] 吴磊等 2016 是系统流动—阻力曲线的后续来源 | 书目关系 / 强 | Y17-P7/References [21]；Z20-P7/References [5]；H15-P929–940/第15章 | 已核书目 | Cho/Wu 原论文未在本轮 16 份中；目前只采用已读的 Yue 和 NEA 页中明确给出的数 |
+
+| C-65 | 同一 Yue 1.25 kg/s 理论目标下，两种明示的管段闭合要求不同节流件：光滑 Blasius 得参考 K≈6.339、条件窄段 ID≈9.41 mm；Yue 理论表内插值得 K≈2.228、ID≈11.15 mm | 构件级设计情景 / 可复算 | Y17-P4/Table 2；H15-P936/Tables 15.3.5–15.3.6；[v16 脚本](../outputs/component-resistance-design-v16-20261108.py)、[五点 CSV](../outputs/component-resistance-design-v16-curve-20261108.csv) | 条件初设 | 窄段需足够分离、补摩擦；短孔板须另用手册孔板公式；不能写成原设施阀口或已验证制造尺寸 |
+
 ## 缺口清单
 
 | 编号 | 对应论点 | 需要的原始证据 | 优先级 |

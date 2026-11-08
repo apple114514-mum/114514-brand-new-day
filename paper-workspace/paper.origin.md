@@ -8,6 +8,7 @@
 - 最近事务：TX-009
 - 参数原始表：[outputs/parameter-provenance-20261102.md](../outputs/parameter-provenance-20261102.md)
 - 当前物理域：[v15 全文证据审查](../outputs/physical-domain-v15-review-20261108.md)、[输入 CSV](../outputs/physical-domain-v15-ledger-20261108.csv)、[16 份原文哈希清单](../outputs/physical-domain-v15-sources-20261108.json)
+- 阻力设计基线：[v16 KYLIN 逐构件计算与阀门反解](../outputs/component-resistance-design-v16-20261108.md)
 
 ## source
 
@@ -53,6 +54,10 @@
 
 `C-51–C-60` 审查新增 16 份原文：NEA 2015 物性式的有效域与误差结构、圆管/环隙不同的 f(Re) 证据、HELIOS 构件损失的几何适用限制，以及赵 2020/2022 和 Xu FR26/NED 2025 的对象隔离。结论为有来源的条件域，成对局阻 δ 仍不能升为物理数值盒。见 [v15 审查及证据页](../outputs/physical-domain-v15-review-20261108.md)。
 
+`C-61–C-64` 更正“整体阻力无法设置”的过强结论：Yue Table 2 给 KYLIN 单侧理论 K_total(m) 基准；Yue 式(3)和 NEA 第15章给新装置逐构件求和公式。v16 在明确假设下反解单点阀门参考 K≈6.339；其值属于可设计动作，非现有实物测量或 δ 的认证盒。[v16 报告](../outputs/component-resistance-design-v16-20261108.md)
+
+`C-65` 将五个理论流量点用于两条摩擦闭合的条件设计比较；低 Re 外域点停用，高点阀门目标 2.228/6.339 可由 NEA 突缩+突扩初设式映射为不同窄段直径。仅为来源明确的设计起点，不是薄孔板或实体阀门的认证。[v16 曲线 CSV](../outputs/component-resistance-design-v16-curve-20261108.csv)
+
 ## constraints
 
 - 表中“直径”必须保留原文修饰语；不能把未说明的几何直径改写为流通内径。
@@ -71,7 +76,7 @@
 
 ## metrics
 
-- 当前 C-01–C-60 共 60 条；逐条状态和原文坐标见矩阵。新增手册物性/构件关联式来源；成对局阻、逐点阀位、独立热量与误差链仍缺。
+- 当前 C-01–C-65 共 65 条；逐条状态和原文坐标见矩阵。新增 KYLIN 理论阻力设计基线及条件节流尺寸；成对实物局阻、逐点阀位、独立热量与误差链仍缺。
 - 目标期刊格式门禁：未启动；当前不判投稿合格。
 
 ## transactions
