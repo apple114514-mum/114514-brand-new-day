@@ -1,0 +1,98 @@
+[
+  {
+    "key": "annular18",
+    "filename": "yzk.2018.youxian.0495.pdf",
+    "pages": 7,
+    "sha256": "60b6b2166ef905c0fb0cb491f150ea4c82380bc0836f6683b3bb694bca23232c"
+  },
+  {
+    "key": "liu23",
+    "filename": "1-s2.0-S0306454923002943-main.pdf",
+    "pages": 7,
+    "sha256": "1c743df0b18b116d9267f338d2521d362d9890a95477d4f3a7c112144724fdb3"
+  },
+  {
+    "key": "cheng23",
+    "filename": "自然循环特性曲线在降高度比例模化中的失真评价_程诚.pdf",
+    "pages": 8,
+    "sha256": "8914c705834e9f4f40909f3cf246d27b6e89b3d4883deab90acc2446675c0b7b"
+  },
+  {
+    "key": "tube20",
+    "filename": "1-s2.0-S1359431120333020-main.pdf",
+    "pages": 10,
+    "sha256": "b714b709062ae4b22bc1cbf4e457ef82a357f7603f43ac24ce1b3ec5f472e20d"
+  },
+  {
+    "key": "xu25",
+    "filename": "1-s2.0-S0029549325005230-main.pdf",
+    "pages": 12,
+    "sha256": "b3975232866231e84b1f0043a9d49423c1bbe55ba5cc025739616d3221a878d4"
+  },
+  {
+    "key": "wang25",
+    "filename": "1-s2.0-S0149197024005146-main.pdf",
+    "pages": 13,
+    "sha256": "8fb301a908e2d9df8d6c3ada668c2224c51a0bd988c6ab6263528e062bc9e791"
+  },
+  {
+    "key": "shi19",
+    "filename": "1-s2.0-S0149197019300605-main.pdf",
+    "pages": 8,
+    "sha256": "fbaf366c66e05234d2277c84c0196245e9cd0db65933dff187aa053dbfb140e9"
+  },
+  {
+    "key": "gsa24",
+    "filename": "海洋条件下非能动系统高效全局敏感性分析方法研究_张世琦.pdf",
+    "pages": 10,
+    "sha256": "aec9cae42207641d9ca559845ff5252056f9e5d29821e0529c7ed7802ca82c16"
+  },
+  {
+    "key": "zhao22",
+    "filename": "1-s2.0-S0306454922001311-main.pdf",
+    "pages": 10,
+    "sha256": "6de7a2fe2b2dc754c4538f7f4395492d1ebc124a99263821903bd7537f5250a0"
+  },
+  {
+    "key": "zhai22",
+    "filename": "自然循环铅基快堆一回路系统驱动力的关键影响因素研究.pdf",
+    "pages": 9,
+    "sha256": "32d71751c861ca10e2cb4cffc612e8a20c53c2021e913723bcf3d4b3659c593f"
+  },
+  {
+    "key": "chen15",
+    "filename": "小型自然循环铅冷快堆SNCLFR-100热工水力设计与安全分析研究_陈钊.pdf",
+    "pages": 154,
+    "sha256": "7e921f877358741c0d089860acb801385e2cd0306cabefbdce6d8b8fc7805632"
+  },
+  {
+    "key": "wang20",
+    "filename": "一回路腔室结构对自然循环铅基快堆堆芯流量分配特性影响研究_王天石.pdf",
+    "pages": 7,
+    "sha256": "645e622df07f2ba3ffc01b0c7541fd10d4ef41bb32d5cb511d51040fe1de6bac"
+  },
+  {
+    "key": "carnevali23",
+    "filename": "Carnevali2023_NURETH20_system-code-for-scaling_cea-04453707.pdf",
+    "pages": 15,
+    "sha256": "80adcb0793082446b89ce10ad006e4b01a80a96cafc3257857ed2a82aa322600"
+  },
+  {
+    "key": "carnevali26",
+    "filename": "Carnevali2026_CATHARE-scaling-tool_SBLOCA_cea-05404859.pdf",
+    "pages": 14,
+    "sha256": "6beece44dd2448e2e688b3859f9ef1661e73a596abb5661e1973b1cab1e59afc"
+  },
+  {
+    "key": "carnevali24",
+    "filename": "Carnevali2024_BEPU-Part1_guidelines_PIRT-scaling_cea-05279481.pdf",
+    "pages": 15,
+    "sha256": "39164400f5ce6b944f0070b42f93759fce871f71fae75b353de3f5f6ab6d0250"
+  },
+  {
+    "key": "nea15",
+    "filename": "OECD_NEA_2015_LBE_Handbook.pdf",
+    "pages": 950,
+    "sha256": "e4b02a77eff41762bfb6f1a22db4e38b77046c5da0adc445ff75280803d450e1"
+  }
+]

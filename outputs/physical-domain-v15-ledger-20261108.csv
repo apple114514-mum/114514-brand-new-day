@@ -1,0 +1,28 @@
+case,parameter,source_value_or_domain,unit,evidence_level,source_coordinate,model_role,transfer_condition_or_gap
+LBE,rho,"11065-1.293*T; 400<=T<=1300; estimated ±0.8%",kg/m3,L1,H15 PDF p131 Table 2.19.3,property,Temperature is K and errors have no stated P/M covariance
+LBE,cp,"164.8-0.0394*T+1.25e-5*T^2-4.56e5/T^2; 400<=T<=1100; estimated ±7%",J/kg/K,L1,H15 PDF p131 Table 2.19.3,property,Temperature is K and ratio error does not automatically cancel
+LBE,mu,"4.94e-4*exp(754.1/T); 400<=T<=1200; estimated ±8%",Pa*s,L1,H15 PDF p131 Table 2.19.3,property,Temperature is K
+LBE,thermal_conductivity,"3.284+0.01617*T-2.305e-6*T^2; 403<=T<=1100; estimated (15%)",W/m/K,L1,H15 PDF p131 Table 2.19.3,property,Temperature is K
+LBE,melting_point,"398 ±1",K,L1,H15 PDF p131 Table 2.19.3,phase_boundary,Not the minimum valid temperature for every correlation
+KYLIN,facility_temperature,"423.15 to 773.15",K,L1,Y17 PDF p2 Table 1,operating_domain,Facility envelope not each measured condition
+KYLIN,facility_pressure,"1 to 1.5",atm,L1,Y17 PDF p2 Table 1,operating_domain,Facility envelope not each measured condition
+KYLIN,pipe_inner_diameter,26,mm,L1,Y17 PDF p2 Table 1,geometry,Prototype side only
+KYLIN,heater_section_inner_diameter,54,mm,L1,Y17 PDF p2 Table 1,geometry,Prototype side only
+KYLIN,heater_rod_outer_diameter,22,mm,L1,Y17 PDF p2 Table 1,geometry,Prototype side only
+KYLIN,pipe_flow_area,0.000530929,m2,L1c,Y17 PDF p2 Table 1 plus circle formula,geometry,No wall intrusion assumed
+KYLIN,heater_annulus_area,0.001910088,m2,L1c,Y17 PDF p2 Table 1 plus concentric annulus formula,geometry,No spacer or bypass intrusion assumed
+KYLIN,heater_hydraulic_diameter,32,mm,L1c,Y17 PDF p2 Table 1 plus annulus formula,geometry,Concentric clean annulus only
+KYLIN,model_diameter_ratio_illustrative,0.616,1,L1,X26 FR26 PDF p4 Table 2,design_mapping,CFD standard scaling design not built facility
+KYLIN,model_length_ratio_illustrative,0.5,1,L1,X26 FR26 PDF p4 Table 2,design_mapping,Segment lengths not separately documented
+KYLIN,pipe_friction_candidate,"f=0.1581/Re^0.13; 38000<Re<185000",1,L2,T20 PDF p6 Eq 24 and p9 Eq 27,distributed_loss,20 and 35 mm circular tubes; check roughness and Re before transfer
+KYLIN,heater_annulus_friction_candidate,"f=0.685/Re^0.30; 5000<Re<35000",1,L4_for_KYLIN,A18 PDF p5 Eq 27 and p7 conclusion,distributed_loss,Experiment annulus ratio 1.30 while KYLIN ratio 2.45
+KYLIN,component_local_loss_k,"not established",1,missing,H15 PDF p932-940 Chapter 15 provides component formulas,form_loss,Need both-side component geometry and valve opening under common reference dynamic pressure
+KYLIN,heat_loss_US,"not established",W/K,missing,ZH22 PDF p2 identifies heat loss mechanism,thermal_boundary,Must not turn fitted or example US into sourced domain
+Zhao2020,circulation_height_P_M,"2 / 1",m,L1,Z20 PDF p5 Table 3,buoyancy_geometry,Height ratio is not friction path length ratio
+Zhao2020,unqualified_diameter_P_M,"1 / 0.5",m,L1,Z20 PDF p5 Table 3,geometry_label,Original label diameter does not establish hydraulic diameter
+Zhao2020,net_flow_area_P_M,"not established",m2,missing,Z20 PDF p5 Table 3 and W20 PDF p2 Table 2,geometry,Core pellet and pitch do not establish clad OD or net area
+Zhao2020,component_local_loss_k_P_M,"not established",1,missing,Z20 PDF p3 Eq 13 and p5-6 Tables 3-5,form_loss,One total-flow FoM cannot identify friction share and local-loss mismatch separately
+Zhao2022,facility_pipe_diameter,0.20,m,L1,Z22 PDF p6 Table 3,other_case_geometry,Separate design and CFD pair; never backfill Zhao 2020
+Water_Cheng2023,valve_opening_P_half_quarter,"100 / 19 / 13",percent,L1,C23 PDF p4 paragraph before section 2,analogy_only,Water apparatus illustrates importance of valve state and gives no LBE K
+HELIOS,benchmark_Re,"10000<Re<200000",1,L1,H15 PDF p940 Chapter 15.5,analogy_only,Source says recommendation limited to HELIOS forced-flow experiments
+HELIOS,grid_spacer_loss,"component correlation with blockage area and Re; not numerically transferred",1,L2_conditional,H15 PDF p935 Table 15.3.4,form_loss,HELIOS measured spacer losses disagreed with empirical relation

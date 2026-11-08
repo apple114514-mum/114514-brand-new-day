@@ -1,5 +1,7 @@
 # KYLIN-II 与赵鹏程 2020 成对模型：参数溯源表
 
+> **2026-11-08 来源补证：**本页是 11 月 2 日的历史快照，其中“Li/Yue 全文未取得”“物性适用下限未找到”等已不再是当前状态。新增 16 份原文及现有 Li/Yue 的逐项核验、NEA 2015 的物性有效域和构件阻力证据，统一以 [v15 物理参数域审查](physical-domain-v15-review-20261108.md)及其 [CSV 台账](physical-domain-v15-ledger-20261108.csv)为准。本页历史数据不覆写，便于追溯先前判断。
+
 **核查日期：2026-11-02。** 这是设计阶段失真模型的**输入台账**，不把论文中的设计值、CFD 值和实测值混写。按 `norman-paper-reading` 核读一手 PDF 的表格与原句，并用 `origin-paper-workspace` 将关键论点登记在 [claim-matrix.md](../paper-workspace/claim-matrix.md)。表中 PDF 页码从 1 开始；赵文同时给出刊页。
 
 ## 来源与口径
