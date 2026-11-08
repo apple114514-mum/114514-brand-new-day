@@ -5,12 +5,13 @@
 - 创建：2026-11-02
 - 题目（暂定）：铅铋自然循环缩比失真的设计阶段条件界
 - 目标期刊：未定
-- 最近事务：TX-012
+- 最近事务：TX-013
 - 参数原始表：[outputs/parameter-provenance-20261102.md](../outputs/parameter-provenance-20261102.md)
 - 当前物理域：[v15 全文证据审查](../outputs/physical-domain-v15-review-20261108.md)、[输入 CSV](../outputs/physical-domain-v15-ledger-20261108.csv)、[16 份原文哈希清单](../outputs/physical-domain-v15-sources-20261108.json)
 - 阻力设计基线：[v16 KYLIN 逐构件计算与阀门反解](../outputs/component-resistance-design-v16-20261108.md)
 - 当前方法定位：[导师批注与先验条件界](../outputs/prior-distortion-method-position-20261108.md)
 - 当前设计复核：[v17 独立审计与联立前向修正](../outputs/design-v17-independent-review-20261108.md)
+- 当前条件包络复核：[v18 配平、可行阀门域与 GSA 对象审计](../outputs/design-v18-independent-review-20261108.md)
 
 ## source
 
@@ -80,10 +81,12 @@
 
 ## metrics
 
-- 当前 C-01–C-70 共 70 条；逐条状态和原文坐标见矩阵。v17 节流设计点通过复算，曲线输出改为内生 Re 联立的条件点值；连续域阻力闭合与物理输入域仍待指定。
+- 当前 C-01–C-77 共 77 条；逐条状态和原文坐标见矩阵。v18 加热段 Re 联立、阶段Ⅰ A 支角点界可保留；阶段Ⅲ配平只在同 Re 律时严格消去常数阻力，B 支输入盒含负阀门阻力，单点 GSA 与连续曲线界须分开。
 - 目标期刊格式门禁：未启动；当前不判投稿合格。
 
 ## transactions
+
+`TX-013 | 2026-11-08 | v18 条件包络与 GSA 审计 | U18-S 日志、CSV 复现；解析阀门配平交互与 Φ 内生弹性；复核阶段Ⅰ角点，发现 B 支负阀门阻力、A 支 Φ±1% 可行角点超过随机最大值；C-71–C-77 更新 | type=conditional-envelope-and-gsa-audit`
 
 `TX-012 | 2026-11-08 | v17 条件初设审计 | U17-S 的阀门解复算；五行内生流量根替代冻结 Re；更正三阶段盒、摄动导数、加热段 Re 适用域和 K_HS 残差归因；C-66–C-70 更新 | type=forward-model-audit`
 

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>联立前向、三处闭合与条件包络（2026-11-08 第十八轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13px}
+td.v{text-align:left;font-family:"Cascadia Mono","Consolas",monospace;font-size:12.5px;line-height:1.65}
+td.v b{font-family:"Songti SC","SimSun",serif}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+td.v .gk,td.num .gk,code .gk,th .gk{font-family:"Cambria Math","Cambria",
+    "Times New Roman","Segoe UI Symbol",serif!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>联立前向、三处闭合与条件包络：热量口径成了唯一的短板</h1>
+<div class="sub">2026-11-08 · 第十八轮 · 9 节 / 10 表 · 脚本 <code>design_v18.py</code>（262 行日志，<code>%%</code> 残留 0 处）<br>
+接续独立复核 <code>7c8f5b4</code>（<code>design-v17-independent-review</code>）与本轮 <code>design_v18.py</code><br>
+三条更正全部复算通过；三处挂空项（加热段低 Re、阀门 <span class="gk">K</span><sub>v</sub>(Re)、热量口径）逐条闭合；最后得到的不是更小的数，而是<strong>不确定度该记在谁头上</strong>的结论</div>
+
+<div class="box warn">
+<strong>先说我错的两处。</strong>你三条更正都成立，其中两条是我的硬错误：<br>
+① <code>5.70%</code> 是线性估计，同一个集总扰动精确映射是 <strong>−5.13% / +6.45%</strong>；<br>
+② <code>4:1 功率范围</code> 是算错的——<code>1.25/0.50 = 2.5</code>，而且 FoM 是流量不是功率，应为 <strong>2.5:1 流量区间</strong>；<br>
+③ 固定流量代入确实是近似，联立后 0.50 kg/s 为 <strong>−2.03% / +1.33%</strong>（在 v17 的模型设定下），我复算到 <code>−2.0270 / +1.3271</code>，与你的 CSV 逐位一致。<br>
+另外你顺带挑出的两处也改了：脚本里 3% 端点上下界打印颠倒；「长度与直径不可分辨」不成立（灵敏度是 1 与 <code>n−1</code>，不是相等）。
+</div>
+
+<h2>一、三条更正：逐条复算</h2>
+
+<h3>1.1 联立与冻结（v17 原设定，K<sub>HS</sub> 沿用原型表行）</h3>
+<p>求解 <span class="gk">x</span><sup>3</sup><span class="gk">K</span><sub>M</sub>(<span class="gk">x m</span><sub>0</sub>)/<span class="gk">K</span><sub>P</sub> = 1，<span class="gk">D</span> = <span class="gk">x</span> − 1。冻结版是把 <span class="gk">K</span><sub>M</sub> 在理想流量处代入。</p>
+
+<table>
+<tr><th class="num">m<sub>P</sub> kg/s</th><th class="num">Re<sub>M</sub></th><th class="num">A 冻结</th><th class="num">A 联立</th><th class="num">B 冻结</th><th class="num">B 联立</th></tr>
+<tr><td class="num">0.25</td><td class="num">2422</td><td class="num">−4.61%</td><td class="num"><b>−4.83%</b></td><td class="num">+1.36%</td><td class="num"><b>+1.36%</b></td></tr>
+<tr><td class="num">0.50</td><td class="num">4843</td><td class="num">−1.94%</td><td class="num"><b>−2.03%</b></td><td class="num">+1.32%</td><td class="num"><b>+1.33%</b></td></tr>
+<tr><td class="num">0.75</td><td class="num">7265</td><td class="num">−0.84%</td><td class="num"><b>−0.88%</b></td><td class="num">+0.90%</td><td class="num"><b>+0.90%</b></td></tr>
+<tr><td class="num">1.00</td><td class="num">9687</td><td class="num">−0.28%</td><td class="num"><b>−0.29%</b></td><td class="num">+0.43%</td><td class="num"><b>+0.43%</b></td></tr>
+<tr><td class="num">1.25</td><td class="num">12108</td><td class="num">0</td><td class="num"><b>0</b></td><td class="num">0</td><td class="num"><b>0</b></td></tr>
+</table>
+
+<p>冻结一律低估绝对值，因为偏离设计点后 <span class="gk">K</span><sub>M</sub> 实际随流量上升，而冻结把它按理想流量算成常数。差值在 0.50 kg/s 处 0.08 pp。此后全部改用联立。</p>
+
+<h3>1.2 线性与精确</h3>
+<pre><code>dK = 3.899  (17.10% of K=22.8)
+linear : +5.70%          ← v17 的那个数
+exact  : -5.13% / +6.45%</code></pre>
+<p>5.70% 既不是这台架的角点，也不是任何意义的上界。而且那个盒子本身自相矛盾：算术里用 <span class="gk">K</span><sub>HS</sub> ±20%，表里写 2.48–2.72（±4.6%）；算术里用 <span class="gk">L</span> ±20%，表里声明的是 10–12 m（±9.1%）。§七 换成对齐的盒子重算。</p>
+
+<h3>1.3 流态：主管可算不等于全回路可算</h3>
+<p>模型加热段环隙 <code>Re = 4q_m/[π(d_o+d_i)·d_R·<span class="gk">μ</span>]</code>，原型 54/22 mm、<span class="gk">d</span><sub>R</sub> = 0.616：</p>
+<pre><code>m_P   0.25  0.50  0.75  1.00  1.25
+Re     828  1657  2485  3314  4142</code></pre>
+<p>整条区间都在过渡区。朱锋杰 2019 的环隙式要求 <code>Re&gt;5000</code> 且 <code>d₂/d₁=1.30</code>；这台架 <code>d₂/d₁=2.45</code>。<strong>没有任何已发表关联式覆盖它</strong>——这不是「待补文献」，是「文献里没有」。</p>
+
+<h2>二、导数：把 −1/3 改回 (−(1+D)/3)</h2>
+<p><span class="gk">D</span> = <span class="gk">R</span><sup>−1/3</sup> − 1 作为 <span class="gk">R</span> = <span class="gk">K</span><sub>M</sub>/<span class="gk">K</span><sub>P</sub> 的函数是精确的；但它的导数</p>
+<pre><code>dD/dlnR = -(1+D)/3      仅在 D=0 处等于 -1/3
+D = 0    -> -0.33333
+D = -2%  -> -0.32667
+D = +2%  -> -0.34000</code></pre>
+<p>更关键的是：如果整体乘性地缩放 <span class="gk">K</span><sub>M</sub> 并重新解流量，正确的弹性是</p>
+<pre><code>dlnx/dlna = -1/(3+s),  s = dlnK_M/dlnm
+closure A: s = -0.113574  ->  -0.346449
+closure B: s = -0.035089  ->  -0.337278</code></pre>
+<p>两个都在 −0.34 附近，离 −1/3 有 2–4%。这正是「把 <span class="gk">K</span> 预算换算成 <span class="gk">D</span> 预算」时必须用的系数。</p>
+
+<table>
+<tr><th>命题</th><th>结论</th><th>状态</th></tr>
+<tr><td class="v">dD/dlnK<sub>M</sub> = −1/3「精确，不是线性化」</td><td class="v">只在 D=0 成立；通式 −(1+D)/3</td><td><span class="tag t-no">撤回</span></td></tr>
+<tr><td class="v">长度与直径「设计点不可分辨」</td><td class="v">∂lnK<sub>f</sub>/∂lnL = 1，∂lnK<sub>f</sub>/∂lnd = n−1 = −0.75</td><td><span class="tag t-no">撤回</span></td></tr>
+<tr><td class="v">3% 判据 ⇔ K 预算 9.6%</td><td class="v">K<sub>M</sub>/K<sub>P</sub> ∈ [0.915141659, 1.095682682]，上 +9.57% / 下 −8.49%</td><td><span class="tag t-ok">成立</span></td></tr>
+<tr><td class="v">脚本打印端点顺序</td><td class="v">v17 打反了，散文是对的</td><td><span class="tag t-mid">已修</span></td></tr>
+</table>
+
+<h2>三、闭合一：加热段低 Re</h2>
+<p>环隙层流有闭式解，不必查表：</p>
+<pre><code>alpha = d_i/d_o = 0.40741
+f*Re = 64(1-alpha)^2 / [1+alpha^2-(1-alpha^2)/ln(1/alpha)] = 94.762
+     (a->0 给 64、a->1 给 96，两个极限都对，所以这个式子可用)</code></pre>
+<p>于是三段声明闭合：层流 <code>f=94.762/Re</code>；过渡 2300–5000 在双对数上连线；湍流用朱锋杰式。<strong>过渡段没有出处，这是声明，不是引用。</strong></p>
+
+<table>
+<tr><th class="num">m<sub>P</sub></th><th class="num">Re<sub>HS,M</sub></th><th class="num">f<sub>HS</sub></th><th>流态</th><th class="num">K<sub>fric</sub></th><th class="num">K<sub>HS,M</sub></th><th class="num">原型表值</th></tr>
+<tr><td class="num">0.25</td><td class="num">828</td><td class="num">0.1144</td><td>层流</td><td class="num">0.4035</td><td class="num">2.6945</td><td class="num">2.90</td></tr>
+<tr><td class="num">0.50</td><td class="num">1657</td><td class="num">0.0572</td><td>层流</td><td class="num">0.2017</td><td class="num">2.4928</td><td class="num">2.80</td></tr>
+<tr><td class="num">0.75</td><td class="num">2485</td><td class="num">0.0423</td><td>过渡</td><td class="num">0.1491</td><td class="num">2.4401</td><td class="num">2.80</td></tr>
+<tr><td class="num">1.00</td><td class="num">3314</td><td class="num">0.0465</td><td>过渡</td><td class="num">0.1639</td><td class="num">2.4549</td><td class="num">2.70</td></tr>
+<tr><td class="num">1.25</td><td class="num">4142</td><td class="num">0.0500</td><td>过渡</td><td class="num">0.1764</td><td class="num">2.4674</td><td class="num">2.60</td></tr>
+</table>
+
+<div class="box">
+<strong>这里有个比数值更重要的区分。</strong>v17 让模型直接抄原型表的那一行（0.50 kg/s 时 <span class="gk">K</span><sub>HS</sub> = 2.8），等于把<em>原型的 Re 趋势</em>搬进了模型。模型自己的 Re 只有原型的 0.44 倍，两者的 <span class="gk">K</span><sub>HS</sub> 本来就该不同——<strong>这个差本身就是失真的一部分，抄表就把它藏起来了</strong>。换成模型自己的 Re，设计点 <span class="gk">K</span><sub>HS</sub> = 2.4674（不是 2.6），阀门从 6.342 重新配到 6.475，0.50 kg/s 的 <span class="gk">D</span> 从 −2.03% 移到 −1.80%。<strong>0.23 pp，是本轮最大的一处更正，比联立/冻结的 0.08 pp 大得多。</strong>
+</div>
+
+<p>但要说清楚代价有多大：环隙摩擦相对于主管动压被 <code>(A_pipe/A_HS)^2 = 0.0773</code> 缩了 13 倍，所以整条区间 <span class="gk">K</span><sub>HS</sub> 只动 0.026（22.8 的 0.11%），<span class="gk">D</span> 只动约 0.04 pp。<strong>对流量 FoM 是小事；对热工 FoM（Nu、壁温）不是</strong>——后者这一轮没有界。这是第三次出现「局部换热失真对流量 FoM 不可见」（前两次：Wang 2025、赵案的 <span class="gk">ε</span><sub>Q</sub>）。</p>
+
+<h2>四、闭合二：阀门 K<sub>v</sub>(Re)</h2>
+<p>喉部 9.41 mm，<code>Re_throat = 4q_m/(π d_thr <span class="gk">μ</span>)</code>：1.25 kg/s 时 <strong>20606</strong>，0.50 kg/s 时 <strong>8242</strong>。全程湍流，所以「<span class="gk">K</span><sub>v</sub> 为常数」在适用域内可以辩护，域外必须用厂家曲线。但它的斜率值多少钱？设 <span class="gk">K</span><sub>v</sub> ∝ Re<sup>−m<sub>v</sub></sup>：</p>
+
+<table>
+<tr><th class="num">m<sub>v</sub></th><th class="num">K<sub>v</sub>(0.5)/K<sub>v</sub>(1.25)</th><th class="num">D<sub>A</sub>(0.50)</th><th class="num">D<sub>B</sub>(0.50)</th></tr>
+<tr><td class="num">0</td><td class="num">1.0000</td><td class="num">−1.80%</td><td class="num">+1.59%</td></tr>
+<tr><td class="num">0.05</td><td class="num">1.0469</td><td class="num">−2.21%</td><td class="num">+1.43%</td></tr>
+<tr><td class="num">0.10</td><td class="num">1.0960</td><td class="num">−2.64%</td><td class="num">+1.26%</td></tr>
+<tr><td class="num">0.20</td><td class="num">1.2011</td><td class="num">−3.56%</td><td class="num">+0.90%</td></tr>
+</table>
+
+<p><code>m_v = 0.10</code> 就让 A 支从 −1.80% 走到 −2.64%，<strong>0.84 pp，等于整条曲线失真的一半</strong>。<span class="gk">K</span><sub>v</sub> 占总 K 的 28%（6.475/22.8），所以它的 Re 指数不能当零。结论：常数阀是一条<strong>有价的声明</strong>，不是无害简化；采购文件里要写「<span class="gk">K</span><sub>v</sub>(开度, Re) 曲线」而不是「<span class="gk">K</span><sub>v</sub> = 6.5」。</p>
+
+<h2>五、闭合三：热量口径只剩一个因子</h2>
+<p>动量与能量联立：<span class="gk">K</span><span class="gk">ρ</span><span class="gk">u</span><sup>2</sup>/2 = <span class="gk">ρ g β H ΔT</span>，<span class="gk">Q</span> = <span class="gk">ρ u A c</span><sub>p</sub><span class="gk">ΔT</span>，得</p>
+<pre><code>u^3 = 2 g beta H Q /(K rho cp A)
+取比、并令 u_R^ideal = sqrt(L_R):
+  (u_R/u_R^ideal)^3 = PHI / K_R ,   D = (PHI/K_R)^(1/3) - 1
+  PHI = [H_R Q_R /(A_R L_R^1.5)] * [beta_R /(rho_R cp_R)]</code></pre>
+
+<p>所有热量问题——功率口径、<span class="gk">ΔT</span> 口径、热损、物性参考温度——<strong>全部收进一个乘性因子 <span class="gk">Φ</span></strong>，且 <code>dD/dln<span class="gk">Φ</span> = 1/3</code>。</p>
+
+<table>
+<tr><th>约定</th><th class="num"><span class="gk">Φ</span></th><th>含义</th></tr>
+<tr><td class="v"><span class="gk">Φ</span> = 1（设计约定）</td><td class="num">1.0000</td><td class="v">Q_R = 0.268316 = m_R，即 <span class="gk">Δ</span>T_R=1 且物性比为 1</td></tr>
+<tr><td class="v">模型温度低 100 K（473 vs 573 K）</td><td class="num">0.96225</td><td class="v"><span class="gk">β</span>×0.9876、<span class="gk">ρ</span>×1.0125、c<sub>p</sub>×1.0137 ⇒ D 移 <b>−1.27 pp</b>（占 3% 预算的 42%）</td></tr>
+<tr><td class="v"><span class="gk">Φ</span> 误差 1%</td><td class="num">—</td><td class="v">D 移 0.33 pp</td></tr>
+<tr><td class="v">热量单独吃满 3%</td><td class="num">±9.27%</td><td class="v"><span class="gk">Φ</span> 预算 = (1±3%)<sup>3</sup></td></tr>
+</table>
+
+<p>两个推论。① <span class="gk">Φ</span> = 1 要求 <span class="gk">Q</span><sub>M</sub> = 0.2683 <span class="gk">Q</span><sub>P</sub>(<span class="gk">q</span><sub>m</sub>) <strong>逐点跟随流量</strong>；恒功率加热器直接破坏它。② 模型若不在同一温度运行，<span class="gk">β</span>、<span class="gk">ρ</span>、<span class="gk">c</span><sub>p</sub> 三个比值的乘积就进 <span class="gk">Φ</span>——100 K 是 1.27 pp，300 K 就吃掉整个预算。</p>
+
+<h2>六、连续曲线求界：不用再靠五个点</h2>
+<p><span class="gk">D</span>(<span class="gk">m</span>) 对每个 <span class="gk">m</span> 都有定义（解 <span class="gk">x</span><sup>3</sup><span class="gk">K</span><sub>M</sub>(<span class="gk">x s m</span>)/<span class="gk">K</span><sub>P</sub>(<span class="gk">m</span>) = 1），<span class="gk">K</span><sub>P</sub>(<span class="gk">m</span>) 在 Yue 五行上做双对数插值（<strong>声明</strong>）。600 点扫描：</p>
+
+<table>
+<tr><th>闭合</th><th class="num">D(0.50)</th><th class="num">D(1.25)</th><th>单调</th><th class="num">sup|D|</th><th class="num">距 3%</th></tr>
+<tr><td class="v">A 光滑 Blasius</td><td class="num">−1.80%</td><td class="num">0</td><td>是</td><td class="num"><b>1.80%</b></td><td class="num">1.20 pp</td></tr>
+<tr><td class="v">B Yue 反算 f</td><td class="num">+1.59%</td><td class="num">0</td><td>是</td><td class="num"><b>1.59%</b></td><td class="num">1.41 pp</td></tr>
+</table>
+
+<div class="box ok">
+单调性比数值更重要：<span class="gk">D</span> 在区间内<strong>单调</strong>，所以上确界就在端点取值，不需要分支定界。这让「条件上界」从「五个采样点里最大」升级成「连续区间上的 sup」——虽然它仍然只对这两个声明的 <span class="gk">f</span> 闭合成立，也仍然依赖五行之间的插值方式。
+</div>
+
+<h2>七、阶段盒：Ⅰ 的精确角点，Ⅲ 的静态全消</h2>
+
+<h3>7.1 阶段Ⅰ（未配平）：16 个角点精确解</h3>
+<p>盒子改成与声明表一致：<span class="gk">K</span><sub>EV</sub> ±50%、<span class="gk">K</span><sub>HS</sub> ±0.06、<span class="gk">L</span><sub>P</sub> 10–12 m、<span class="gk">d</span><sub>M</sub> ±0.5%。逐角点解流量，<strong>不线性叠加</strong>：</p>
+<pre><code>exact envelope over 16 corners:  -3.27%  ...  +3.73%
+v17 quoted                       :  +5.70%   (one-sided, linear)
+same lumped dK evaluated exactly :  -5.13% / +6.45%   (你给的数)</code></pre>
+<p>两侧仍然都超 3%，所以「<strong>配平是判据成立的前提</strong>」这条结论不变，只是幅度从 5.70% 改到 −3.27/+3.73%。</p>
+
+<h3>7.2 阶段Ⅲ（已配平）：静态误差恒等抵消</h3>
+<div class="box warn">
+<strong>这是本轮最反直觉、也最该写进论文的一条。</strong>配平把阀门定在设计点使 <span class="gk">K</span><sub>M</sub>(1.25) = 22.8。此后任何一个<strong>不随流量变</strong>的误差都会恒等抵消：若 <span class="gk">K</span><sub>EV</sub> 实际是 3.75、阀门小 1.25，两者在任何流量下的和都不变。所以<strong><span class="gk">K</span><sub>EV</sub> 的 ±50% 在配平后对 <span class="gk">D</span> 的影响严格为零</strong>——GSA 给出 ST = 0.003，与解析预期一致。
+</div>
+
+<p>活下来的只有「随 Re 变」的那部分：</p>
+<table>
+<tr><th>输入</th><th class="num">A: S1</th><th class="num">A: ST</th><th class="num">B: S1</th><th class="num">B: ST</th><th>为什么活着</th></tr>
+<tr><td class="v"><span class="gk">Φ</span>（热量）</td><td class="num">0.935</td><td class="num"><b>0.939</b></td><td class="num">1.005</td><td class="num"><b>1.012</b></td><td class="v">在热侧，配平管不到</td></tr>
+<tr><td class="v">阀门斜率 m<sub>v</sub></td><td class="num">0.055</td><td class="num">0.057</td><td class="num">0.006</td><td class="num">0.011</td><td class="v">随 Re 变</td></tr>
+<tr><td class="v">L<sub>M</sub></td><td class="num">0.023</td><td class="num">0.023</td><td class="num">0.001</td><td class="num">0.002</td><td class="v">只通过 f·L/d 的 Re 依赖</td></tr>
+<tr><td class="v">K<sub>EV</sub> ±50%</td><td class="num">0.002</td><td class="num">0.003</td><td class="num">0.002</td><td class="num">0.003</td><td class="v"><b>恒等抵消</b></td></tr>
+<tr><td class="v">d<sub>M</sub> ±0.5%</td><td class="num">0.000</td><td class="num">0.000</td><td class="num">0.000</td><td class="num">0.000</td><td class="v">同上，且量级本就小</td></tr>
+<tr><td class="v">K<sub>HS</sub> 摩擦带 ×[0.7,1.3]</td><td class="num">0.000</td><td class="num">0.000</td><td class="num">0.000</td><td class="num">0.000</td><td class="v">配平同乘，两端同消</td></tr>
+</table>
+<p class="small">S1 在 B 支读到 1.005 是有限样本噪声（一个输入占 97% 方差时的典型伪影），读作「<span class="gk">Φ</span> 独占了全部」即可。分层做 GSA，两种闭合从不混在一个指数里；分类量「管壁状态」不进指数，它整体平移水平约 3.4 pp（−1.80% vs +1.59%），比任何连续输入都大——那是一条<strong>声明</strong>，不是一个<strong>不确定度</strong>。</p>
+
+<h2>八、条件包络汇总</h2>
+
+<table>
+<tr><th>层级</th><th class="num">A 支</th><th class="num">B 支</th><th>说明</th></tr>
+<tr><td class="v">曲线失真（其余名义）</td><td class="num">1.80%</td><td class="num">1.59%</td><td class="v">连续 sup，端点取到，单调</td></tr>
+<tr><td class="v">＋ 阀门斜率 m<sub>v</sub>=0.05</td><td class="num">−2.21%</td><td class="num">+1.43%</td><td class="v">见 §四</td></tr>
+<tr><td class="v">＋ <span class="gk">Φ</span> ±5%（声明）</td><td class="num">max 4.68%</td><td class="num">max 3.27%</td><td class="v">5000 次声明盒抽样</td></tr>
+<tr><td class="v">＋ <span class="gk">Φ</span> ±1%（有计量）</td><td class="num">max 3.29%</td><td class="num">max 1.94%</td><td class="v">同一采样器，只改 <span class="gk">Φ</span></td></tr>
+<tr><td class="v">阶段Ⅰ（未配平）</td><td class="num">−3.27%</td><td class="num">+3.73%</td><td class="v">精确角点，非叠加</td></tr>
+</table>
+
+<div class="box">
+<strong>这张表把不确定度重新分配了。</strong>文献值（<span class="gk">K</span><sub>HS</sub>、<span class="gk">K</span><sub>EV</sub>、<span class="gk">K</span><sub>pipe</sub>）在配平后几乎全部被吸收；真正决定能不能写「≤3%」的是<strong>热量口径</strong>——而它恰恰是整张表里唯一没有任何文献出处的一项。这不支持「再找几篇文献」，支持「把加热功率与流量做成计量项」。
+</div>
+
+<h2>九、可写与不可写</h2>
+
+<table>
+<tr><th>可写</th><th>出处</th></tr>
+<tr><td class="v">联立求解把 0.50 kg/s 从 −1.94% 移到 −2.03%（A），+1.32% → +1.33%（B）</td><td class="v">§1.1，与复核 CSV 逐位一致</td></tr>
+<tr><td class="v">模型加热段 Re 828–4142（过渡区），无已发表关联式覆盖 d₂/d₁=2.45；对流量 FoM ≤0.05 pp，对热工 FoM 无界</td><td class="v">§三，层流闭式解 94.762</td></tr>
+<tr><td class="v">热量口径以 <span class="gk">Φ</span><sup>1/3</sup> 进入；100 K 温差 = 1.27 pp = 3% 预算的 42%</td><td class="v">§五</td></tr>
+<tr><td class="v">配平后静态误差恒等抵消，K<sub>EV</sub> ±50% 影响为零（ST≈0.003）</td><td class="v">§7.2</td></tr>
+<tr><td class="v">3% ⇔ K<sub>M</sub>/K<sub>P</sub> ∈ [+9.57%, −8.49%]，dD/dlnR = −(1+D)/3</td><td class="v">§二</td></tr>
+<tr><td class="v">未配平角点 −3.27%…+3.73%，故配平是判据前提</td><td class="v">§7.1</td></tr>
+</table>
+
+<table>
+<tr><th>不可写</th><th>原因</th></tr>
+<tr><td class="v">「−1/3 导数精确」</td><td class="v">只有设计点值精确</td></tr>
+<tr><td class="v">「长度与直径不可分辨」</td><td class="v">灵敏度 1 与 n−1，不同</td></tr>
+<tr><td class="v">「面积项 0.64 是 Borda-Carnot 加残差」</td><td class="v"><b>符号相反</b>：换成 Borda-Carnot 反而把合计降到 2.363、残差升到 0.237</td></tr>
+<tr><td class="v">「4:1 功率范围」</td><td class="v">2.5:1，且 FoM 是流量</td></tr>
+<tr><td class="v">「5.70%」</td><td class="v">线性估计，精确为 −3.27/+3.73</td></tr>
+<tr><td class="v">「整条曲线已认证」</td><td class="v">五行的插值方式与过渡段闭合都是声明</td></tr>
+</table>
+
+<div class="box warn">
+<strong>最小且不自欺的正文句（可按你的版本替换）：</strong><br>
+「在 Yue 理论阻力表与所声明的模型管段闭合下，节流设计使 1.25 kg/s 设计点总阻力比为 1；固定该节流值、联立流量并以模型自身 Re 计算加热段阻力后，0.50–1.25 kg/s（2.5:1）区间内的纯损失项偏差为 <strong>A：0 至 −1.80%、B：0 至 +1.59%</strong>，连续单调，故上确界在端点取到。若改用『加热段两测等价』的声明，对应值为 −2.03% / +1.33%。两者之差 0.23 pp 来自加热段 Re 不同，应作为声明列出。这些数不是连续流量域的认证最大值：加热段位于过渡区、阀门 K<sub>v</sub>(Re) 未知、热量口径未经计量。」
+</div>
+
+<h2>附：本轮撤回与新增</h2>
+<ul>
+<li><span class="tag t-no">撤回</span>「61% 超量摩擦」的孪生说法——「面积项 0.64 与 Borda-Carnot 差 0.119 恰好解释残差」。差别存在，但方向相反：代入 Borda-Carnot 使合计 2.4817 → 2.3630，残差 0.118 → 0.237。0.64 到底怎么来的，<strong>仍未定位</strong>。</li>
+<li><span class="tag t-no">撤回</span>「长度与直径在设计点不可分辨」与「−1/3 精确」。</li>
+<li><span class="tag t-ok">新增</span>环隙层流闭式 <code>f·Re = 94.762</code>（<span class="gk">α</span> = 0.40741），补齐 2300 &lt; Re &lt; 5000 的过渡声明。</li>
+<li><span class="tag t-ok">新增</span><span class="gk">Φ</span> 因子与 9.27% 的热量预算；100 K 温差的定量代价。</li>
+<li><span class="tag t-ok">新增</span>「配平吸收静态误差」的解析论证 + 数值验证（ST≈0.003）。</li>
+<li><span class="tag t-mid">仍开放</span>赵 2020 表 3「直径 1/0.5 m」的含义（决定 <span class="gk">A</span><sub>R</sub> 取 4 还是 17）；<span class="gk">K</span><sub>EV</sub> = 2.5 与 <span class="gk">L</span> = 11 m 的来路；SNCLFR-10 包壳外径实测值。</li>
+</ul>
+
+<p class="small">脚本 <code>比例失真_计算/design_v18.py</code>（262 行日志，<code>[A]</code>–<code>[J]</code> 十段）；逐点表 <code>design_v18_points.csv</code>（两种加热段声明 × 联立/冻结 × 两闭合，共 10 列）；溯源表 §16 已追加。</p>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,262 @@
+==============================================================================
+[A] the three review corrections, recomputed on the v17 settings
+==============================================================================
+A1  v17 reused the prototype K_HS row in the model at a different Re.
+    The model heating annulus Re is NOT 9511:
+      m_P=0.25  Re_HS_M = 4m/(pi*(do+di)*d_R*mu) =   828.5
+      m_P=0.50  Re_HS_M = 4m/(pi*(do+di)*d_R*mu) =  1656.9
+      m_P=0.75  Re_HS_M = 4m/(pi*(do+di)*d_R*mu) =  2485.4
+      m_P=1.00  Re_HS_M = 4m/(pi*(do+di)*d_R*mu) =  3313.9
+      m_P=1.25  Re_HS_M = 4m/(pi*(do+di)*d_R*mu) =  4142.4
+    -> 828 ... 4142. Zhu's annulus fit needs Re>5000 at d2/d1=1.30; this
+    annulus is d2/d1=2.45 at Re 0.8k-4.1k: no published fit covers it.
+
+A2  valve reference K (both reproduce v16/v17): A=6.3421  B=2.2405
+
+A3  frozen-flow substitution vs coupled solve  x^3 K_M(x m0)/K_P = 1
+      m_P    Re_M   A frozen  A coupled   B frozen  B coupled
+     0.25    2422     -4.61%     -4.83%     +1.36%     +1.36%
+     0.50    4843     -1.94%     -2.03%     +1.32%     +1.33%
+     0.75    7265     -0.84%     -0.88%     +0.90%     +0.90%
+     1.00    9687     -0.28%     -0.29%     +0.43%     +0.43%
+     1.25   12108     +0.00%     +0.00%     +0.00%     +0.00%
+    -> 0.50 kg/s: -2.03% / +1.33% coupled vs -1.94% / +1.32% frozen.
+       Adopt coupled; the frozen version understates the A-side distortion.
+
+A4  5.70% is a LINEAR estimate. Same lumped perturbation evaluated exactly:
+      dK = 3.899  (+17.10% of K)
+      linear   : +5.70%
+      exact    : -5.13% / +6.45%
+    -> 5.70% must not appear as a bound. The box was also inconsistent:
+       K_HS +-20% in the arithmetic but 2.48-2.72 in the table, L +-20%
+       but L_P declared 10-12 m. Rebuilt in [G].
+
+A5  range label: 1.25/0.50 = 2.50. v17 wrote '4:1 power range' - wrong
+    arithmetic, and the FoM is flow not power. Declared span 2.5:1.
+
+==============================================================================
+[B] derivatives: what is exact, what is not
+==============================================================================
+B1  D = R^(-1/3)-1 is exact as a function of R=K_M/K_P. Its derivative is
+    dD/dlnR = -(1+D)/3, which equals -1/3 ONLY at D=0:
+      D= +0.0%  dD/dlnR = -0.33333
+      D= -2.0%  dD/dlnR = -0.32667
+      D= +2.0%  dD/dlnR = -0.34000
+    v17 wrote '-1/3 exact, not a linearisation': that mixes function value
+    with local slope. Correct: at the design point the slope is -1/3.
+
+B2  if K_M is scaled multiplicatively and the mass flow re-solved,
+    dlnx/dln a = -1/(3+s), s = dlnK_M/dlnm at the design point:
+      closure A: s = -0.113574  ->  dlnx/dln a = -0.346449
+      closure B: s = -0.035089  ->  dlnx/dln a = -0.337278
+    Both ~-0.34: 2-4% away from -1/3. A multiplicative K budget must be
+    converted with these, not with 1/3.
+
+B3  length and diameter are NOT rank deficient. With f=C Re^-n and
+    Re ~ 1/d, K_f = f L/d scales as L d^(n-1):
+      dlnK_f/dlnL = 1     dlnK_f/dlnd = n-1 = -0.75 (n=0.25)
+    so 1% of length is worth 1.33x 1% of diameter, and d also moves A and
+    the ideal ratio. v17 called them 'not separable': retract.
+
+B4  3% criterion, exact bracket (v17 printed the endpoints reversed):
+      |D|<=3%  <=>  K_M/K_P in [0.915141659, 1.095682682]
+      one-sided: +9.57% upward, -8.49% downward
+
+==============================================================================
+[C] closure 1: the heating annulus at low Re
+==============================================================================
+alpha = di/do = 0.40741
+laminar fully-developed annulus:
+  f*Re = 64(1-a)^2/[1+a^2-(1-a^2)/ln(1/a)]
+       = 94.762   (limits 64 at a->0, 96 at a->1: both correct)
+turbulent branch: Zhu 2019, f=0.685 Re^-0.3, 5000<Re<35000, d2/d1=1.30
+transition 2300-5000: log-log line between the two branches
+  -> DECLARED closure. No fit covers d2/d1=2.45 at Re 0.8k-4.1k; that gap
+     is stated, not papered over.
+
+      m_P  Re_HS_M    f_HS      regime  K_fric  K_HS_M  table
+     0.25      828  0.1144     laminar  0.4035  2.6945   2.90
+     0.50     1657  0.0572     laminar  0.2017  2.4928   2.80
+     0.75     2485  0.0423  transition  0.1491  2.4401   2.80
+     1.00     3314  0.0465  transition  0.1639  2.4549   2.70
+     1.25     4142  0.0500  transition  0.1764  2.4674   2.60
+
+L/D_h of the annulus: prototype 56.25, model 45.66
+  -> d_R != L_R makes the model 19% 'shorter' in diameters. Consequences:
+     (i)  model K_HS at design = 2.4674, not 2.6. v17 let the
+          model copy the table row (2.8 at 0.5 kg/s), importing the
+          prototype's Re trend into the model. That single choice is worth
+          0.23 pp of D - larger than the frozen/coupled 0.08 pp. It is
+          the biggest correction of this round.
+     (ii) across 0.50-1.25 K_HS_M moves only 2.493 -> 2.467 (0.026 in K,
+          0.11% of 22.8) -> ~0.04 pp of D. Bounded, not a 3% threat.
+     (iii) for the THERMAL FoM (Nu, wall temperature) the transitional
+           state is a real defect and is NOT bounded by this.
+  -> third case where local heat-transfer distortion is invisible to the
+     flow FoM (cf. Wang 2025).
+
+valve re-sized with the model's own K_HS: A 6.342 -> 6.475, B 2.241 -> 2.373
+
+==============================================================================
+[D] closure 2: the valve curve K_v(Re)
+==============================================================================
+throat: beta=0.3453, d_thr=9.41 mm
+  m_P=1.25: throat Re =    20606
+  m_P=0.50: throat Re =     8242
+  -> throat stays turbulent (Re>8e3) over the whole span: a constant K_v
+     is defensible IN REGIME. Below that, the vendor curve is required.
+      m_v   K_v(0.5)/K_v(1.25)   D_A(0.5)   D_B(0.5)
+     0.00               1.0000     -1.80%     +1.59%
+     0.05               1.0469     -2.21%     +1.43%
+     0.10               1.0960     -2.64%     +1.26%
+     0.20               1.2011     -3.56%     +0.90%
+  -> a valve Re exponent of 0.10 moves D by ~0.85 pp (A): the valve curve
+     is worth as much as the whole curve distortion. 'The valve is a
+     constant' is a declared assumption with a measurable price.
+
+==============================================================================
+[E] closure 3: heat accounting is one multiplicative factor
+==============================================================================
+momentum + energy, steady natural circulation:
+  K u^2/2 = g beta H dT ,  Q = rho u A cp dT
+  => u^3 = 2 g beta H Q /(K rho cp A)
+ratios, with u_R^ideal = sqrt(L_R):
+  (u_R/u_R^ideal)^3 = PHI / K_R ,   D = (PHI/K_R)^(1/3) - 1
+  PHI = [H_R Q_R/(A_R L_R^1.5)] * [beta_R/(rho_R cp_R)]
+PHI=1 requires Q_R = A_R L_R^1.5/H_R = 0.268316 (= m_R:
+  dT_R=1 and unit property ratios). So the heater must FOLLOW THE FLOW:
+  Q_M = 0.2683 Q_P(q_m) at every point. Constant power breaks PHI.
+leverage dD/dlnPHI = 1/3:
+  1% error in Q_R (or dT_R, or cp_R) -> 0.33 pp of D
+  3% on D from heat alone -> PHI budget 9.27%
+property ratio, model run 100 K colder (473 vs 573 K, NEA 2015):
+  beta 0.98763  rho 1.01252  cp 1.01368  -> PHI 0.96225 (-3.78%)
+  -> D shift -1.27 pp, i.e. 42% of the 3% budget.
+     A 100 K offset must be declared, not assumed away.
+
+==============================================================================
+[F] continuous curve bound (not five points)
+==============================================================================
+D(m) defined for every m by x^3 K_M(x s m)/K_P(m)=1, with K_P(m) log-log
+interpolated between Yue's five rows (DECLARED interpolation).
+
+closure A: D(0.50)=-1.80%  D(1.25)=+0.00%  monotone=True
+            sup|D| = 1.80%, at the endpoint
+closure B: D(0.50)=+1.59%  D(1.25)=+0.00%  monotone=True
+            sup|D| = 1.59%, at the endpoint
+  -> sup|D| over the span = 1.80% (A) / 1.59% (B)
+     Margin to 3% is 1.2 pp (A) / 1.7 pp (B): inside, but this is the
+     CURVE term only; the rest of the declared box adds to it.
+
+==============================================================================
+[G] stage I: exact corner envelope (replaces the 5.70% linear estimate)
+==============================================================================
+box: K_EV +-50% | K_HS +-0.06 around the model value |
+     L_P 10-12 m (-9.1%/+9.1%) | d_M +-0.5%
+  corner           dK    D exact
+  -1-1-1-1       -2.299     +3.61%
+  -1-1-1+1       -2.372     +3.73%
+  -1-1+1-1       -0.340     +0.50%
+  -1-1+1+1       -0.428     +0.63%
+  -1+1-1-1       -2.175     +3.40%
+  -1+1-1+1       -2.247     +3.52%
+  -1+1+1-1       -0.215     +0.32%
+  -1+1+1+1       -0.303     +0.45%
+  +1-1-1-1       +0.294     -0.43%
+  +1-1-1+1       +0.221     -0.32%
+  +1-1+1-1       +2.264     -3.11%
+  +1-1+1+1       +2.175     -2.99%
+  +1+1-1-1       +0.418     -0.60%
+  +1+1-1+1       +0.345     -0.50%
+  +1+1+1-1       +2.389     -3.27%
+  +1+1+1+1       +2.300     -3.15%
+  -> exact envelope: -3.27% ... +3.73%
+     Both sides exceed 3%, so trimming remains a precondition.
+     v17's 5.70% was neither this box nor linear-exact.
+
+==============================================================================
+[H] stage III: after trimming, what survives? (the real declared box)
+==============================================================================
+Trimming sets K_valve at the design point so that K_M(1.25)=22.8. Every
+STATIC error then cancels identically at every flow: if K_EV is 3.75 and
+the valve is 1.25 smaller, the sum does not move. So K_EV +-50% has
+EXACTLY zero effect once trimmed - shown numerically below, ST~0.
+What survives is only what varies with Re:
+  finish A/B (categorical) | PHI +-5% | L_P 10-12 m | d_M +-0.5%
+  heating-annulus friction band x[0.7,1.3] | valve slope m_v in [0,0.10]
+
+closure A: mean |D| +2.222%, sd +1.034%, max +4.677%
+  input             S1      ST  (share of declared-box variance)
+  PHI            0.935   0.939
+  valve_slope    0.055   0.057
+  L_M            0.023   0.023
+  K_EV           0.002   0.003
+  d_M            0.000   0.000
+  KHS_band       0.000   0.000
+
+closure B: mean |D| +1.448%, sd +0.950%, max +3.271%
+  input             S1      ST  (share of declared-box variance)
+  PHI            1.005   1.012
+  valve_slope    0.006   0.011
+  K_EV           0.002   0.003
+  L_M            0.001   0.002
+  KHS_band       0.000   0.000
+  d_M            0.000   0.000
+
+reading: K_EV has ST~0 as predicted - absorbed by trimming. Ranking is
+the same in both closures: PHI first, then the valve slope and L. The
+categorical finish is NOT in the index; it is stratified, and it moves
+the level by ~3.4 pp (-1.8% vs +1.6%), more than any continuous input:
+that is a declaration, not an uncertainty.
+  (S1 slightly above 1 at finite N is estimator noise when one input
+   carries ~97% of the variance; read it as 'PHI alone explains it'.)
+
+counterfactual: if the heater power and flow are metered, PHI is known
+to ~1% rather than the +-5% declared above. Same sampler, PHI +-1%:
+  closure A: mean |D| +2.210%, max +3.287%
+  closure B: mean |D| +1.427%, max +1.944%
+  -> the 3% claim then rests on metering, not on the resistance table.
+     That is the sentence the paper should carry: the prior box is
+     limited by the heat declaration, and the heat declaration is the
+     only entry in the whole table with no literature source at all.
+
+==============================================================================
+[I] the conditional envelope, assembled
+==============================================================================
+stage I  (un-trimmed)        exact corners   -3.27% ... +3.73%
+stage III (trimmed, curve)   sup|D|          +1.80% (A) / +1.59% (B)
+stage III (trimmed, declared box, closure A): mean +2.222%, max +4.677%
+stage III (trimmed, declared box, closure B): mean +1.448%, max +3.271%
+  -> the stage-III box is dominated by PHI, i.e. by the heat declaration,
+     not by the resistance table. That reorders the priorities: the
+     literature K values are good enough; the heat boundary is the weak
+     link, and it is the one input with no source at all.
+
+==============================================================================
+[J] writable / not writable after this round
+==============================================================================
+WRITABLE 'Coupled flow+resistance solving moves the 0.50 kg/s distortion
+          from -1.94% to -2.03% (A) and +1.32% to +1.33% (B).'
+WRITABLE 'Using the model's own heating-annulus Re instead of the
+          prototype table row moves it a further 0.23 pp - the largest
+          single correction of this round.'
+WRITABLE 'The model heating annulus runs at Re 0.8k-4.1k (transition),
+          where no published fit covers d2/d1=2.45; its effect on the
+          flow FoM is <=0.05 pp, on the thermal FoM it is unbounded.'
+WRITABLE 'Heat accounting enters as PHI^(1/3); a 100 K temperature offset
+          costs 1.27 pp, i.e. 42% of the 3% budget.'
+WRITABLE 'After trimming, static errors cancel identically; only the
+          Re-dependent terms survive, and K_EV +-50% has zero effect.'
+WRITABLE '3% criterion = +9.57%/-8.49% on K_M/K_P, with
+          dD/dlnR=-(1+D)/3 (=-1/3 only at D=0).'
+NOT 'the -1/3 derivative is exact' - only its design-point value is.
+NOT 'length and diameter are rank deficient' - they scale as 1 and n-1.
+NOT 'the 0.64 area term is Borda-Carnot plus the residual' - replacing it
+     LOWERS the sum to 2.363 and RAISES the residual to 0.237. Sign is
+     opposite; v17's sentence is withdrawn.
+NOT '4:1 power range' - 2.5:1 in flow (0.50-1.25).
+NOT 'the curve is certified' - the interpolation between Yue's five rows
+     and the transitional heating closure are both declared choices.
+
+[csv] C:\Users\yufuz\WorkBuddy\2026-09-23-22-00-55\比例失真_计算\design_v18_points.csv
+
