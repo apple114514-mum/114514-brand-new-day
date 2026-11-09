@@ -1,0 +1,339 @@
+{
+  "nominal": [
+    {
+      "Q_W": 3000.0,
+      "m_P": 0.605343274632848,
+      "m_M": 0.20874921257185342,
+      "K_P": 24.06884883878094,
+      "D_massflux_pct": -8.939536863297825,
+      "D_velocity_pct": -8.603829798436136
+    },
+    {
+      "Q_W": 3500.0,
+      "m_P": 0.6405745809747483,
+      "m_M": 0.2219762641166031,
+      "K_P": 24.00893538808856,
+      "D_massflux_pct": -8.495265057042356,
+      "D_velocity_pct": -8.127030452477735
+    },
+    {
+      "Q_W": 4000.0,
+      "m_P": 0.6724044960605482,
+      "m_M": 0.23393660910698777,
+      "K_P": 23.953926454730606,
+      "D_massflux_pct": -8.129873901450857,
+      "D_velocity_pct": -7.7304987180578095
+    },
+    {
+      "Q_W": 4300.0,
+      "m_P": 0.690182721339955,
+      "m_M": 0.2406206307147682,
+      "K_P": 23.922825045979458,
+      "D_massflux_pct": -7.939037977130292,
+      "D_velocity_pct": -7.521558055029209
+    },
+    {
+      "Q_W": 4500.0,
+      "m_P": 0.701560335003377,
+      "m_M": 0.24489945494034882,
+      "K_P": 23.902775679390224,
+      "D_massflux_pct": -7.821524260098656,
+      "D_velocity_pct": -7.392193221696363
+    },
+    {
+      "Q_W": 5000.0,
+      "m_P": 0.7285485935575418,
+      "m_M": 0.25505222408992645,
+      "K_P": 23.85475432334855,
+      "D_massflux_pct": -7.556299580685666,
+      "D_velocity_pct": -7.098039460508643
+    },
+    {
+      "Q_W": 5500.0,
+      "m_P": 0.7537377494125759,
+      "m_M": 0.2645313296553671,
+      "K_P": 23.809332176002485,
+      "D_massflux_pct": -7.324789966324474,
+      "D_velocity_pct": -6.83850184639514
+    },
+    {
+      "Q_W": 6000.0,
+      "m_P": 0.7774996686683149,
+      "m_M": 0.27343960854777694,
+      "K_P": 23.757467341175563,
+      "D_massflux_pct": -7.1316046271520666,
+      "D_velocity_pct": -6.618109462889487
+    }
+  ],
+  "frozen22_8_D_pt_pct": {
+    "3000": -10.573625581816703,
+    "3500": -10.062299945838749,
+    "4000": -9.633830775523467,
+    "4300": -9.406752791341743,
+    "4500": -9.265678796240739,
+    "5000": -8.943396827848005,
+    "5500": -8.657178599409898,
+    "6000": -8.400027804832888
+  },
+  "morris": {
+    "eps_M": {
+      "mu_star": 1.6485172693112655,
+      "sigma": 0.10104197524520343,
+      "mu_star_conf": 0.027351769212601195
+    },
+    "d_hole": {
+      "mu_star": 0.10830571706459875,
+      "sigma": 0.003957206893912615,
+      "mu_star_conf": 0.0009752031207474405
+    },
+    "k_aux_M": {
+      "mu_star": 0.8111852387046313,
+      "sigma": 0.026105885308256967,
+      "mu_star_conf": 0.006065770375832498
+    },
+    "u_loss_fac": {
+      "mu_star": 0.017353024650146365,
+      "sigma": 0.008262985155981024,
+      "mu_star_conf": 0.0020273904847111076
+    },
+    "mu_fac": {
+      "mu_star": 0.7691128080628128,
+      "sigma": 0.07487446511640357,
+      "mu_star_conf": 0.017222663246436794
+    },
+    "cp_fac": {
+      "mu_star": 0.3043246431326133,
+      "sigma": 0.03575422222530667,
+      "mu_star_conf": 0.008456299786466878
+    },
+    "rho_fac": {
+      "mu_star": 0.04332765444993984,
+      "sigma": 0.005930213183059943,
+      "mu_star_conf": 0.0014808617378993464
+    },
+    "dTin_P": {
+      "mu_star": 0.008691676150089723,
+      "sigma": 0.006036191426161246,
+      "mu_star_conf": 0.0013110026148963842
+    },
+    "dTin_M": {
+      "mu_star": 0.03778138298538247,
+      "sigma": 0.007068124718850779,
+      "mu_star_conf": 0.0017104369159890056
+    },
+    "L_HS_M": {
+      "mu_star": 0.005649675027089129,
+      "sigma": 0.0008184372445362856,
+      "mu_star_conf": 0.00019145814259501108
+    }
+  },
+  "sobol": {
+    "eps_M": {
+      "S1": 0.6642606176905628,
+      "S1_conf": 0.09049994684647646,
+      "ST": 0.6738367263541963,
+      "ST_conf": 0.07868659880126735
+    },
+    "d_hole": {
+      "S1": 0.0029044026049421744,
+      "S1_conf": 0.006521610172204887,
+      "ST": 0.0029030274854211662,
+      "ST_conf": 0.00040772624260678933
+    },
+    "k_aux_M": {
+      "S1": 0.1553768375858114,
+      "S1_conf": 0.04449083176506915,
+      "ST": 0.1625096157485001,
+      "ST_conf": 0.02118945464679687
+    },
+    "u_loss_fac": {
+      "S1": -0.00014337214132166824,
+      "S1_conf": 0.0013785524003907099,
+      "ST": 0.00010362370936471652,
+      "ST_conf": 1.5941985457083972e-05
+    },
+    "mu_fac": {
+      "S1": 0.14561642433655833,
+      "S1_conf": 0.045284010346040696,
+      "ST": 0.14602149377529083,
+      "ST_conf": 0.019064858007086308
+    },
+    "cp_fac": {
+      "S1": 0.020844180655507066,
+      "S1_conf": 0.018254596637745132,
+      "ST": 0.02246460031811129,
+      "ST_conf": 0.0027018301150757043
+    },
+    "rho_fac": {
+      "S1": 0.0005122395804584106,
+      "S1_conf": 0.002516283595053251,
+      "ST": 0.0004576782361370847,
+      "ST_conf": 6.310045000345541e-05
+    },
+    "dTin_P": {
+      "S1": -0.00018357915581246765,
+      "S1_conf": 0.000553994718734221,
+      "ST": 1.868809084162159e-05,
+      "ST_conf": 3.706469563031481e-06
+    },
+    "dTin_M": {
+      "S1": 0.00017505297405425062,
+      "S1_conf": 0.002317526094040947,
+      "ST": 0.00036389608327230035,
+      "ST_conf": 4.7400914288664675e-05
+    },
+    "L_HS_M": {
+      "S1": 1.1505941924214293e-05,
+      "S1_conf": 0.0003238400900983046,
+      "ST": 7.660542885630362e-06,
+      "ST_conf": 1.0762818767623547e-06
+    }
+  },
+  "sobol_meta": {
+    "base_N": 512,
+    "model_runs": 6144,
+    "seed": 20261109,
+    "distribution": "independent uniform DESIGN scenarios"
+  },
+  "search": {
+    "corner_min_pct": -8.908746964014524,
+    "corner_max_pct": -5.104024539614505,
+    "corner_min_mask": 573,
+    "corner_max_mask": 322,
+    "global_heuristic": [
+      {
+        "D_pt_pct": -8.881065996216087,
+        "x": [
+          19.92836919194552,
+          9.980196052358405,
+          0.9964334260437367,
+          1.1409105584739399,
+          1.0796558376197842,
+          1.0657039663864212,
+          0.9923729738261701,
+          -1.8835500166698715,
+          -1.7155940141507233,
+          1.0046434268414441
+        ],
+        "nfev": 3291,
+        "success": false
+      },
+      {
+        "D_pt_pct": -5.128149329970666,
+        "x": [
+          0.018180244895539488,
+          10.019873408076297,
+          0.0036667456908729967,
+          0.8471169510663212,
+          0.9208772102241874,
+          0.9304326900547177,
+          1.0074437590775114,
+          -1.8198620045280705,
+          1.5629168199562726,
+          1.0017030797818287
+        ],
+        "nfev": 3291,
+        "success": false
+      }
+    ],
+    "status": "searched extrema only; no interval/analytic certificate"
+  },
+  "input_domain": [
+    {
+      "name": "eps_M",
+      "nominal": 10.0,
+      "lower": 0.0,
+      "upper": 20.0,
+      "unit": "um",
+      "identity": "declared tube finish",
+      "basis": "10 um is a procurement spec, not a measured Ra; ks != Ra"
+    },
+    {
+      "name": "d_hole",
+      "nominal": 10.0,
+      "lower": 9.98,
+      "upper": 10.02,
+      "unit": "mm",
+      "identity": "declared hole tolerance",
+      "basis": "a drawing spec, not a capability claim"
+    },
+    {
+      "name": "k_aux_M",
+      "nominal": 0.5,
+      "lower": 0.0,
+      "upper": 1.0,
+      "unit": "-",
+      "identity": "unspecified M form loss",
+      "basis": "flanges, supports, instrument pockets; no correlation available"
+    },
+    {
+      "name": "u_loss_fac",
+      "nominal": 1.0,
+      "lower": 0.8,
+      "upper": 1.2,
+      "unit": "-",
+      "identity": "insulation + bridges",
+      "basis": "50 mm, k=0.05, +20 pct bridge allowance; ageing not measured"
+    },
+    {
+      "name": "mu_fac",
+      "nominal": 1.0,
+      "lower": 0.92,
+      "upper": 1.08,
+      "unit": "-",
+      "identity": "NEA mu estimated error",
+      "basis": "Table 2.19.3, +-8 pct, 400-1200 K"
+    },
+    {
+      "name": "cp_fac",
+      "nominal": 1.0,
+      "lower": 0.93,
+      "upper": 1.07,
+      "unit": "-",
+      "identity": "NEA cp estimated error",
+      "basis": "Table 2.19.3, +-7 pct, 400-1100 K"
+    },
+    {
+      "name": "rho_fac",
+      "nominal": 1.0,
+      "lower": 0.992,
+      "upper": 1.008,
+      "unit": "-",
+      "identity": "NEA rho estimated error",
+      "basis": "Table 2.19.3, +-0.8 pct, 400-1300 K"
+    },
+    {
+      "name": "dTin_P",
+      "nominal": 0.0,
+      "lower": -2.0,
+      "upper": 2.0,
+      "unit": "K",
+      "identity": "control error, P",
+      "basis": "declared setpoint accuracy of the controlled heater inlet"
+    },
+    {
+      "name": "dTin_M",
+      "nominal": 0.0,
+      "lower": -2.0,
+      "upper": 2.0,
+      "unit": "K",
+      "identity": "control error, M",
+      "basis": "declared setpoint accuracy of the controlled heater inlet"
+    },
+    {
+      "name": "L_HS_M",
+      "nominal": 1.0,
+      "lower": 0.99,
+      "upper": 1.01,
+      "unit": "m",
+      "identity": "heater length tolerance",
+      "basis": "declared fabrication tolerance"
+    }
+  ],
+  "model_form_branches": {
+    "P": "Yue Table 2 piecewise-linear in tube Re main; frozen 22.8 comparator",
+    "bend": "Al-Tameemi relation nominal; transfer factor not random",
+    "orifice": "NEA 15.3.3 #3 nominal; alternate formula separate"
+  },
+  "design_choice": "Keep M 16 m and 3 m rise as preregistered candidate; changed geometry is discussion only"
+}
