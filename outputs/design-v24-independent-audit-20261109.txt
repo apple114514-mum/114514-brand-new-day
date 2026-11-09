@@ -1,0 +1,22 @@
+A. Equal-temperature component check, not a scaling constraint
+Re=8643.447004, Kpipe=32.284926, K4elbow=5.191282, Korifice=5.593959, Ktotal=43.070166
+Ktotal=22.8 has NOT been imposed as an input condition.
+B. v24 energy identity
+Qe=3000 W, Qloss=764.029 W, Qnet=2235.971 W, v24_Qcool=1471.941 W, correct_Qcool=2235.971 W, balance_residual=764.029 W
+Qe=6000 W, Qloss=909.686 W, Qnet=5090.314 W, v24_Qcool=4180.628 W, correct_Qcool=5090.314 W, balance_residual=909.686 W
+C. A self-consistent 1-D conditional counterexample
+heater and cooler: 1 m uniform source/sink; 0.5 W/K bridge budget spread over the insulated length; no K_aux; roughness=0
+m is solved; coolant duty is solved from T_end=T_heater_in; buoyancy integrates rho(T) around the 3 m vertical legs
+layout: horizontal legs 5.00 m, insulated length 15.00 m, orifice=True
+Qe=3000 W ds=0.050 m -> m=0.2073554 kg/s, Tmax=570.6908 K, Qloss=714.157 W, Qcool=2285.843 W, heat_res=+0.000141 W, drive=2261.169 Pa, friction=2261.169 Pa, cooler_Tmin=482.014 K, UA_sufficient_at_oil433=46.78 W/K
+Qe=3000 W ds=0.025 m -> m=0.2073553 kg/s, Tmax=570.6908 K, Qloss=714.157 W, Qcool=2285.843 W, heat_res=+0.000035 W, drive=2261.169 Pa, friction=2261.169 Pa, cooler_Tmin=482.014 K, UA_sufficient_at_oil433=46.78 W/K
+Qe=6000 W ds=0.050 m -> m=0.2731996 kg/s, Tmax=622.8147 K, Qloss=795.151 W, Qcool=5204.848 W, heat_res=+0.000326 W, drive=3641.427 Pa, friction=3641.427 Pa, cooler_Tmin=479.837 K, UA_sufficient_at_oil433=111.48 W/K
+Qe=6000 W ds=0.025 m -> m=0.2731996 kg/s, Tmax=622.8148 K, Qloss=795.152 W, Qcool=5204.848 W, heat_res=+0.000082 W, drive=3641.428 Pa, friction=3641.428 Pa, cooler_Tmin=479.837 K, UA_sufficient_at_oil433=111.48 W/K
+layout: horizontal legs 2.50 m, insulated length 10.00 m, orifice=False
+Qe=3000 W ds=0.050 m -> m=0.2462980 kg/s, Tmax=555.1238 K, Qloss=497.706 W, Qcool=2502.294 W, heat_res=+0.000041 W, drive=1951.205 Pa, friction=1951.205 Pa, cooler_Tmin=478.276 K, UA_sufficient_at_oil433=55.45 W/K
+Qe=3000 W ds=0.025 m -> m=0.2462979 kg/s, Tmax=555.1238 K, Qloss=497.706 W, Qcool=2502.294 W, heat_res=+0.000010 W, drive=1951.205 Pa, friction=1951.205 Pa, cooler_Tmin=478.276 K, UA_sufficient_at_oil433=55.45 W/K
+Qe=6000 W ds=0.050 m -> m=0.3235123 kg/s, Tmax=599.2997 K, Qloss=547.307 W, Qcool=5452.693 W, heat_res=+0.000086 W, drive=3103.622 Pa, friction=3103.622 Pa, cooler_Tmin=477.039 K, UA_sufficient_at_oil433=124.24 W/K
+Qe=6000 W ds=0.025 m -> m=0.3235122 kg/s, Tmax=599.2998 K, Qloss=547.308 W, Qcool=5452.692 W, heat_res=+0.000022 W, drive=3103.622 Pa, friction=3103.622 Pa, cooler_Tmin=477.039 K, UA_sufficient_at_oil433=124.24 W/K
+D. Churchill transition sign check
+Re(.10 kg/s,473.15 K)=3272.582; mu+8% -> 3030.169; mu-8% -> 3557.155
+Positive df/dRe makes K rise with m locally; it does not by itself imply multiple steady roots.

@@ -1,0 +1,256 @@
+==============================================================================
+[A] the submitted component audit, recomputed from the NEA text
+==============================================================================
+    nominal: m = 0.20 kg/s, T = 573.15 K, bore 16 mm, 16 m, 4 mitre elbows
+    quantity                     this script     submitted
+    Re main                      8643.447004   8643.447004
+    K_pipe (Churchill)             32.284926     32.284926
+    K 4 elbows                      5.191282      5.191282
+    K orifice 10 mm x 2 mm          5.593959      5.593959
+    K_total                        43.070166     43.070166
+    -> agrees to the printed digit; the arithmetic in the submitted audit is
+       correct and my reproduction adds nothing to it.
+
+    scenario grid: 576 rows, Re 3262-24372, K_total 34.354-56.799
+    (a discrete diagnostic grid; the two numbers are not extrema of a
+     continuous domain and are not offered as such.)
+    heat-loss bound as submitted, evaluated at T_max = 773.15 K:
+      Q_loss <= 1509.6 W ; 3 kW - that = 1490.4 W
+
+==============================================================================
+[B] is this loop a scale model of the prototype?
+==============================================================================
+    the three length scales of the submitted layout:
+      bore     16.00 / 26.00 mm   ->  l_r = 0.6154
+      length   16.00 / 11.00 m    ->  l_r = 1.4545
+      height    2.00 /  3.35 m    ->  l_r = 0.5970
+    one number is not like the other two.  A scale model needs one l_r for
+    all three; here length is 2.36x the bore ratio.
+
+    the consequence is in L/D, which fixes how much of K is pipe friction:
+      prototype  L/D = 11.00/0.026 = 423.1
+      model      L/D = 16.00/0.016 = 1000.0
+      ratio                        = 2.36
+    and the prototype's own pipe term is K_pipe = 17.7 of 22.8, i.e. 77.6%.
+    The model's pipe term alone is 32.285, which is 141.6% of 22.8 -
+    the pipe by itself already exceeds the whole target.
+
+    minimum K reachable with this topology (no orifice, smooth, K_aux = 0):
+      T = 473.15 K  Re =   6545  K =  40.534
+      T = 573.15 K  Re =   8643  K =  37.476
+      T = 773.15 K  Re =  12148  K =  34.230
+    -> the lowest of these, 34.230, is still 50.1% above 22.8.  Deleting the
+       orifice cannot rescue it: the deficit is negative, and no manufacture
+       tolerance or roughness choice changes the sign.
+
+==============================================================================
+[C] which length belongs to the submitted orifice?
+==============================================================================
+    hold bore, elbows, K_aux = 0 and the nominal check point, and ask what
+    pipe length makes K_total equal to 22.8 for a given orifice:
+      orifice         K_orif    K_pipe    L needed       L/D
+      10 mm            5.594    12.015       5.954       372
+      11 mm            3.065    14.544       7.208       450
+      12 mm            1.638    15.971       7.915       495
+      13 mm            0.825    16.784       8.318       520
+      none             0.000    17.609       8.727       545
+
+    -> the submitted 10 mm hole pairs with L = 5.95 m, not 16.00 m.
+       At 16.00 m the same hole would need K_orifice = -14.676, i.e. a
+       NEGATIVE resistance element.  The two numbers in the spec come from
+       two different loops.
+
+    and the 5.95 m is not reachable either: with 3.00 m risers (which the
+    declared H_eff = 2.00 m forces) the loop is already 6.00 m before any
+    horizontal run.  So the orifice has no length to live at.
+
+==============================================================================
+[D] the 155D requirement and the 22.8 target cannot both hold at 16 mm
+==============================================================================
+    the spec asks for >= 155D from each bottom elbow to the orifice, i.e. a
+    bottom leg of 2 x 155D = 310D = 4.96 m at 16 mm.
+      bore 16.0 mm: bottom leg 4.96 m, L = 11.06 m, L/D = 691, K = 27.51
+      bore 20.0 mm: bottom leg 6.20 m, L = 12.30 m, L/D = 615, K = 26.65
+      bore 26.0 mm: bottom leg 8.06 m, L = 14.16 m, L/D = 545, K = 26.16
+    -> at 16 mm the requirement alone gives K = 27.51, 20.7% above 22.8,
+       before any orifice is added.  A larger bore relaxes it only because
+       the riser stays 3.00 m while D grows; it does not relax the pipe
+       friction share, which is what K/L/D fixes.
+
+    so the design has to give up one of: the 155D distance, the four-elbow
+    topology, the 2.00 m height, or the 22.8 target.  There is no fifth way
+    at this bore.
+
+==============================================================================
+[E] three distortions, because the formula's premise is not stated
+==============================================================================
+    prototype design point: m = 1.25 kg/s, u = 0.2280 m/s
+
+    (1) pure K ratio, the formula used since v16:
+        D_K = (K_M/K_P)^(-1/3) - 1
+          K_M = 43.070, K_P = 22.800  ->  D = -19.105%
+          K_M = 43.070, K_P = 19.308  ->  D = -23.466%
+          K_M = 43.070, K_P = 24.318  ->  D = -17.349%
+        This form assumes the driving head is the same on both sides, i.e.
+        H_M = H_P and dT_M = dT_P.  Here H_M/H_P = 0.597, so the premise
+        fails by 40% and the number above is not the velocity error.
+        The same expression at the loop's own operating point (Re 17662,
+        K = 31.18) gives D = -9.91%; the deficit is smaller there because
+        f falls with Re, but it is still six times the 3% target.
+
+    (2) Froude-normalised, dT matched:
+        u_r = sqrt(H_r/K_r), target u_r* = sqrt(l_r), D_F = u_r/u_r* - 1
+        H_r = 0.5970, l_r = 0.6154, K_r = 1.8890
+        u_r = 0.5622, u_r* = 0.7845, D_F = -28.34%
+        the same with K_r = 1 (length corrected):
+        u_r = 0.7727, D_F = -1.50%
+        -> the height is consistent with the bore (0.597 against 0.615);
+           the whole distortion is the length.
+
+    (3) same heater power on both sides, Q_r = 1:
+        u_r = [H_r/(A_r K_r)]^(1/3) = 0.9415
+        this is not a similarity criterion, only 'one heater, two benches'.
+
+    which one is the paper's FoM is a declaration, not a calculation.
+    The first two are far outside 3%, and both are dominated by the same
+    input: L = 16.00 m.
+
+==============================================================================
+[F] the correlation domain the operating point actually visits
+==============================================================================
+    Churchill eq. 6 is not monotone in the transition.  Scan f(Re):
+      d f/dRe > 0 between Re = 2202 and Re = 3116
+      local minimum at Re = 2200: f = 0.03009
+      local maximum at Re = 3115: f = 0.04316   (+43.4% over the minimum)
+    -> a steady state that sits on the rising branch has dK/dRe > 0, and the
+       uniqueness argument (3 + s_M > 0) used in v20 does not apply there.
+
+    the submitted admissibility window 0.10 <= m <= 0.40 kg/s:
+      m = 0.10, T = 473.15 K -> Re =   3273   ABOVE peak margin to peak +158
+      m = 0.10, T = 573.15 K -> Re =   4322   ABOVE peak margin to peak +1207
+      m = 0.40, T = 773.15 K -> Re =  24296   ABOVE peak margin to peak +21181
+      with the 8% viscosity tolerance, the lowest of these becomes 3030
+    -> the lower flow bound clears the hump by 158 in Re, i.e. 5%.
+       A -8% viscosity or a -5% flow puts it on the rising branch, where two
+       steady states are possible.  The lower bound should be 0.12 kg/s,
+       which gives Re = 3927.
+
+==============================================================================
+[G] the thermal boundary: the 1.510 kW is evaluated at a T the loop never sees
+==============================================================================
+    K as submitted (43.07):
+      Q_elec         Q_net        u    m_dot       dT    T_max        Re   Q_loss
+            3 kW      2192   0.0933   0.1951     76.9    550.0      7979      808
+            4 kW      3033   0.1041   0.2175     95.6    568.7      9302      867
+            5 kW      3691   0.1112   0.2322    109.0    582.2     10240      909
+            6 kW      5013   0.1234   0.2571    133.9    607.1     11959      987
+    K corrected to 22.8:
+      Q_elec         Q_net        u    m_dot       dT    T_max        Re   Q_loss
+            3 kW      2236   0.1160   0.2428     62.9    536.1      9581      764
+            4 kW      3088   0.1293   0.2704     78.1    551.3     11092      812
+            5 kW      3754   0.1381   0.2886     89.1    562.2     12157      846
+            6 kW      5090   0.1530   0.3194    109.3    582.4     14097      910
+    -> the loop runs at T_max = 536-607 K, not 773 K.  The submitted heat
+       bound therefore overstates the loss by 1.5-1.9x, and the line
+       '3 kW - 1.510 kW = 1.49 kW' is a bound on a hypothetical loop, not
+       on this one.  At 3 kW the real loss is about 808 W.
+
+    flow and temperature both land inside the declared window (0.10-0.40
+    kg/s, 473-773 K).  This part of the input set closes.
+
+    one thing the thermal solve exposes and cannot settle: the model runs
+    at 536-607 K, while the prototype's Table 2 implies 504.6 K and LI
+    2015 quotes 723 K as the bench's nominal temperature.  Those two
+    differ by 1.4x in viscosity.  Until the prototype's reference
+    temperature is declared, Re_r has no defined target.
+
+    to reach u = sqrt(l_r) u_P = 0.1789 m/s with K = 43.07, Q_net = 15.2 kW
+      i.e. Q_elec about 16.2 kW.  The declared ceiling is 6 kW.
+    to reach u = sqrt(l_r) u_P = 0.1789 m/s with K = 22.80, Q_net = 8.1 kW
+      i.e. Q_elec about 9.0 kW.  The declared ceiling is 6 kW.
+    -> at 6 kW the bench runs at 86% of the Froude velocity, so the
+       heater is the binding input if velocity similarity is wanted.
+
+    Q_elec 3 kW: cooler duty 1472 W, LMTD 66.6 K, UA needed 22 W/K
+    Q_elec 6 kW: cooler duty 4181 W, LMTD 83.0 K, UA needed 50 W/K
+    -> the declared UA >= 150 W/K is 5x the need; the cooler must be
+       throttled, i.e. it is a controlled boundary, not a fixed UA.
+
+==============================================================================
+[H] what length the same separation rule gives if the orifice is removed
+==============================================================================
+    with an orifice in the bottom leg, the spec's 155D to the orifice forces
+    that leg to 310D = 4.96 m, and L to 16 m.  Without an orifice the
+    binding distance is elbow-to-elbow, and the correlation asks for 140D:
+      4 legs at >= 140D              L >= 8.96 m
+      but the risers are fixed by H = 2.00 m:  L = 2(3.00) + 2h, h >= 2.24
+      so the real floor is               L >= 10.48 m
+
+    at L = 11.00 m (h = 2.50 m, 156D) the loop gives, at its own operating
+    point (0.37 kg/s, 620 K, Re 17662):
+      K_pipe 18.331 + 4 elbows 4.518 = K 22.849   against 22.8
+      -> D = -0.071%
+    -> four mitre elbows already cost 4.5 K.  The components the model does
+       not have (expansion tank 2.5 + annular heater 2.6 = 5.1 K) are paid
+       for.  The orifice was never needed - and it is what forced 16 m,
+       which then cost more than the orifice could supply.
+
+    the orifice branch, for comparison (evaluated at the check point):
+      h (m)    L (m)    L/D   K_pipe K (no orif)    D_K %  hole mm  elb-elb/D
+      0.300     6.60    412   13.318      18.509     7.20    10.44         19
+      1.000     8.00    500   16.142      21.334     2.24    12.17         62
+      1.365     8.73    546   17.615      22.807    -0.01     none         85
+    -> with an orifice the feasible band is h <= 1.365 m, i.e. 85D, which
+       fails the 140D rule; without one, h = 2.50 m satisfies it and lands
+       on the target.  (The h = 2.50 row is absent here because at this
+       check point it gives K = 27.4, not 22.8; the same length is right
+       only at the operating point, which is the paragraph below.)
+
+    the design point is itself an undeclared input, and it moves L:
+      evaluation point                        Re       f    L (m)    h (m)
+      submitted check 0.20 kg/s, 573 K      8643 0.03228     8.73     1.36
+      6 kW coupled operating point         14077 0.02828    10.25     2.12
+      Froude point 0.37 kg/s, 620 K        17662 0.02666    10.97     2.49
+    -> 8.7 to 11.0 m.  The spread is 26%, which is why the design point has
+       to be declared before the drawing is frozen.  None of the three is
+       16.00 m; the submitted length is 45-85% too long.
+
+    the recommended input set (a proposal, for the user to decide):
+      bore 16.00 mm, risers 3.00 m, horizontals 2.50 m, L = 11.00 m
+      no resistance element in the main path
+      4 mitre elbows at 156D elbow-to-elbow
+      K = 22.85 at the operating point, against 22.8
+      pipe share 80.2%, elbow share 19.8%  (prototype 77.6 / 22.4)
+    the cost, stated plainly: l_r is 0.615 in bore and 0.597 in height but
+    1.00 in length.  This is a friction-similar loop, not a geometrically
+    similar one.  K and geometry cannot both be matched, and this design
+    chooses K because K is what sets the velocity.
+
+    single-axis evaluation at L = 11.00 m, 0.37 kg/s, 620 K (not an extremum):
+      axis                                         K       D_F %  delta pp
+      nominal                                22.8487      -1.609
+      legs +0.01 m each (L +0.04)            22.9154      -1.752     -0.14
+      legs -0.01 m each                      22.7821      -1.465     +0.14
+      bore +0.05 mm                          22.8084      -1.522     +0.09
+      bore -0.05 mm                          22.8893      -1.696     -0.09
+      roughness 10 um                        23.8093      -3.614     -2.01
+      K_aux 0.5                              23.3487      -2.668     -1.06
+    -> roughness (-2.0 pp) and K_aux (-1.1 pp) dominate; the length and bore
+       tolerances are worth 0.2 pp together.  Both dominant items are
+       acceptance conditions on the drawing, not measured values, and both
+       act in the same direction: a rougher pipe or a real auxiliary port
+       makes K too high, i.e. the model too slow.
+
+==============================================================================
+SUMMARY
+==============================================================================
+  verified: 43.070, 1.510 kW, the 576-row grid, Re 8643.4, every component.
+  not verified, because it is false: that this loop is a scale model.
+    l_r = 0.615 (bore), 0.597 (height), 1.455 (length).
+    K_pipe alone 32.285 > 22.8 at the check point, 26.7 at the operating
+    point.  The orifice deficit is negative at both: -14.7 and -8.4.
+  closable: the thermal boundary.  m = 0.24-0.32 kg/s, T_max 536-583 K,
+    Q_loss 0.76-0.91 kW; all inside the declared window.
+  the one decision that closes it: drop the orifice, L = 11.0 m (h = 2.50),
+    which restores K = 22.85 at the operating point and 156D separation.
+

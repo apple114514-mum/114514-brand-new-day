@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设计输入能不能同时成立（2026-11-09 第二十四轮）</title>
+<style>
+:root{
+  --ink:#1a1a1a; --ink2:#3d3d3d; --mute:#6b6b6b;
+  --line:#d8d4cc; --bg:#fbfaf7; --card:#ffffff;
+  --acc:#8c2f1f; --acc2:#1f4e79; --ok:#2f6b3a; --warn:#8a5a10;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:"Songti SC","SimSun","Source Han Serif SC",serif;
+  font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:44px 30px 80px}
+h1{font-size:27px;line-height:1.4;margin:0 0 6px;letter-spacing:.5px;font-weight:700}
+.sub{color:var(--mute);font-size:13.5px;margin-bottom:34px;letter-spacing:.3px}
+h2{font-size:20px;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);
+   letter-spacing:.4px}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--acc2)}
+p{margin:10px 0}
+code,.mono{font-family:"Cascadia Mono","Consolas","Courier New",monospace;font-size:13.5px;
+  background:#f2f0ea;padding:1px 5px;border-radius:3px}
+pre{background:#f2f0ea;border-left:3px solid var(--line);padding:12px 14px;overflow-x:auto;
+  font-family:"Cascadia Mono","Consolas",monospace;font-size:13px;line-height:1.75;margin:14px 0}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#efece5;font-weight:600;font-size:13px;letter-spacing:.3px}
+td.num,th.num{text-align:right;font-family:"Cascadia Mono","Consolas",monospace;font-size:13px}
+td.v{text-align:left;font-family:"Cascadia Mono","Consolas",monospace;font-size:12.5px;line-height:1.65}
+td.v b{font-family:"Songti SC","SimSun",serif}
+tr:nth-child(even) td{background:#fcfbf8}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:3px;margin-right:6px;
+  vertical-align:1px;font-family:system-ui,sans-serif}
+.t-ok{background:#e3f0e5;color:var(--ok);border:1px solid #bfd8c4}
+.t-no{background:#f7e6e2;color:var(--acc);border:1px solid #e2c3ba}
+.t-mid{background:#f8efdc;color:var(--warn);border:1px solid #e5d3ae}
+.box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc2);
+  padding:14px 18px;margin:18px 0}
+.box.warn{border-left-color:var(--acc);background:#fdf8f6}
+.box.ok{border-left-color:var(--ok);background:#f6faf6}
+.small{font-size:13.5px;color:var(--mute)}
+ul{margin:8px 0 8px 22px;padding:0}
+li{margin:5px 0}
+.gk{font-family:"Cambria Math","Cambria","Times New Roman","Segoe UI Symbol",serif;
+    font-size:.98em;letter-spacing:.02em}
+td.v .gk,td.num .gk,code .gk,th .gk,pre .gk{font-family:"Cambria Math","Cambria",
+    "Times New Roman","Segoe UI Symbol",serif!important}
+.wide{width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>设计输入能不能同时成立</h1>
+<div class="sub">2026-11-09 · 第二十四轮 · 11 节 / 13 表 · 脚本 <code>design_v24.py</code>（538 行，日志 256 行，<code>%%</code> 残留 0 处）<br>
+对象：<code>lbe-forward-design-input-spec-20261108.md</code> 与提交的 576 行审计网格。本轮**不做** GSA，**不做**区间证书，也**不给**最大失真上界。</div>
+
+<h2>零、这一轮问的是另一个问题</h2>
+
+<p>提交的这版方案比前面任何一版都完整：拓扑固定了、每条关联式都点了原文页码、每个数字都标了「文献值 / 拟定验收条件 / 待核」。我把它逐项的算术复算了一遍，<b>全部对上，一位不差</b>。所以这一轮我不重做它。</p>
+
+<p>我换了一个问题：<b>这些输入能不能同时成立？</b> 一份输入清单可以每一项都正确、每一处引用都对，而整体仍然无解——就像三个角都量准了的三角形，第四个角多写了 20 度。这一轮找的就是那个 20 度。</p>
+
+<div class="box warn">
+<p style="margin:0 0 6px"><b>结论先说：找到五处，前三处同根，其中第一处是硬伤。</b></p>
+<p style="margin:0">L = 16.00 m 与 16 mm 内径不相容：这一段的管摩擦单项 <b>32.285</b>，已经是原型整条回路总阻力 22.8 的 <b>141.6%</b>。把孔板整个删掉、取光滑管、取整个温度窗里最有利的 773 K，最低也只有 <b>34.230</b>。所以这不是「孔板选大了」，是<b>长度和口径不属于同一台台架</b>——而这台台架也就不可能是原型的缩比模型。</p>
+</div>
+
+<h2>一、先确认：提交的算术是对的</h2>
+
+<p>我用 NEA 2015 表 15.3.2 第 6 式、表 15.3.3 第 3 式、Al‑Tameemi–Ricco 式(4) 独立实现了一遍，在 <span class="gk">ṁ</span> = 0.20 kg/s、<i>T</i> = 573.15 K、16 mm、16 m、4 个斜接弯头下：</p>
+
+<table>
+<tr><th style="width:34%">量</th><th class="num" style="width:22%">本脚本</th><th class="num" style="width:22%">提交值</th><th style="width:22%">判定</th></tr>
+<tr><td>Re（主管）</td><td class="num">8643.447004</td><td class="num">8643.447004</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><span class="gk">K</span><sub>pipe</sub>（Churchill，光滑）</td><td class="num">32.284926</td><td class="num">32.284926</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><span class="gk">K</span> 四个弯头</td><td class="num">5.191282</td><td class="num">5.191282</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><span class="gk">K</span><sub>orifice</sub>（10 mm × 2 mm）</td><td class="num">5.593959</td><td class="num">5.593959</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td><b><span class="gk">K</span><sub>total</sub></b></td><td class="num"><b>43.070166</b></td><td class="num"><b>43.070166</b></td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td>576 行网格 <span class="gk">K</span> 范围</td><td class="num">34.354–56.799</td><td class="num">34.354–56.799</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td>网格 Re 范围</td><td class="num">3262–24372</td><td class="num">3262–24372</td><td><span class="tag t-ok">一致</span></td></tr>
+<tr><td>保温 + 热桥 <span class="gk">U</span>′ 上限</td><td class="num">0.175743</td><td class="num">0.175743</td><td><span class="tag t-ok">一致</span> W/(m·K)</td></tr>
+<tr><td>条件热损上限（<i>T</i> = 773.15 K）</td><td class="num">1509.6</td><td class="num">1509.6</td><td><span class="tag t-ok">一致</span> W</td></tr>
+<tr><td>3 kW 减该上限</td><td class="num">1490.4</td><td class="num">1490.4</td><td><span class="tag t-ok">一致</span> W</td></tr>
+</table>
+
+<p class="small">复算脚本把 576 行网格重新生成了一遍（3 个流量 × 3 个温度 × 2<sup>6</sup> 个尺寸/阻力端点 = 576），逐行对上了提交的 <code>K_min/K_max</code>。这一步没有发现任何算术错误。</p>
+
+<h2>二、第一处硬伤：长度不是同一个尺度</h2>
+
+<p>方案里给了三个长度：内径 16.00 mm、总直管 16.00 m、源汇中心高差 2.00 m。对照原型（26.00 mm、11.00 m、3.35 m）：</p>
+
+<table>
+<tr><th style="width:20%">轴</th><th class="num" style="width:18%">原型</th><th class="num" style="width:18%">模型</th><th class="num" style="width:16%">l<sub>r</sub></th><th>判定</th></tr>
+<tr><td>内径</td><td class="num">26.00 mm</td><td class="num">16.00 mm</td><td class="num">0.6154</td><td><span class="tag t-ok">基准</span></td></tr>
+<tr><td>有效高度</td><td class="num">3.35 m</td><td class="num">2.00 m</td><td class="num">0.5970</td><td><span class="tag t-ok">与内径相符</span>（差 3%）</td></tr>
+<tr><td><b>直管总长</b></td><td class="num">11.00 m</td><td class="num">16.00 m</td><td class="num"><b>1.4545</b></td><td><span class="tag t-no">模型比原型还长 45%</span></td></tr>
+</table>
+
+<p>缩比模型需要<b>一个</b> l<sub>r</sub> 同时管三个轴。这里口径和高差落在 0.60，长度落在 1.45，差 2.36 倍。这不是「有点宽」，是这台台架在这个轴上<b>不是原型缩小，而是原型放大</b>。</p>
+
+<p>后果全部落在 L/D 上，而 L/D 决定 <span class="gk">K</span> 里有多少是管摩擦：</p>
+
+<pre><code>原型   L/D = 11.00 / 0.026 = 423.1     K_pipe = 17.7  =  77.6% of 22.8
+模型   L/D = 16.00 / 0.016 = 1000.0    K_pipe = 32.3  = 141.6% of 22.8</code></pre>
+
+<p><b>模型这一段的管摩擦单项，已经超过原型整条回路的总阻力。</b> 于是孔板的位置很尴尬：它需要提供的量是</p>
+
+<pre><code>K_orifice,required = 22.8 - 32.285 - 5.191 - 0 = <b>-14.676</b></code></pre>
+
+<p>负数。任何实物构件都给不出负阻力。而把孔板删掉也不行，因为删掉它的下限是：</p>
+
+<table>
+<tr><th style="width:26%">算例（无孔板、光滑、<span class="gk">K</span><sub>aux</sub> = 0）</th><th class="num" style="width:16%">Re</th><th class="num" style="width:18%"><span class="gk">K</span><sub>pipe</sub> + 4 弯头</th><th class="num" style="width:16%">相对 22.8</th></tr>
+<tr><td><i>T</i> = 473.15 K</td><td class="num">6545</td><td class="num">40.534</td><td class="num">+77.8%</td></tr>
+<tr><td><i>T</i> = 573.15 K</td><td class="num">8643</td><td class="num">37.476</td><td class="num">+64.4%</td></tr>
+<tr><td><i>T</i> = 773.15 K（最有利）</td><td class="num">12148</td><td class="num">34.230</td><td class="num">+50.1%</td></tr>
+</table>
+
+<p>三种温度下都是正值，最低 34.230 仍高出 50.1%。<b>无论孔板取什么、公差取什么、粗糙度取什么，符号都翻不过来。</b> 这一条与孔板无关，只与长度有关。</p>
+
+<h2>三、第二处：10 mm 的孔和 16 m 的管，分属两台台架</h2>
+
+<p>反过来问：给定一个孔，多长的管才能凑到 22.8？（仍取 16 mm、4 个弯头、<span class="gk">K</span><sub>aux</sub> = 0、检查点 0.20 kg/s / 573 K）</p>
+
+<table>
+<tr><th style="width:18%">孔板</th><th class="num" style="width:16%"><span class="gk">K</span><sub>orifice</sub></th><th class="num" style="width:16%">需要 <span class="gk">K</span><sub>pipe</sub></th><th class="num" style="width:18%">L 应为</th><th class="num" style="width:14%">L/D</th><th>备注</th></tr>
+<tr><td>10 mm（提交值）</td><td class="num">5.594</td><td class="num">12.015</td><td class="num"><b>5.95 m</b></td><td class="num">372</td><td>提交的是 16.00 m</td></tr>
+<tr><td>11 mm</td><td class="num">3.065</td><td class="num">14.544</td><td class="num">7.21 m</td><td class="num">450</td><td>—</td></tr>
+<tr><td>12 mm</td><td class="num">1.638</td><td class="num">15.971</td><td class="num">7.92 m</td><td class="num">495</td><td>—</td></tr>
+<tr><td>13 mm</td><td class="num">0.825</td><td class="num">16.784</td><td class="num">8.32 m</td><td class="num">520</td><td>—</td></tr>
+<tr><td>无</td><td class="num">0.000</td><td class="num">17.609</td><td class="num">8.73 m</td><td class="num">545</td><td>上限</td></tr>
+</table>
+
+<p>表里最刺眼的一行是：<b>提交的 10 mm 孔，对应的长度正好是 5.95 m。</b> 也就是说这两个数各自都算得对，但它们属于两台不同的台架。方案 §3 说「孔板的 5.594 与按 22.8 配平所需的 6.475 接近只是数值巧合」——这句话说对了一半：<i>K</i> 的接近确实是巧合，但<b>孔径与长度的对应不是巧合，是一个约束</b>，而 16.00 m 不满足它。</p>
+
+<p>更麻烦的是 5.95 m 本身也到不了：有效高差 2.00 m 要求竖段各 3.00 m（加热段与冷却段各占 1 m，中心间距 = 竖段长 − 1 m），所以<b>光两条竖段就是 6.00 m</b>，还没算横段。孔板连一个合法的长度都没有。</p>
+
+<h2>四、第三处：155D 与 22.8 在 16 mm 上互斥</h2>
+
+<p>方案要求「从每个弯头到孔板至少 155D」，也就是下横段全长 310D。这一条与 <span class="gk">K</span> 目标的冲突与孔板无关，是几何本身：</p>
+
+<table>
+<tr><th style="width:16%">内径</th><th class="num" style="width:20%">下横段 310D</th><th class="num" style="width:16%">L</th><th class="num" style="width:14%">L/D</th><th class="num" style="width:16%"><span class="gk">K</span>（无孔板）</th><th>对 22.8</th></tr>
+<tr><td>16 mm</td><td class="num">4.96 m</td><td class="num">11.06 m</td><td class="num">691</td><td class="num"><b>27.51</b></td><td>+20.7%</td></tr>
+<tr><td>20 mm</td><td class="num">6.20 m</td><td class="num">12.30 m</td><td class="num">615</td><td class="num">26.65</td><td>+16.9%</td></tr>
+<tr><td>26 mm</td><td class="num">8.06 m</td><td class="num">14.16 m</td><td class="num">545</td><td class="num">26.16</td><td>+14.7%</td></tr>
+</table>
+
+<p>加粗那一行是 16 mm 的结果：<b>光是满足 155D 就已经 27.51，比目标高 20.7%，孔板还没装。</b> 放大口径只是把竖段固定 3.00 m 的相对占比压下来，压不掉管道摩擦的份额——那个份额由 L/D 决定，而 155D 把 L/D 钉在 545–691。</p>
+
+<div class="box">
+<p style="margin:0"><b>所以设计必须放弃四项中的一项：</b>155D 这个距离、四弯头这个拓扑、2.00 m 这个高度、或 22.8 这个目标。<b>在 16 mm 上没有第五条路。</b> 这不是数值问题，是这台台架的形状问题；换任何关联式、任何公差都不动它。</p>
+</div>
+
+<h2>五、第四处：<span class="gk">D</span> 的口径没声明，同一个设计有三个答案</h2>
+
+<p>方案 §5 已经指出 <span class="gk">D</span> = (<span class="gk">K</span><sub>M</sub>/<span class="gk">K</span><sub>P</sub>)<sup>−1/3</sup> − 1「需满足特定同口径条件」——这是对的，而且条件现在可以写出来了。<b>这个式子的前提是两侧驱动压头相同</b>，即 <span class="gk">H</span><sub>M</sub> = <span class="gk">H</span><sub>P</sub> 且 <span class="gk">ΔT</span> 匹配。而这份设计里 <span class="gk">H</span><sub>M</sub>/<span class="gk">H</span><sub>P</sub> = 0.597，前提缺 40%。</p>
+
+<table>
+<tr><th style="width:34%">口径</th><th class="num" style="width:18%"><span class="gk">K</span><sub>r</sub></th><th class="num" style="width:16%">结果</th><th>它实际在说什么</th></tr>
+<tr><td>(1) 纯 <span class="gk">K</span> 比（v16 以来的式子）</td><td class="num">1.889</td><td class="num"><b>−19.10%</b></td><td>驱动压头不变时的速度偏差；此处前提不成立</td></tr>
+<tr><td>(2) Froude 归一，<span class="gk">ΔT</span> 匹配</td><td class="num">1.889</td><td class="num"><b>−28.34%</b></td><td>u<sub>r</sub> = √(<span class="gk">H</span><sub>r</sub>/<span class="gk">K</span><sub>r</sub>) 对目标 √l<sub>r</sub></td></tr>
+<tr><td>(2′) 同式，但 <span class="gk">K</span><sub>r</sub> = 1（长度已修正）</td><td class="num">1.000</td><td class="num">−1.50%</td><td>只剩 <span class="gk">H</span><sub>r</sub> 0.597 与 l<sub>r</sub> 0.615 的差</td></tr>
+<tr><td>(3) 同加热功率，<span class="gk">Q</span><sub>r</sub> = 1</td><td class="num">1.889</td><td class="num">0.9415</td><td>不是相似准则，只是「一个加热器两台台架」</td></tr>
+</table>
+
+<p>(1) 与 (2) 差 9.2 pp，全部来自「<span class="gk">H</span> 要不要跟着缩」。这不是谁对谁错，是<b>两个不同的实验声明</b>。方案 §5 拒绝把 <span class="gk">D</span> 当一般式用是对的；但接下来必须选一个，(2′) 那一行同时说明：<b>只要长度修正，Froude 口径下的失真就从 −28.3% 掉到 −1.5%</b>，而 −1.5% 只剩高差与口径那 3% 的差。</p>
+
+<p class="small">另外一行值得记住：把同一个式子挪到这台回路自己的运行点（Re 17662、<span class="gk">K</span> = 31.18），(1) 给出 −9.91%。比检查点的 −19.10% 小一半，因为 <i>f</i> 随 Re 下降。所以「失真多大」这句话连在同一个设计上都要先说明在哪个流量点。<b>三个数都在 3% 之外，最近的也是它的三倍。</b></p>
+
+<h2>六、第五处：Churchill 式在过渡区真的有峰，而下界贴得太近</h2>
+
+<p>方案 §3 提到「Churchill 式在过渡区有阻力峰」。这句话是对的，而且峰的位置可以定出来——我按 1 个 Re 的步长扫了 f(Re)：</p>
+
+<pre><code>df/dRe &gt; 0   for   2202 &lt; Re &lt; 3116      (非单调段)
+局部最小   Re = 2200   f = 0.03009
+局部最大   Re = 3115   f = 0.04316       比谷底高 43.4%</code></pre>
+
+<p>这不是插值噪声，是 NEA 表 15.3.2 第 6 式自身在过渡区的形状。后果是：如果稳态点落在这段上，d<span class="gk">K</span>/dRe &gt; 0，v20 用的那个「3 + s<sub>M</sub> &gt; 0 ⇒ 解唯一」的论证在这里<b>不成立</b>，可能出现多解。</p>
+
+<p>再看声明域的最低角（<span class="gk">ṁ</span> = 0.10 kg/s、<i>T</i> = 473.15 K）：</p>
+
+<table>
+<tr><th style="width:34%">条件</th><th class="num" style="width:18%">Re</th><th class="num" style="width:18%">距峰 Re 3115</th><th>判定</th></tr>
+<tr><td>声明下界 0.10 kg/s / 473.15 K</td><td class="num">3273</td><td class="num">+158</td><td><span class="tag t-mid">5%</span> 在下降支上</td></tr>
+<tr><td>同一角，<span class="gk">μ</span> 按 NEA 的 +8%</td><td class="num">3030</td><td class="num">−85</td><td><span class="tag t-no">落进上升支</span></td></tr>
+<tr><td>建议下界 0.12 kg/s</td><td class="num">3927</td><td class="num">+812</td><td><span class="tag t-ok">安全</span></td></tr>
+</table>
+
+<p>方案 §3 说「最低 Re 仍约 3021，高于孔板及弯头门槛」——对孔板和弯头的门槛是对的，但<b>没查单调性</b>。3021 正好落在峰下。把下界从 0.10 提到 0.12 kg/s 就能把这段躲开，代价只是可调流量范围从 4:1 缩到 3.3:1。</p>
+
+<h2>七、热边界：这一块可以封口</h2>
+
+<p>方案 §4 的热账本身没错，但有一个口径问题：<b>1.510 kW 这个上限是在 <i>T</i><sub>max</sub> = 773.15 K 上算的，而 773 K 是关联式的适用域上限，不是这台回路会到的温度。</b></p>
+
+<p>把动量方程和能量方程联立（浮升 = 摩擦，<span class="gk">ṁ</span> 与 <span class="gk">ΔT</span> 都是输出），得到：</p>
+
+<table>
+<tr><th style="width:14%">电功率</th><th class="num" style="width:12%">净热</th><th class="num" style="width:11%"><i>u</i></th><th class="num" style="width:12%"><span class="gk">ṁ</span></th><th class="num" style="width:10%"><span class="gk">ΔT</span></th><th class="num" style="width:12%"><i>T</i><sub>max</sub></th><th class="num" style="width:10%">Re</th><th class="num" style="width:12%">热损</th></tr>
+<tr><td>3 kW</td><td class="num">2236 W</td><td class="num">0.1160</td><td class="num">0.243</td><td class="num">62.9 K</td><td class="num">536.1 K</td><td class="num">9581</td><td class="num">764 W</td></tr>
+<tr><td>4 kW</td><td class="num">3088 W</td><td class="num">0.1293</td><td class="num">0.270</td><td class="num">78.1 K</td><td class="num">551.3 K</td><td class="num">11092</td><td class="num">812 W</td></tr>
+<tr><td>5 kW</td><td class="num">3754 W</td><td class="num">0.1381</td><td class="num">0.289</td><td class="num">89.1 K</td><td class="num">562.2 K</td><td class="num">12157</td><td class="num">846 W</td></tr>
+<tr><td>6 kW</td><td class="num">5090 W</td><td class="num">0.1530</td><td class="num">0.319</td><td class="num">109.3 K</td><td class="num">582.4 K</td><td class="num">14097</td><td class="num">910 W</td></tr>
+</table>
+
+<p class="small">上表按 <span class="gk">K</span> = 22.8 算（长度修正后）。按提交的 <span class="gk">K</span> = 43.07 算，同功率下 <span class="gk">ṁ</span> = 0.195–0.257 kg/s、<i>T</i><sub>max</sub> = 550–607 K、热损 808–987 W，结论相同。</p>
+
+<p>于是：</p>
+<ul>
+<li><b>真实热损是 0.76–0.91 kW，不是 1.51 kW。</b> 上限没错，但它把「3 kW 只剩 1.49 kW」写成了一个不存在的紧约束——实际剩 2.24 kW。</li>
+<li><b>流量和温度都落在声明窗口内</b>（0.10–0.40 kg/s、473–773 K），这一项可以封口。</li>
+<li><b>冷却器 <span class="gk">UA</span> ≥ 150 W/K 是需求的 3–7 倍。</b> 3 kW 时只需 22 W/K（<span class="gk">ΔT</span><sub>lm</sub> 66.6 K），6 kW 时 50 W/K。所以它不能按固定 <span class="gk">UA</span> 运行，必须是可调边界（旁通或油侧流量），否则冷腿被钉在 433 K，加热入口的 473 K 控制条件做不到。</li>
+</ul>
+
+<div class="box warn">
+<p style="margin:0 0 6px"><b>热边界还暴露了一个没人声明过的输入：原型的参考温度到底是哪一个。</b></p>
+<p style="margin:0">模型算出来跑在 536–607 K。原型侧有两个数：Yue 表 2 的 Re 列反解出 <b>504.6 K</b>（<span class="gk">μ</span> = 2.20×10<sup>−3</sup>），Li 2015 说台架常规运行在 <b>723 K</b>。两者 <span class="gk">μ</span> 差 1.4 倍。<b>在这个数被声明之前，Re<sub>r</sub> 没有目标值</b>——而 Re<sub>r</sub> 正是「模型有没有复现原型的摩擦状态」这句话的全部内容。</p>
+</div>
+
+<h2>八、把五处并起来：一条能同时成立的方案</h2>
+
+<p>前四处其实是同一个错误的四个侧面——长度、孔径、间距、口径，四个都在问同一句话：<b>这台台架是哪一台</b>。第五处是另一类：它不是几何不相容，而是声明域的边界贴到了 <i>f</i>(Re) 的上升支上，单独解，不参与这条几何链。<b>先按因果顺序把几何这四处排开，会看到孔板是起点：</b></p>
+
+<ol>
+<li>孔板要放在下横段中点，于是要求它两侧各 155D；下横段因此长 310D = 4.96 m。</li>
+<li>加上两条 3.00 m 竖段和上横段，总长被推到 16 m。</li>
+<li>16 m 的管摩擦是 32.3，超过 22.8；孔板的缺口变成 −14.7。</li>
+<li>为了救它，只能缩短——但缩短会立刻破坏 155D；两条要求互相掐住。</li>
+</ol>
+
+<p><b>所以修法不是调孔板，是把孔板拿掉。</b> 理由在数据里：模型缺的构件是膨胀箱（2.5 <span class="gk">K</span>）与环隙加热段的形阻（2.6 <span class="gk">K</span>），合计 5.1；而<b>四个斜接弯头已经值 4.5 <span class="gk">K</span></b>。缺额已经被弯头付掉了，孔板是重复付款，而且它付款的方式（逼长管道）比它付的还贵。</p>
+
+<p>拿掉孔板之后，约束从「弯头到孔板 155D」变成「弯头到弯头 ≥ 140D」（Al‑Tameemi 的上下游要求取其大者）：</p>
+
+<table>
+<tr><th style="width:40%">量</th><th class="num" style="width:20%">值</th><th>说明</th></tr>
+<tr><td>四条腿各 140D</td><td class="num">L ≥ 8.96 m</td><td>几何下限</td></tr>
+<tr><td>竖段被 <span class="gk">H</span> = 2.00 m 钉在 3.00 m</td><td class="num">L ≥ 10.48 m</td><td>实际下限（h ≥ 2.24 m）</td></tr>
+<tr><td><b>取 L = 11.00 m（h = 2.50 m，156D）</b></td><td class="num"><b><span class="gk">K</span> = 22.849</b></td><td>运行点 0.37 kg/s / 620 K / Re 17662</td></tr>
+<tr><td>其中 <span class="gk">K</span><sub>pipe</sub> / 4 弯头</td><td class="num">18.331 / 4.518</td><td>占比 80.2% / 19.8%（原型 77.6% / 22.4%）</td></tr>
+<tr><td>对 22.8：<span class="gk">K</span> 高 0.21%，速度失真 <span class="gk">D</span><sub>K</sub> −0.071%</td><td class="num">−0.071%</td><td>两个数不是一回事：<span class="gk">D</span> = (<span class="gk">K</span><sub>M</sub>/<span class="gk">K</span><sub>P</sub>)<sup>−1/3</sup> − 1</td></tr>
+</table>
+
+<p>K 的<b>构成</b>也回来了：管道八成、局部两成。这是原型的构成。带孔板的那版做不到这一点——它会把 26% 的阻力塞进一个原型没有的集中构件里。</p>
+
+<h3>设计点本身也是个没声明的输入</h3>
+
+<p>上面那个 11.00 m 是在运行点上算的。方案用的是等温检查点（0.20 kg/s、573.15 K），那不是回路的运行点。换检查点，同一个「凑到 22.8」的长度会变：</p>
+
+<table>
+<tr><th style="width:38%">评价点</th><th class="num" style="width:14%">Re</th><th class="num" style="width:14%"><i>f</i></th><th class="num" style="width:16%">L 应为</th><th class="num" style="width:14%">h</th></tr>
+<tr><td>提交的检查点 0.20 kg/s / 573 K</td><td class="num">8643</td><td class="num">0.03228</td><td class="num">8.73 m</td><td class="num">1.36 m</td></tr>
+<tr><td>6 kW 耦合运行点</td><td class="num">14077</td><td class="num">0.02828</td><td class="num">10.25 m</td><td class="num">2.12 m</td></tr>
+<tr><td>Froude 点 0.37 kg/s / 620 K</td><td class="num">17662</td><td class="num">0.02666</td><td class="num">10.97 m</td><td class="num">2.49 m</td></tr>
+</table>
+
+<p>8.7–11.0 m，跨度 26%。<b>所以在冻结图纸之前，必须先声明设计点</b>；否则「长度」这个输入没有唯一值。三个都不是 16.00 m；提交的长度比它们长 45–85%。</p>
+
+<h3>这个方案付的代价，说清楚</h3>
+
+<p>l<sub>r</sub> 在口径上是 0.615、高差上是 0.597，但<b>长度上是 1.00</b>。也就是说这是一台<b>摩擦相似</b>的回路，不是几何相似的回路。K 和几何不能同时匹配——摩擦数相似要求 L/D 而不是 L 跟着 l<sub>r</sub> 走，而 L/D 相似与几何相似只有在壁面粗糙度也同比缩小时才等价，那做不到。这份设计选 K，因为 K 定速度。</p>
+
+<h3>逐轴代价（局部评价，不是极值）</h3>
+
+<p>在 L = 11.00 m、0.37 kg/s、620 K 上，把每个输入单独推到它自己的验收端点：</p>
+
+<table>
+<tr><th style="width:40%">轴</th><th class="num" style="width:16%"><span class="gk">K</span></th><th class="num" style="width:16%"><span class="gk">D</span><sub>F</sub></th><th class="num" style="width:16%"><span class="gk">Δ</span></th></tr>
+<tr><td>名义</td><td class="num">22.849</td><td class="num">−1.61%</td><td class="num">—</td></tr>
+<tr><td>四段各 +0.01 m</td><td class="num">22.915</td><td class="num">−1.75%</td><td class="num">−0.14 pp</td></tr>
+<tr><td>四段各 −0.01 m</td><td class="num">22.782</td><td class="num">−1.47%</td><td class="num">+0.14 pp</td></tr>
+<tr><td>内径 ±0.05 mm</td><td class="num">22.81 / 22.89</td><td class="num">−1.52 / −1.70%</td><td class="num">±0.09 pp</td></tr>
+<tr><td><b>等效砂粒粗糙度 10 <span class="gk">μ</span>m</b></td><td class="num">23.809</td><td class="num"><b>−3.61%</b></td><td class="num"><b>−2.01 pp</b></td></tr>
+<tr><td><b><span class="gk">K</span><sub>aux</sub> = 0.5</b></td><td class="num">23.349</td><td class="num"><b>−2.67%</b></td><td class="num"><b>−1.06 pp</b></td></tr>
+</table>
+
+<p>两项大的都是<b>图纸上的验收条件，不是测量值</b>，而且方向一致：管更糙或真有辅助口，<span class="gk">K</span> 就偏高，模型就偏慢。「0–10 <span class="gk">μ</span>m」和「<span class="gk">K</span><sub>aux</sub> ≤ 0.5」这两条不是可以糊过去的注脚，它们值 3 pp，比整套长度公差和口径公差加起来大十倍。</p>
+
+<h2>九、设计输入台账</h2>
+
+<table>
+<tr><th style="width:22%">输入</th><th style="width:24%">本版建议值</th><th style="width:18%">身份</th><th style="width:12%">状态</th><th>若不满足</th></tr>
+<tr><td>主管内径</td><td class="v">16.00 ± 0.05 mm</td><td>图纸</td><td><span class="tag t-ok">可封</span></td><td>0.09 pp</td></tr>
+<tr><td>竖段（×2）</td><td class="v">3.00 ± 0.01 m</td><td>图纸，由 <span class="gk">H</span> = 2.00 m 定</td><td><span class="tag t-ok">可封</span></td><td>—</td></tr>
+<tr><td>横段（×2）</td><td class="v">2.50 ± 0.01 m</td><td>图纸</td><td><span class="tag t-mid">待定 L</span></td><td>每 0.04 m 值 0.14 pp</td></tr>
+<tr><td>阻力件</td><td class="v">无（去孔板）</td><td>设计决定</td><td><span class="tag t-no">与提交冲突</span></td><td>见第二至四节</td></tr>
+<tr><td>四个弯头</td><td class="v">90° 锐角斜接，156D 间距</td><td>图纸 + 关联式</td><td><span class="tag t-mid">模型条件</span></td><td>间距 85D 以下失去依据</td></tr>
+<tr><td>等效砂粒粗糙度</td><td class="v">0–10 <span class="gk">μ</span>m</td><td>采购/服役验收</td><td><span class="tag t-mid">最敏感</span></td><td>2.01 pp</td></tr>
+<tr><td><span class="gk">K</span><sub>aux</sub></td><td class="v">0–0.5（主管动压）</td><td>图纸验收，无出处</td><td><span class="tag t-mid">最敏感</span></td><td>1.06 pp</td></tr>
+<tr><td>加热电功率</td><td class="v">3–6 kW，设计点约 8 kW 才到 Froude 速度</td><td>设备能力</td><td><span class="tag t-no">偏小</span></td><td>6 kW 时只到 86% 目标速度</td></tr>
+<tr><td>加热入口温度</td><td class="v">473.15–483.15 K</td><td>控制边界</td><td><span class="tag t-ok">可封</span></td><td>—</td></tr>
+<tr><td>保温 / 热桥</td><td class="v"><span class="gk">k</span> ≤ 0.05、50 mm、<span class="gk">UA</span><sub>br</sub> ≤ 0.5</td><td>材料与施工验收</td><td><span class="tag t-ok">可封</span></td><td>热损会超出 0.76–0.91 kW 这本账</td></tr>
+<tr><td>冷却器</td><td class="v"><span class="gk">UA</span> 可调，上限 ≥ 50 W/K</td><td>控制边界</td><td><span class="tag t-mid">须可调</span></td><td>固定 150 W/K 会把冷腿钉在 433 K</td></tr>
+<tr><td>流量验收窗</td><td class="v">0.12–0.40 kg/s</td><td>求解后验收</td><td><span class="tag t-ok">改下界</span></td><td>0.10 贴 Churchill 峰 5%</td></tr>
+<tr><td>原型参考温度</td><td class="v">504.6 K 或 723 K，须二选一</td><td><b>未声明</b></td><td><span class="tag t-no">缺</span></td><td>Re<sub>r</sub> 无目标值</td></tr>
+<tr><td>设计点（<span class="gk">ṁ</span>, <i>T</i>, <span class="gk">Q</span>）</td><td class="v">未声明</td><td><b>缺</b></td><td><span class="tag t-no">缺</span></td><td>L 在 8.7–11.0 m 之间摆</td></tr>
+</table>
+
+<h2>十、可写 / 不可写</h2>
+
+<table>
+<tr><th style="width:50%">可写</th><th>不可写</th></tr>
+<tr><td>「16 mm / 16 m / 10 mm 孔 的等温检查给出 <span class="gk">K</span><sub>total</sub> = 43.070，全部按 NEA 与 Al‑Tameemi 式正向计算，未使用配平。」</td><td>「该回路在设计域内的总阻力为 43.070。」——43.070 是一个检查点的值，不是域上的量</td></tr>
+<tr><td>「按 22.8 目标反推，该拓扑需要的孔板阻力为 −14.68，即几何上不存在。」</td><td>「孔板选 10 mm 是因为…」——10 mm 对应的是 5.95 m 的回路</td></tr>
+<tr><td>「l<sub>r</sub> 在口径与高差上为 0.60，在长度上为 1.45。」</td><td>「这是一台 0.6 缩比的模型。」——只有两个轴是</td></tr>
+<tr><td>「在 L = 11.00 m、0.37 kg/s、620 K 上，<span class="gk">K</span><sub>pipe</sub> + 4 弯头 = 22.849（比 22.8 高 0.21%），速度失真 <span class="gk">D</span><sub>K</sub> = −0.07%。」</td><td>「因此该设计满足相似准则。」——这是设计点的构造值，不是独立验证</td></tr>
+<tr><td>「热损的条件上限在 773 K 上为 1.51 kW；按实际 <i>T</i><sub>max</sub> 536–607 K 为 0.76–0.91 kW。」</td><td>「热损 0.1–0.2 kW。」——无依据</td></tr>
+<tr><td>「Churchill 式在 Re ∈ (2202, 3116) 上单调递增，局部极值在 2200 与 3115。」</td><td>「流量解唯一。」——在该区间不成立</td></tr>
+<tr><td>「本轮未给出失真上界，也未做 GSA。」</td><td>「设计域已经封口。」</td></tr>
+</table>
+
+<div class="box ok">
+<p style="margin:0"><b>下一步只需要两个决定，都不是算出来的：</b></p>
+<p style="margin:6px 0 0">① <b>孔板留不留。</b> 留，则长度必须 ≤ 5.95 m 且 155D 作废；不留，则 L ≈ 11 m，155D（按弯头—弯头 140D）成立，K 的构成也回到原型的八二开。<br>
+② <b>设计点声明在哪。</b> 它决定 L 是 8.7 还是 11.0 m，也决定「<span class="gk">D</span> 用哪个口径」。<br>
+这两条定了，输入就真的封口了；剩下的（摄动、GSA、求界）才开始有意义。</p>
+</div>
+
+<p class="small" style="margin-top:34px">脚本 <code>比例失真_计算/design_v24.py</code>（538 行，<code>[A]</code>–<code>[H]</code> 八段）；日志 <code>design_v24_log.txt</code>（256 行，纯 ASCII，<code>%%</code> 残留 0）。复算只依赖 NEA 2015 表 15.3.2 第 6 式、表 15.3.3 第 3 式与 Al‑Tameemi–Ricco 式(4)，未从任何目标值反解。</p>
+
+</div>
+</body>
+</html>

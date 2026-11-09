@@ -5,7 +5,7 @@
 - 创建：2026-11-02
 - 题目（暂定）：铅铋自然循环缩比失真的设计阶段条件界
 - 目标期刊：未定
-- 最近事务：TX-017
+- 最近事务：TX-018
 - 参数原始表：[outputs/parameter-provenance-20261102.md](../outputs/parameter-provenance-20261102.md)
 - 当前物理域：[v15 全文证据审查](../outputs/physical-domain-v15-review-20261108.md)、[输入 CSV](../outputs/physical-domain-v15-ledger-20261108.csv)、[16 份原文哈希清单](../outputs/physical-domain-v15-sources-20261108.json)
 - 阻力设计基线：[v16 KYLIN 逐构件计算与阀门反解](../outputs/component-resistance-design-v16-20261108.md)
@@ -14,6 +14,7 @@
 - 当前条件包络复核：[v18 配平、可行阀门域与 GSA 对象审计](../outputs/design-v18-independent-review-20261108.md)
 - 当前设计约束复核：[v19 阀门可行域、曲线求界与温度口径审计](../outputs/design-v19-independent-review-20261108.md)
 - 当前独立模型设计输入：[固定孔板、四斜接弯头与热边界方案](../outputs/lbe-forward-design-input-spec-20261108.md)
+- v24 后独立审计：[阻力配平前提与重复扣热损](../outputs/design-v24-independent-review-20261109.md)
 
 ## source
 
@@ -71,6 +72,8 @@
 
 `TX-017` 独立拓扑与热边界候选：拟建模型选 16 mm 内径、3×2 m 竖向与 5×2 m 横向直管、四个锐角斜接弯头、下横段 10×2 mm 有限厚度孔板；外加热和外冷却同内径圆管，正常循环路径无内联调节/隔离阀。NEA 2015 表 2.19.3/15.3.2/15.3.3 与 AR-P5/式(4)支撑相应构件**条件模型**，均不以 `K_target=22.8` 配平。`K_aux≤0.5`、粗糙度≤10 μm、保温与热桥、冷却器 `UA≥150 W/K` 是**提出的验收规格**，非文献或实物测量；尚不能称整个装置物理输入已认证。按沿程温度与密度联立求质量流量，不把总热损压缩为可任意采样的单一 Φ。[完整方案与输入脚本](../outputs/lbe-forward-design-input-spec-20261108.md)
 
+`TX-018` v24 审计：原等温构件算术与 1.510 kW 条件热损上限复现。v24 用原型理论 `K=22.8` 反推新回路管长，新增缩放配平约束，不能据 `16 m` 的 `K=43.070` 判原独立候选整体无根；Yue 11 m 还是 *assumed conservatively*。v24 `Q_net=Q_e−Q_loss` 后又设 `Q_c=Q_net−Q_loss`，重复扣热损。独立 1D 周期能量/沿程密度动量联立在 16 m 孔板候选的 3/6 kW 给名义正根 `ṁ≈0.20736/0.27320 kg/s`，仅为条件存在性反例，不是实物验证或连续 FoM 界。Churchill 过渡峰保留，但 `μ−8%` 的 Re 方向及“必可能多根”推论撤回。[完整复核](../outputs/design-v24-independent-review-20261109.md)
+
 ## constraints
 
 - 表中“直径”必须保留原文修饰语；不能把未说明的几何直径改写为流通内径。
@@ -89,7 +92,7 @@
 
 ## metrics
 
-- 当前 C-01–C-92 共 92 条；逐条状态和原文坐标见矩阵。v19 B 支设计可行性临界值和 A 支 m_v≤0.05 候选规格已核；v19 的受约束 GSA 实际未筛可行样本、向量配平漏 band，曲线 Lipschitz 余量未认证，573/473 K 案例混用黏度基准。TX-017 为独立设计候选，尚未跑整回路 FoM/GSA。
+- 当前 C-01–C-96 共 96 条；逐条状态和原文坐标见矩阵。v19 B 支设计可行性临界值和 A 支 m_v≤0.05 候选规格已核；v19 的受约束 GSA 实际未筛可行样本、向量配平漏 band，曲线 Lipschitz 余量未认证，573/473 K 案例混用黏度基准。TX-017 的独立设计候选尚未跑整回路 FoM/GSA；TX-018 纠正 v24 的缩放前提和热账。
 - 目标期刊格式门禁：未启动；当前不判投稿合格。
 
 ## transactions
@@ -97,6 +100,8 @@
 `TX-014 | 2026-11-08 | v19 可行域与曲线极值审计 | U19-S 日志/CSV 复现；B 支 K_EV=3.5 和 L=5.88 反例，A 支 m_v≤0.05 候选角点；发现 GSA 未筛样本、向量配平漏 band、阀门流量导数符号错误及 NEA 温度基准混用；C-78–C-83 更新 | type=design-feasibility-and-proof-audit`
 
 `TX-017 | 2026-11-08 | 独立前向设计输入 | 选定圆管闭环、固定孔板、四斜接弯头与外加热/外冷却；逐项区分原式、图纸选择、采购验收与求根后核域；标明辅助口和热桥等未核规格，不报整体失真上界；C-90–C-92 更新 | type=independent-design-input`
+
+`TX-018 | 2026-11-09 | v24 设计可行性与热账审计 | 保留构件算术、Churchill 内部峰与 FoM 口径待定；撤回“K>22.8 ⇒ 16 m 无解”、冷却热负荷二次扣损及 μ 扰动反号；用独立沿程模型给条件稳态根；C-93–C-96 更新 | type=design-premise-and-energy-audit`
 
 `TX-013 | 2026-11-08 | v18 条件包络与 GSA 审计 | U18-S 日志、CSV 复现；解析阀门配平交互与 Φ 内生弹性；复核阶段Ⅰ角点，发现 B 支负阀门阻力、A 支 Φ±1% 可行角点超过随机最大值；C-71–C-77 更新 | type=conditional-envelope-and-gsa-audit`
 
