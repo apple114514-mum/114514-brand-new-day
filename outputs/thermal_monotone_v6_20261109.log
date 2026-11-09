@@ -1,0 +1,22 @@
+M heater minimum Q - UL(Tin-Tamb) = 2958.022136695 W > 0
+3 kW Dj min: -10.738854% corner bits (1, 0, 1, 1, 1, 1, 0, 0, 1, 1), (eps,aux,hole)=110
+3 kW Dj max: -6.910335% corner bits (0, 1, 0, 0, 0, 0, 1, 1, 1, 0), (eps,aux,hole)=001
+3 kW DT min: +7.809187% corner bits (0, 1, 0, 0, 0, 0, 1, 1, 1, 1), (eps,aux,hole)=001
+3 kW DT max: +12.649602% corner bits (1, 0, 1, 1, 1, 1, 0, 0, 1, 0), (eps,aux,hole)=110
+3 kW eps_M: 512 pairs, expected Dj margin 1.183991..1.491177 pp, expected DT margin 1.467295..1.751866 pp, violations 0/0
+3 kW k_aux_M: 512 pairs, expected Dj margin 0.701417..0.810007 pp, expected DT margin 0.873896..0.944606 pp, violations 0/0
+3 kW d_hole: 512 pairs, expected Dj margin 0.092431..0.109994 pp, expected DT margin 0.115942..0.127309 pp, violations 0/0
+4.3 kW Dj min: -9.720541% corner bits (1, 0, 1, 1, 1, 1, 0, 0, 0, 1), (eps,aux,hole)=110
+4.3 kW Dj max: -5.899992% corner bits (0, 1, 0, 0, 0, 0, 1, 1, 1, 0), (eps,aux,hole)=001
+4.3 kW DT min: +6.514469% corner bits (0, 1, 0, 0, 0, 0, 1, 1, 1, 1), (eps,aux,hole)=001
+4.3 kW DT max: +11.159484% corner bits (1, 0, 1, 1, 1, 1, 0, 0, 1, 0), (eps,aux,hole)=110
+4.3 kW eps_M: 512 pairs, expected Dj margin 1.335096..1.672462 pp, expected DT margin 1.613372..1.924097 pp, violations 0/0
+4.3 kW k_aux_M: 512 pairs, expected Dj margin 0.732359..0.847242 pp, expected DT margin 0.890848..0.966110 pp, violations 0/0
+4.3 kW d_hole: 512 pairs, expected Dj margin 0.096470..0.115109 pp, expected DT margin 0.118169..0.130239 pp, violations 0/0
+6 kW Dj min: -8.908746% corner bits (1, 0, 1, 1, 1, 1, 0, 0, 0, 1), (eps,aux,hole)=110
+6 kW Dj max: -5.104019% corner bits (0, 1, 0, 0, 0, 0, 1, 0, 1, 0), (eps,aux,hole)=001
+6 kW DT min: +5.539475% corner bits (0, 1, 0, 0, 0, 0, 1, 1, 1, 1), (eps,aux,hole)=001
+6 kW DT max: +10.027973% corner bits (1, 0, 1, 1, 1, 1, 0, 0, 1, 0), (eps,aux,hole)=110
+6 kW eps_M: 512 pairs, expected Dj margin 1.489043..1.856587 pp, expected DT margin 1.763555..2.102778 pp, violations 0/0
+6 kW k_aux_M: 512 pairs, expected Dj margin 0.759969..0.881217 pp, expected DT margin 0.907197..0.987735 pp, violations 0/0
+6 kW d_hole: 512 pairs, expected Dj margin 0.100071..0.119779 pp, expected DT margin 0.120319..0.133181 pp, violations 0/0
