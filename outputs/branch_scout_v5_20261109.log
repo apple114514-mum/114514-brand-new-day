@@ -1,0 +1,4 @@
+3 kW P: m0=0.4; min F(m0)=1384.883 Pa; nonpositive starts=0; cases without exactly one sampled sign crossing=0; first crossing well before solver root=0
+3 kW M: m0=0.15; min F(m0)=1523.061 Pa; nonpositive starts=0; cases without exactly one sampled sign crossing=0; first crossing well before solver root=0
+6 kW P: m0=0.4; min F(m0)=3670.031 Pa; nonpositive starts=0; cases without exactly one sampled sign crossing=0; first crossing well before solver root=0
+6 kW M: m0=0.15; min F(m0)=4757.676 Pa; nonpositive starts=0; cases without exactly one sampled sign crossing=0; first crossing well before solver root=0

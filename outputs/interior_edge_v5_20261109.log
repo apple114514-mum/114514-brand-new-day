@@ -1,0 +1,4 @@
+6 kW u_loss_fac: 55 edge sign flips; largest interior gain 0.001291 pp at 1.0013437 (maximum); endpoints -8.581157, -8.581151; interior -8.579860
+3 kW dTin_M: 36 edge sign flips; largest interior gain 0.000232 pp at -0.0159408 (maximum); endpoints -9.420037, -9.420039; interior -9.419805
+3 kW: corner D_j [-10.738854,-6.910335]%; explored interior edges [-9.545960,-7.447891]%
+6 kW: corner D_j [-8.908746,-5.104019]%; explored interior edges [-8.585108,-5.158327]%
