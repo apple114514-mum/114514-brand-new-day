@@ -1,0 +1,5 @@
+k 2 first-cell dlnr/dQ direct [-2.59352253e-05,7.26051126e-05] normalized-B/R [-6.08438979e-05,0.000118110275]
+k 4 first-cell dlnr/dQ direct [-1.24592141e-05,2.80811934e-05] normalized-B/R [-3.56535048e-05,5.15229454e-05]
+k 8 first-cell dlnr/dQ direct [-5.08681777e-06,1.52552157e-05] normalized-B/R [-2.26685986e-05,3.19255651e-05]
+k 16 first-cell dlnr/dQ direct [-1.1337476e-06,9.87949859e-06] normalized-B/R [-1.59148652e-05,2.36117857e-05]
+DIAGNOSTIC ONLY: both forms cross zero on this cell; the naive normalized rewrite is wider here.
