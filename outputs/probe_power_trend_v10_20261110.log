@@ -1,0 +1,6 @@
+CORNER_POWER_TREND 1024 corners, Q=3000/4300/6000 W
+three-point reversals 0
+minimum D_j(6000)-D_j(3000) in percentage points: (1.3582608543002204, 652, (1, 0, 1, 0, 0, 0, 1, 1, 0, 0), [-9.271107329794305, -8.486565759444408, -7.912846475494084])
+maximum D_j(6000)-D_j(3000) in percentage points: (2.2479400780088366, 371, (0, 1, 0, 1, 1, 1, 0, 0, 1, 1), [-8.696660477654083, -7.467828798042553, -6.4487203996452465])
+elapsed_s 7.45
+SEARCH ONLY: three Q values and corners do not prove monotonicity.
