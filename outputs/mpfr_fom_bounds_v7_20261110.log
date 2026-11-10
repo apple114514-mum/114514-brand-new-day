@@ -1,0 +1,3 @@
+progress 100/256, bound=[-34.7955,29.0981] %, time=15.4s
+progress 200/256, bound=[-35.1974,29.7397] %, time=30.5s
+CERTIFIED OUTER D_j, levels=1, boxes=256, root_bisection=12: [-35.19736257, 29.73966069] %, seconds=38.9

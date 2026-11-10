@@ -1,0 +1,7 @@
+MPFR MPFR 4.2.2, precision=128 bits, full ten-axis box
+P, 8 m boxes: F_m in [-21927.4503,-2891.1884] Pa/(kg/s), boxes crossing 0: 0/8
+P, 32 m boxes: F_m in [-20968.5724,-4367.9988] Pa/(kg/s), boxes crossing 0: 0/32
+P, 128 m boxes: F_m in [-20698.1891,-4867.6666] Pa/(kg/s), boxes crossing 0: 0/128
+M, 8 m boxes: F_m in [-2195440.2547,2367583.8638] Pa/(kg/s), boxes crossing 0: 8/8
+M, 32 m boxes: F_m in [-321863.0185,410259.0404] Pa/(kg/s), boxes crossing 0: 32/32
+M, 128 m boxes: F_m in [-210226.0556,307573.6597] Pa/(kg/s), boxes crossing 0: 128/128

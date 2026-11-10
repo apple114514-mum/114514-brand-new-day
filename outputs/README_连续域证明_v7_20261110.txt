@@ -1,0 +1,23 @@
+先验失真 v7：连续域证明复算包（2026-11-10）
+
+先读：先验失真_连续域根存在唯一性证明_v7_20261110.md
+
+依赖：Python 3.11+，numpy，gmpy2（MPFR）。
+安装：python -m pip install numpy gmpy2
+
+在解压后的同一目录中依次运行：
+  python factored_buoyancy_v7_20261109.py
+  python mpfr_interval_v7_20261109.py
+  python mpfr_derivative_v7_20261109.py
+  python mpfr_uniqueness_v7_20261110.py
+  python mpfr_fom_bounds_v7_20261110.py 1 12
+
+最后两步通常各需约 30–40 秒。随包的 .log 是本次运行输出。
+
+核对点：
+  P 的 F_m 上界 < -2891 Pa/(kg/s)。
+  M：5793 箱、2897 叶箱，F_m 的最大上界 < -1000 Pa/(kg/s)。
+  十轴 + 3–6 kW 的流量失真严格外包：[-35.198%, +29.740%]。
+
+外包已证明包含，但尚未收紧到 v2 搜索见到的近似极值；
+请勿将 [-10.74%, -5.10%] 称为严格极值。
