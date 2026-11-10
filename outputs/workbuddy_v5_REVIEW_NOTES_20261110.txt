@@ -1,0 +1,102 @@
+REVIEW NOTES - what to attack, and what is deliberately not claimed
+====================================================================
+
+Scope of the claim in this round
+--------------------------------
+Over the declared box (ten axes, bounds in core_v2.BOUNDS) and over the
+continuous power range Q in [3000, 6000] W, the mass-flux distortion
+
+    D_j = (m_M / A_R) / m_P - 1 ,     A_R = 0.378698225 fixed before solving
+
+satisfies
+
+    -18.6573 %  <=  D_j  <=  +2.6803 %        (21.3376 pp wide)
+
+This is an OUTER BOUND (an enclosure), not an extremum.  No claim is made
+that either endpoint is attained, and no claim is made that the true range is
+narrower than 21.34 pp.  The earlier corner search [-10.739, -5.104] % is
+strictly inside this enclosure and remains a searched value, not a bound.
+
+Five things worth attacking, in the order that would hurt most
+--------------------------------------------------------------
+1. The six-slab union.
+   SLABS in gbound.py are six closed 500 W intervals covering [3000, 6000].
+   The union argument needs: for every Q in a slab, every accepted root of
+   that slab lies inside that slab's flow bracket.  slab_window() computes
+   that bracket once per slab, from corner(side,-1) and corner(side,+1) with
+   the corner reduction.  Check: are the two corners really the extreme
+   cases of Phi over the slab (needs dPhi/dQ > 0 and the eight signed axes),
+   and does bracket() return an interval that contains ALL roots, not just
+   the one its bisection converged to?  bracket() runs two independent
+   monotone searches (largest m with Phi > 0, smallest m with Phi < 0) and
+   returns [a, b]; if the sign pattern is not the one assumed, it should
+   raise, not silently return.
+
+2. The pairing direction inside each cell.
+   cell_bound() evaluates, per cell, the low end of D_j as m_M(q_lo)/m_P(q_hi)
+   and the high end as m_M(q_hi)/m_P(q_lo).  This is valid only because
+   D_j increases in m_M and decreases in m_P, which is definitional.  Check
+   that no cell is counted with the two roots taken at the same Q when the
+   other root is allowed to move - that would be the pairing error the v7
+   report itself flags.
+
+3. Which axes are pinned and which are gridded.
+   DJ_PIN = eps_M, k_aux_M, d_hole, L_HS_M are pinned to the endpoint given
+   by their certified sign (they enter only the M loop, and their signs are
+   certified in v4).  DJ_SPLIT = u_loss_fac, mu_fac, cp_fac, rho_fac are the
+   four shared axes whose d ln r / dx straddles zero in v4, so they are NOT
+   assumed monotone: they are enumerated on a k^4 tensor grid (k = 4 here).
+   Attack: is any axis left free without either a sign certificate or a grid
+   partition?  Count them - ten axes, four pinned, four gridded, two are
+   dTin_P / dTin_M, handled separately below.  The power axis is not an axis
+   here; it is the slab index.
+
+4. The mean-value step for dTin.
+   dTin is the only axis whose sign is not certified.  gbound uses
+       Phi(T_in) - Phi(0) = Phi'(xi) * T_in ,  |xi| <= 2 K
+   with Phi' enclosed over the same cell, so the +-2 K contributes a fixed
+   additive interval instead of being evaluated as a raw interval.  Attack:
+   is Phi' really evaluated over an interval that contains xi for every
+   point of the cell, and is the resulting interval added with the correct
+   sign?  This step is what makes the bound usable at all: a raw interval
+   evaluation of the same +-2 K costs 2.5x more width on the root (and 104x
+   on Phi in the v4 measurement).
+
+5. The two silent traps.
+   (a) core_v2.solve() begins with kw.pop('dtin', None).  If you pass **kw
+       straight through, the two dTin axes are dropped with NO error, and
+       3 kW narrows by 0.067 pp.  gbound does not hit this (it never calls
+       solve), but run_v4c.py did before the fix, and a reviewer reusing
+       these helpers will.
+   (b) bound.bracket() returns a valid interval for any starting window,
+       but its tightness depends on the window used for dPhi/dT_in inside
+       the mean-value step, not on the bisection window.  Moving the
+       bisection window by 0.001 kg/s changed nothing; moving the
+       derivative window changed one cell from 16.0 pp to 10.2 pp.
+
+What is NOT claimed and should not be inferred
+----------------------------------------------
+- No tight bound.  The k=1..4 sequence is 37.67 / 26.98 / 23.27 / 21.34 pp,
+  and a W0 + C/k fit gives W0 about 4.8 pp per cell, so the enclosure can
+  still be tightened by roughly 4x with more cells.  The fit is an
+  extrapolation, not a proof.
+- No monotonicity for the four shared axes.  That missing lemma is the only
+  route from ~10 pp to ~1 pp; it is not proved here and is not assumed.
+- No D_T in this round.  D_T follows from 1 + D_T = R_H / (1 + D_j); R_H was
+  certified in v4 at 0.8 % width, and propagating the enclosure above gives
+  a D_T interval that is dominated entirely by D_j (about 12 of its 14 pp).
+  That propagation is not re-run here.
+- No wall temperature, no solid conduction, no Nu correlation branch.
+- No statement about physical reality.  D_j is a model-to-model distortion
+  between two declared geometries; every number here is a property of the
+  declared box, not a measurement.
+
+Provenance
+----------
+core_v2.py sha256[:16] = f76f81934141869a, byte-identical to the copy in
+v7-continuous-proof and to the frozen baseline of round 4.  No geometry,
+power convention, friction model or FoM definition was changed to make the
+numbers smaller.  The enclosure got tighter only by (i) replacing the raw
+interval evaluation of dTin with the mean-value form, (ii) handing the
+bisection a certified starting window instead of a +-12 % band, and
+(iii) pinning the four M-only axes that v4 had already signed.

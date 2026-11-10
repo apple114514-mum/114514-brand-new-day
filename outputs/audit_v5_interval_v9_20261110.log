@@ -1,0 +1,4 @@
+active_endpoint_a 0.054221123763026076 calls 6344
+value_lower_minus_true 6.878613099306426e-16 true_inside False
+derivative_lower_minus_true 1.469612923938039e-13 true_inside False error_ulps 10589.677146601947
+COUNTEREXAMPLE: both original v5 intervals miss exact values
