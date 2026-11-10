@@ -169,6 +169,9 @@ def interval_residual(side,m,q,x):
     diagnostic=dict(temperature_min=min(v.lo for v in [ti,tci,tco,*means]),
                     temperature_max=max(v.hi for v in [ti,tci,tco,*means]),
                     cooler_bulk_delta=tci-tco,
+                    height_temperature_sum=z,
+                    mean_density=rmean,
+                    main_dynamic_pressure=qmain,
                     segment_re_min=math.inf,segment_re_max=0.)
     if side=='P':
         friction=table2_total_iv(re_main)*qmain

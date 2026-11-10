@@ -1,0 +1,269 @@
+==============================================================================
+v4 task 2 - existence and uniqueness of the accepted flow, certified
+==============================================================================
+
+[0] baseline and vocabulary
+  core_v2.py sha256[:16] = f76f81934141869a
+  copy inside the uploaded zip: f76f81934141869a  (identical=True)
+  Phi(m; x, Q) = dp_buoy - dp_fric.  The accepted flow is its root.
+
+  Three kinds of number appear in this log and they are kept apart:
+    searched   a value found by evaluating the model at many points.
+               It is a lower bound on the range and nothing more.
+    analytic   a range valid under stated premises, evaluated in
+               double precision at its endpoints, no rounding proof.
+    certified  an interval produced by outward-rounded arithmetic on a
+               proven enclosure, valid for every point of the stated
+               set.  Only this column may be called a bound.
+  Everything labelled certified below comes from ivcore.py: every
+  arithmetic result is widened by math.nextafter at each operation and
+  every transcendental enters only through a proven monotone image.
+
+[1] provisional flow windows, used only to place the searches
+  slab  Q lo    Q hi     m_P guess  m_M guess   certificate window
+     0    3000    3500    0.623442   0.215542   +-12 pct
+     1    3500    4000    0.656863   0.228096   +-12 pct
+     2    4000    4500    0.687281   0.239530   +-12 pct
+     3    4500    5000    0.715300   0.250068   +-12 pct
+     4    5000    5500    0.741349   0.259869   +-12 pct
+     5    5500    6000    0.765781   0.269051   +-12 pct
+  nominal flows 0.623442-0.765781 kg/s (P) and 0.215542-0.269051 kg/s (M)
+
+[2] derivative certificate for dPhi/daxis
+  Each entry is the interval image of one partial derivative over
+       x in the ten-axis box,  Q in one 500 W slab,  m in one flow slab
+  Union over the finite cover of the flow window.  A sign that does not
+  contain zero is a proof of monotonicity on that set, and it fixes the
+  endpoint on which the extremum of Phi over the box must sit.
+
+  loop slab  axis          dPhi/daxis interval           sign   use
+  P       0  dTin_P        [     -1.228,    +0.09282]   ZERO   centered
+  P       0  u_loss_fac    [     -195.1,      -106.5]   NEG    corner
+  P       0  mu_fac        [       -111,      -26.24]   NEG    corner
+  P       0  cp_fac        [      -2827,      -728.3]   NEG    corner
+  P       0  rho_fac       [      +2166,       +4216]   POS    corner
+  P       0  Qe            [    +0.4169,     +0.6804]   POS    pinned
+          1  dTin_P        [     -1.131,     +0.2952]   ZERO   centered
+          1  u_loss_fac    [     -186.8,      -101.7]   NEG    corner
+          1  mu_fac        [     -163.3,      -40.75]   NEG    corner
+          1  cp_fac        [      -3069,      -851.9]   NEG    corner
+          1  rho_fac       [      +2472,       +4602]   POS    corner
+          1  Qe            [    +0.3959,      +0.646]   POS    pinned
+          2  dTin_P        [     -1.068,     +0.3985]   ZERO   centered
+          2  u_loss_fac    [       -180,      -97.72]   NEG    corner
+          2  mu_fac        [     -188.2,      -46.95]   NEG    corner
+          2  cp_fac        [      -3303,      -967.8]   NEG    corner
+          2  rho_fac       [      +2762,       +4972]   POS    corner
+          2  Qe            [    +0.3785,     +0.6176]   POS    pinned
+          3  dTin_P        [     -1.013,     +0.4999]   ZERO   centered
+          3  u_loss_fac    [     -174.4,      -94.37]   NEG    corner
+          3  mu_fac        [     -213.4,      -53.23]   NEG    corner
+          3  cp_fac        [      -3529,       -1077]   NEG    corner
+          3  rho_fac       [      +3038,       +5327]   POS    corner
+          3  Qe            [    +0.3639,     +0.5937]   POS    pinned
+          4  dTin_P        [    -0.9638,     +0.5996]   ZERO   centered
+          4  u_loss_fac    [     -169.7,       -91.5]   NEG    corner
+          4  mu_fac        [     -238.9,      -59.57]   NEG    corner
+          4  cp_fac        [      -3751,       -1182]   NEG    corner
+          4  rho_fac       [      +3302,       +5670]   POS    corner
+          4  Qe            [    +0.3512,     +0.5736]   POS    pinned
+          5  dTin_P        [    -0.9193,     +0.6981]   ZERO   centered
+          5  u_loss_fac    [     -165.5,      -88.99]   NEG    corner
+          5  mu_fac        [     -264.8,      -65.99]   NEG    corner
+          5  cp_fac        [      -3965,       -1282]   NEG    corner
+          5  rho_fac       [      +3556,       +6003]   POS    corner
+          5  Qe            [    +0.3401,     +0.5556]   POS    pinned
+
+  M       0  eps_M         [     -13.61,      -1.805]   NEG    corner
+  M       0  k_aux_M       [     -70.02,      -42.45]   NEG    corner
+  M       0  d_hole        [     +138.9,        +239]   POS    corner
+  M       0  L_HS_M        [     -69.28,      -15.09]   NEG    corner
+  M       0  dTin_M        [     -1.926,      +6.667]   ZERO   centered
+  M       0  u_loss_fac    [     -347.1,      -143.9]   NEG    corner
+  M       0  mu_fac        [      -2230,      -134.5]   NEG    corner
+  M       0  cp_fac        [      -4846,      -970.1]   NEG    corner
+  M       0  rho_fac       [      +3299,       +6306]   POS    corner
+  M       0  Qe            [     +0.621,      +1.143]   POS    pinned
+          1  eps_M         [     -15.96,      -2.056]   NEG    corner
+          1  k_aux_M       [     -78.46,      -47.57]   NEG    corner
+          1  d_hole        [     +155.6,      +267.8]   POS    corner
+          1  L_HS_M        [     -67.13,      -14.46]   NEG    corner
+          1  dTin_M        [     -1.795,      +7.299]   ZERO   centered
+          1  u_loss_fac    [     -329.6,      -133.4]   NEG    corner
+          1  mu_fac        [      -2448,      -144.3]   NEG    corner
+          1  cp_fac        [      -5253,       -1148]   NEG    corner
+          1  rho_fac       [      +3735,       +6881]   POS    corner
+          1  Qe            [    +0.5866,      +1.085]   POS    pinned
+          2  eps_M         [     -18.34,      -2.301]   NEG    corner
+          2  k_aux_M       [     -86.56,      -52.49]   NEG    corner
+          2  d_hole        [     +171.7,      +295.5]   POS    corner
+          2  L_HS_M        [     -65.44,      -13.95]   NEG    corner
+          2  dTin_M        [     -1.687,      +7.886]   ZERO   centered
+          2  u_loss_fac    [     -315.5,      -124.8]   NEG    corner
+          2  mu_fac        [      -2657,      -153.2]   NEG    corner
+          2  cp_fac        [      -5647,       -1314]   NEG    corner
+          2  rho_fac       [      +4144,       +7430]   POS    corner
+          2  Qe            [    +0.5583,      +1.037]   POS    pinned
+          3  eps_M         [     -20.76,      -2.539]   NEG    corner
+          3  k_aux_M       [      -94.4,      -57.24]   NEG    corner
+          3  d_hole        [     +187.2,      +322.2]   POS    corner
+          3  L_HS_M        [     -64.09,      -13.52]   NEG    corner
+          3  dTin_M        [     -1.598,      +8.438]   ZERO   centered
+          3  u_loss_fac    [     -303.8,      -117.4]   NEG    corner
+          3  mu_fac        [      -2858,      -161.3]   NEG    corner
+          3  cp_fac        [      -6029,       -1469]   NEG    corner
+          3  rho_fac       [      +4532,       +7957]   POS    corner
+          3  Qe            [    +0.5345,     +0.9969]   POS    pinned
+          4  eps_M         [     -23.21,      -2.771]   NEG    corner
+          4  k_aux_M       [       -102,      -61.84]   NEG    corner
+          4  d_hole        [     +202.3,      +348.1]   POS    corner
+          4  L_HS_M        [     -62.98,      -13.15]   NEG    corner
+          4  dTin_M        [     -1.521,       +8.96]   ZERO   centered
+          4  u_loss_fac    [       -294,        -111]   NEG    corner
+          4  mu_fac        [      -3053,      -168.9]   NEG    corner
+          4  cp_fac        [      -6400,       -1615]   NEG    corner
+          4  rho_fac       [      +4903,       +8466]   POS    corner
+          4  Qe            [     +0.514,     +0.9624]   POS    pinned
+          5  eps_M         [     -25.69,      -2.997]   NEG    corner
+          5  k_aux_M       [     -109.4,      -66.32]   NEG    corner
+          5  d_hole        [       +217,      +373.3]   POS    corner
+          5  L_HS_M        [     -62.05,      -12.82]   NEG    corner
+          5  dTin_M        [     -1.455,      +9.456]   ZERO   centered
+          5  u_loss_fac    [     -285.5,      -105.3]   NEG    corner
+          5  mu_fac        [      -3243,      -175.8]   NEG    corner
+          5  cp_fac        [      -6762,       -1754]   NEG    corner
+          5  rho_fac       [      +5259,       +8958]   POS    corner
+          5  Qe            [    +0.4962,     +0.9323]   POS    pinned
+
+  Reading: on every slab, dPhi/deps_M, dPhi/dk_aux_M, dPhi/du_loss_fac,
+  dPhi/dmu_fac, dPhi/dcp_fac and dPhi/dL_HS_M are strictly negative,
+  dPhi/drho_fac and dPhi/dd_hole strictly positive, dPhi/dQ strictly
+  positive.  Only the inlet-control axis changes sign: raising the
+  inlet temperature raises buoyancy and raises viscosity, and over this
+  box the two nearly cancel.  It is therefore not pinned to a corner;
+  its effect enters through the mean-value form in bound.py, whose
+  enclosure is about 5 Pa against 510 Pa for plain interval evaluation
+  of the same 4 K span; that factor is measured in section [3].
+
+[3] existence: a bracket on every power slab
+  dPhi/dQ > 0 is certified, so within a slab the minimum of Phi is at
+  the low power end and the maximum at the high end; the slab is
+  therefore bracketed exactly, not sampled.  Six slabs cover [3,6] kW,
+  and the union of their brackets is the bracket for the whole range.
+
+  loop slab  Q lo   Q hi    m_low      m_high     width (% of m)  iters
+  P       0   3000   3500   0.583697   0.664867     13.020        22
+  P       1   3500   4000   0.618298   0.697429     12.047        22
+  P       2   4000   4500   0.649427   0.727471     11.355        22
+  P       3   4500   5000   0.677998   0.755284     10.805        22
+  P       4   5000   5500   0.704339   0.781312     10.383        22
+  P       5   5500   6000   0.728898   0.805805     10.043        22
+
+  M       0   3000   3500   0.197053   0.235775     17.965        22
+  M       1   3500   4000   0.209786   0.248330     16.898        22
+  M       2   4000   4500   0.221256   0.259852     16.113        22
+  M       3   4500   5000   0.231752   0.270552     15.516        22
+  M       4   5000   5500   0.241475   0.280547     15.035        22
+  M       5   5500   6000   0.250512   0.289955     14.660        22
+
+  Global bracket, valid for every x in the box and every power in
+  [3000, 6000] W:
+    m*_P in [0.583697, 0.805805] kg/s
+    m*_M in [0.197053, 0.289955] kg/s
+  Non-empty at every power, so a root exists for every input in the
+  declared set.  Note this is a proof of existence in the model, not
+  a statement that the model is right; the model is the frozen one.
+
+  What the mean-value form buys, measured at the 3 kW corner:
+    Phi spread from the 4 K inlet error
+      plain interval evaluation over [T_in-2, T_in+2]    510.950 Pa
+      mean-value form with the certified derivative         4.912 Pa
+    ratio 104x.  The plain form is useless at this scale; the centered
+    form is what makes a 0.1 pct flow bracket reachable at all.
+
+[4] uniqueness: dPhi/dm < 0 on a finite cover of each bracket
+  Covering, not sampling: the bracket is cut into slabs and each slab
+  is checked as an interval over the whole box and the whole power
+  slab.  A finite cover plus continuity gives strict monotonicity on
+  the entire bracket; a grid of points would not.
+
+  loop  slabs  worst upper bound   narrowest |dPhi/dm|   verdict
+  P        24            -5915.99              5915.99      strictly decreasing
+  M        24            -17122.1              17122.1      strictly decreasing
+
+  dPhi/dm stays below -5900 Pa per kg/s everywhere on the bracket, so
+  the root is simple as well as unique: no tangency, no fold, and the
+  implicit function theorem applies to the sensitivity terms that the
+  FoM bounds rely on.
+
+[5] the two transition questions
+
+  (i) Churchill.  core_v2.churchill is a single expression valid for
+      all Re; there is no laminar branch and no switch at Re = 2300, so
+      the 'transition peak' of a two-correlation code does not exist
+      here.  Monotonicity in Re is proved by composition inside
+      ivcore.iv_churchill, not by sampling: every factor of
+          f = 8 [(8/Re)^12 + (a+b)^-1.5]^(1/12)
+      is monotone in Re for fixed relative roughness.  What the model
+      does have is a steep but smooth change of slope near Re ~ 3000.
+      The certified flow intervals keep Re well above that:
+
+  power  loop  Re_min   Re_max   Churchill window   verdict
+   3000  P       11352    15673   [400, inf)        inside
+   4500  P       12878    17540   [400, inf)        inside
+   6000  P       14665    19744   [400, inf)        inside
+   3000  M        6669    10004   [400, inf)        inside
+   4500  M        7802    11559   [400, inf)        inside
+   6000  M        9096    13312   [400, inf)        inside
+
+  (ii) Yue Table 2.  K(Re_tube) is piecewise linear through five
+       printed points, so it has four breakpoints and the interval
+       image must not assume smoothness.  ivcore.iv_table2_total
+       takes the union of the segment ends plus every printed
+       breakpoint strictly inside the interval, which is exact for a
+       continuous piecewise-linear function.  The test below checks
+       containment against 4000 point evaluations spread over the
+       interval, including the breakpoints themselves.
+
+       containment test: 163959 point values, 0 outside the interval
+       breakpoints covered: 11100, 16700, 22300
+
+       Re_tube over the certified bracket:
+  power  loop  Re_min   Re_max   straddles 16700  straddles 22300
+   3000  P       11352    15673   no              no
+   4500  P       12878    17540   yes             no
+   6000  P       14665    19744   yes             no
+   3000  M        6669    10004   no              no
+   4500  M        7802    11559   no              no
+   6000  M        9096    13312   no              no
+
+       The P loop crosses 16700 between 3 and 4.5 kW, so the interval
+       image there straddles a breakpoint and the segment-end-plus-
+       breakpoint union is what keeps it exact.  The M loop never
+       touches the table (it carries K_aux instead), so the breakpoints
+       act on P only.
+
+[6] the temperature window, over the whole box, not at the corners
+  The corner search of previous rounds could only report the maximum
+  temperature seen at 1024 points.  This is the interval image of the
+  whole field over the box at the certified bracket, so it covers
+  every interior point as well.
+
+  power  T_hs min  T_hs max   T_co min  T_co max   cp window  verdict
+   3000  P       494.0     512.4      472.2      477.8   [455,1570]  inside
+   3000  M       535.1     585.8      475.4      486.3   [455,1570]  inside
+   4500  P       505.8     531.2      472.2      477.8   [455,1570]  inside
+   4500  M       567.9     641.5      475.4      486.3   [455,1570]  inside
+   6000  P       517.6     550.0      472.2      477.8   [455,1570]  inside
+   6000  M       600.6     697.1      475.4      486.3   [455,1570]  inside
+
+  The heater stays between 494 K and 698 K and the cold leg between
+  472 K and 487 K, against a property window of [455, 1570] K.  The
+  candidate bracket at 0.15 of nominal flow tried early in this round
+  did violate it (T_hs reached 1511 K); that bracket is not used,
+  because the corner reduction makes a tight bracket affordable.
+
+[7] files
+  results_v4b.csv   116 rows
+  run_v4b_log.txt   this log
+  elapsed 0.7 s

@@ -1,0 +1,3 @@
+Re=3000, all roughness: df/dRe in [+2.440157569048e-06,+7.633988524980e-06]
+Re=3300, all roughness: df/dRe in [-5.812047575913e-06,-8.650607151197e-07]
+CERTIFIED: a smooth local maximum exists between Re=3000 and 3300 for every declared roughness; the accepted root bracket is above this range.

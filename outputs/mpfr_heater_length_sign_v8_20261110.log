@@ -1,0 +1,9 @@
+mass box 0: dF/dL_HS_M = [-2796.497429563,-70.835576167] Pa/m
+mass box 1: dF/dL_HS_M = [-2116.982524262,-83.892413096] Pa/m
+mass box 2: dF/dL_HS_M = [-1727.657833104,-98.617882698] Pa/m
+mass box 3: dF/dL_HS_M = [-1490.845214510,-114.972230091] Pa/m
+mass box 4: dF/dL_HS_M = [-1342.272630437,-132.902849867] Pa/m
+mass box 5: dF/dL_HS_M = [-1248.785882617,-152.357989657] Pa/m
+mass box 6: dF/dL_HS_M = [-1191.903790056,-173.290724730] Pa/m
+mass box 7: dF/dL_HS_M = [-1160.667776475,-195.659643728] Pa/m
+CERTIFIED whole-box dF/dL_HS_M in [-2796.497429563,-70.835576167] Pa/m; m_M and D_j strictly decrease as L_HS_M increases

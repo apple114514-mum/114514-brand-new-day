@@ -1,0 +1,9 @@
+direction 1 other_bits (1, 0, 1, 0, 0, 0, 1, 0, 0) finite_corner_difference_pp 0.0075270501063151585
+P root [0.796808528,0.796808528] M root [0.277826131,0.277826131]
+dln(mP)/du [-0.0167996492,-0.0167996492] dln(mM)/du [-0.0164592095,-0.0164592095] dln(mM/mP)/du [0.000340439723,0.000340439723]
+signed derivative interval 0.0003404397226899493 0.0003404397226920112
+direction -1 other_bits (0, 1, 0, 1, 1, 1, 0, 1, 1) finite_corner_difference_pp -0.04653100892898454
+P root [0.765505418,0.765505418] M root [0.271452049,0.271452049]
+dln(mP)/du [-0.0161120308,-0.0161120308] dln(mM)/du [-0.0172098296,-0.0172098296] dln(mM/mP)/du [-0.00109779882,-0.00109779882]
+signed derivative interval -0.0010977988172687783 -0.0010977988172665555
+CERTIFIED: the shared heat-loss axis has both local derivative signs.

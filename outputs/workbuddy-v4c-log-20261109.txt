@@ -1,0 +1,199 @@
+==============================================================================
+v4 task 3 - bounds on D_j, R_H and D_T, certified over the box
+==============================================================================
+
+[0] baseline
+  core_v2.py sha256[:16] = f76f81934141869a
+  D_j = (m_M/m_P)/A_R - 1,  D_T = A_R dT_M/dT_P - 1,  A_R = 0.378698225
+  (1+D_T)(1+D_j) = R_H is an identity; it moves the whole problem into
+  the value of R_H, which this script bounds from the loss side.
+
+  A_R is written before any solve, so it is not a fitted quantity.  No
+  parameter is adjusted anywhere below; only enclosure is added.
+
+[1] flow bracket at the three reported powers
+  power  loop  m_low       m_high      width (% of m)   Phi margin
+   3000  P     0.583636  0.628966      7.488        [   +0.2,    -0.5]
+   3000  M     0.196689  0.222351     12.293        [   +0.5,    -0.6]
+   4300  P     0.666808  0.715741      7.090        [   +0.3,    -0.3]
+   4300  M     0.227227  0.255819     11.883        [   +0.6,    -0.1]
+   6000  P     0.751988  0.805836      6.926        [   +0.1,    -0.3]
+   6000  M     0.258539  0.290487     11.684        [   +0.5,    -0.6]
+
+  This is the enclosure of the flow itself, and it is already tighter
+  than the searched corner range of earlier rounds, because the
+  certified axis signs let the box collapse onto two corners instead
+  of 1024.
+
+[2] D_j: what the independent enclosure costs, and what subdivision
+    recovers
+
+  Naive: D_j in [m_M,lo/m_P,hi, m_M,hi/m_P,lo] / A_R - 1.  Valid, but it
+  pairs the smallest M flow with the largest P flow, which no single
+  input produces.
+  power  naive D_j bound                 width
+   3000  [ -17.4229,   +0.6011] pct      18.024 pp
+   4300  [ -16.1679,   +1.3069] pct      17.475 pp
+   6000  [ -15.2799,   +2.0052] pct      17.285 pp
+
+  Subdivided: the four M-only axes are pinned to the ends that
+  extremise D_j (their signs are certified, so the pinning is exact),
+  and the four shared axes are cut into k cells each.  Inside a cell
+  the two flows are enclosed on the same sub-box, so the pairing is
+  consistent and the enclosure converges as k grows.
+
+  power  k     cells   certified D_j bound            width   time
+   3000  1       1   [ -21.4897,   +5.4602] pct   26.950 pp   0.1 s
+   3000  2      16   [ -16.4770,   -0.5024] pct   15.975 pp   1.4 s
+   3000  3      81   [ -14.6641,   -2.5192] pct   12.145 pp  16.1 s
+   3000  4     256   [ -13.8110,   -3.5102] pct   10.301 pp  53.5 s
+   4300  1       1   [ -19.6102,   +5.4023] pct   25.013 pp   0.3 s
+   4300  2      16   [ -14.9601,   +0.0098] pct   14.970 pp   3.3 s
+   4300  3      81   [ -13.3413,   -1.8166] pct   11.525 pp  16.6 s
+   4300  4     256   [ -12.5637,   -2.7150] pct    9.849 pp  56.0 s
+   6000  1       1   [ -18.4140,   +5.7144] pct   24.128 pp   0.2 s
+   6000  2      16   [ -13.9306,   +0.6085] pct   14.539 pp   3.5 s
+   6000  3      81   [ -12.3758,   -1.1277] pct   11.248 pp  17.3 s
+   6000  4     256   [ -11.5918,   -2.0080] pct    9.584 pp  54.0 s
+
+  The width falls like width = W0 + C/k, not like a search that merely
+  samples more points: every k gives a statement valid on the whole
+  box, and the nested cells only sharpen it.  Fitting the four rows
+  gives the cost of the next decimal place, and that number is the
+  honest answer to how far this route can be pushed this round.
+
+  power   W0 (pp)   C (pp)   k for +1 pp     cells      hours
+   3000     4.783   22.194         22.2           242648          14.1
+   4300     4.808   20.219         20.2           167135          10.2
+   6000     4.792   19.359         19.4           140466           8.2
+
+  W0 is the width the enclosure is converging to, i.e. the true range
+  of D_j over the box; C is how much of the present width is still
+  cell-size error.  C is the number that matters: to be within one
+  point of W0 the grid has to reach k = C per shared axis, which is
+  C^4 cells.  That is a compute task, not a method one, and it is the
+  reason the certified D_j of this round is roughly five points wider
+  than W0 while R_H is already tight to a fraction of a point.
+
+  One observation worth recording: W0 is about 4.8 pp at every power,
+  while the corner search of section [6] only spans 3.8 pp at 3 kW and
+  3.8 pp at 6 kW.  A convergent enclosure cannot converge below the
+  true range, so the corner search appears to miss roughly one point
+  of it.  That is an extrapolation from four grid levels, not a proof
+  of where the missing point is, but it says the searched extremes of
+  earlier rounds are not the extremes.
+
+[3] why D_j stalls: the derivative that interval arithmetic cannot sign
+  For a shared axis, d ln(mM*/mP*)/daxis is the difference of two
+  sensitivities that nearly cancel:
+      d ln m*/daxis = -(dPhi/daxis) / (m dPhi/dm)
+  dPhi/dcp_fac alone spans a factor of six across the box (it is
+  -2827 to -728 Pa on the 3 kW slab for P and -4846 to -970 for M),
+  so each term carries a wide interval and their difference straddles
+  zero.  The table below uses the *narrowest* honest window, the
+  certified bracket itself at one power, so no wider window would
+  help.  The true value is far from zero, but interval arithmetic
+  cannot see that without splitting.
+
+  axis         d ln(mM/mP)/daxis, box x bracket @4.3 kW   sign
+  eps_M        [    -0.02042,   -0.0008314]        NEG    <- certified
+  k_aux_M      [    -0.09253,     -0.01973]        NEG    <- certified
+  d_hole       [    +0.06455,      +0.3158]        POS    <- certified
+  L_HS_M       [    -0.07151,    -0.004594]        NEG    <- certified
+  u_loss_fac   [     -0.3314,     +0.01461]        ZERO
+  mu_fac       [      -3.405,     +0.00201]        ZERO
+  cp_fac       [       -6.25,      +0.5559]        ZERO
+  rho_fac      [     -0.1728,        +8.05]        ZERO
+
+  The four M-only axes are certified, because for them the other
+  loop's sensitivity is identically zero and the sign is just the sign
+  of dPhi_M/daxis.  The four shared axes are not, and that is the
+  blocking position for a corner-tight D_j bound.
+
+[4] R_H from the loss side, and D_T through the identity
+  Energy balance on the heated segment, checked independently in task 1
+  to 1e-12 relative, gives Qnet = Qe - L_HS with
+      L_HS = u u_fac L_HS (Tmean - T_amb).
+  R_H = (Qnet_M/Qnet_P)(cp_P/cp_M) then follows from u, Tmean and the
+  two inlet temperatures.  It does not use the flow solve, so
+  combining it with the D_j enclosure is not circular.
+
+  power  L_HS,P W        L_HS,M W        Qnet ratio
+   3000  [  44.4,  69.3]  [  33.5,  54.2]  [0.996671170,1.012211051]
+   4300  [  45.3,  70.9]  [  35.1,  57.3]  [0.997179302,1.008472319]
+   6000  [  46.4,  72.9]  [  37.0,  60.9]  [0.997559646,1.006056674]
+
+  power  cp ratio interval            R_H interval
+   3000  [0.999483903,1.000516363]      [0.996156792,1.012733719]
+   4300  [0.999483903,1.000516363]      [0.996664661,1.008993057]
+   6000  [0.999483903,1.000516363]      [0.997044808,1.006576165]
+
+  The cp ratio is one to four digits.  Both loops call cp at the same
+  inlet boundary and with the same multiplier, so the multiplier
+  cancels exactly and the only spread is the +-2 K control error acting
+  on a quantity with |dlncp/dT| about 2e-4 per K.  All of R_H therefore
+  comes from the loss fraction, which is small and similar on both
+  sides; that is why R_H sits within a percent of one while D_j is
+  seven percent away from it.
+
+[5] D_T through the identity
+  power  D_j certified                R_H certified          D_T
+   3000  [-13.8110,  -3.5102] pct   [0.996156792,1.012733719]  [ +3.2396, +17.5015]
+   4300  [-12.5637,  -2.7150] pct   [0.996664661,1.008993057]  [ +2.4479, +15.3976]
+   6000  [-11.5918,  -2.0080] pct   [0.997044808,1.006576165]  [ +1.7475, +13.8556]
+
+  The width of D_T is dominated by the D_j factor: R_H contributes
+  1.7 points and D_j about twelve.  Improving D_T therefore means
+  improving D_j, not the heater.
+
+[6] the same quantities by corner search, for comparison only
+  1024 corners at each power, the protocol of the earlier rounds.  This
+  is not a bound: it says nothing about the interior of the box.
+  Note on dtin: core_v2.solve() discards a 'dtin' keyword, because the
+  official protocol folds it into T_in before the solve (see C.fom).
+  The corner loop below must therefore add it to T_in by hand; passing
+  the kw dict straight through would silently drop that axis.
+
+  power  D_j searched range            D_T searched range
+   3000  [-10.7389,  -6.9103] pct   [ +7.8092, +12.6496] pct
+   4300  [ -9.7205,  -5.9000] pct   [ +6.5145, +11.1595] pct
+   6000  [ -8.9087,  -5.1040] pct   [ +5.5395, +10.0280] pct
+
+[7] three tiers, side by side
+  power  quantity  searched            certified            gap (pp)
+   3000  D_j       [-10.739, -6.910]  [-13.811, -3.510]    6.472
+         D_T       [ +7.809,+12.650]  [ +3.240,+17.502]    9.422
+   4300  D_j       [ -9.721, -5.900]  [-12.564, -2.715]    6.028
+         D_T       [ +6.514,+11.159]  [ +2.448,+15.398]    8.305
+   6000  D_j       [ -8.909, -5.104]  [-11.592, -2.008]    5.779
+         D_T       [ +5.539,+10.028]  [ +1.748,+13.856]    7.620
+
+  Conditional tier, for the record.  If D_j is *assumed* to lie inside
+  the searched range -- a premise, not a proof -- the identity carries
+  it to D_T and the width falls to about six points:
+
+  power  assumed D_j            resulting D_T        width
+   3000  [-10.7389, -6.9103] pct  [ +7.0105,+13.4574]      6.447 pp
+   4300  [ -9.7205, -5.9000] pct  [ +5.9155,+11.7633]      5.848 pp
+   6000  [ -8.9087, -5.1040] pct  [ +5.0671,+10.5020]      5.435 pp
+
+  That is the table to quote if the paper already accepts the corner
+  search as sufficient.  It is an analytic range with a stated premise,
+  not a certificate, and it is labelled as such.
+
+  The gap column below is how much wider the certified interval is than the
+  searched range, summed over both ends.  A gap of zero would mean the
+  corner search happened to sit on the true extremes; the number here
+  is the price of certifying the interior, and it is what the next
+  round would have to shrink.
+
+  Apart from the conditional tier, no row above is an analytic
+  envelope with a premise attached: every certified number holds for
+  all inputs in the box, because the temperature window that the
+  property fits require is itself checked as an interval in run_v4b
+  section [6].  That is the difference between the two tables.
+
+[8] files
+  results_v4c.csv   29 rows
+  run_v4c_log.txt   this log
+  elapsed 242.9 s
